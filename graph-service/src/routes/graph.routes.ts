@@ -440,11 +440,16 @@ graphRouter.post("/matchmaker/candidates", async (req, res, next) => {
         if (payload.scope === "same_department" && !sameDepartment) return null;
         if (payload.scope === "same_university" && !sameUniversity) return null;
 
-        const skillCoverage = signal.matchCount / normalizedRequiredSkills.length;
-        const confidenceScore = Math.min(1, signal.avgConfidence);
-        const endorsementScore = Math.min(1, signal.endorsementCount / Math.max(1, normalizedRequiredSkills.length * 2));
+        const matchCount = Number(signal.matchCount);
+        const avgConfidence = Number(signal.avgConfidence);
+        const endorsementCount = Number(signal.endorsementCount);
+        const repoSignalCount = Number(signal.repoSignalCount);
+
+        const skillCoverage = matchCount / normalizedRequiredSkills.length;
+        const confidenceScore = Math.min(1, avgConfidence);
+        const endorsementScore = Math.min(1, endorsementCount / Math.max(1, normalizedRequiredSkills.length * 2));
         const institutionScore = sameDepartment ? 1 : sameUniversity ? 0.75 : 0.35;
-        const activityScore = Math.min(1, signal.repoSignalCount / Math.max(1, signal.matchCount * 2));
+        const activityScore = Math.min(1, repoSignalCount / Math.max(1, matchCount * 2));
         const matchScore = Math.round((
           skillCoverage * 0.4 +
           confidenceScore * 0.2 +
@@ -457,10 +462,10 @@ graphRouter.post("/matchmaker/candidates", async (req, res, next) => {
           !matchedSkillNames.some((matchedSkill) => matchedSkill.toLowerCase() === skill.toLowerCase())
         ));
         const reasons = [
-          `${signal.matchCount} of ${normalizedRequiredSkills.length} required skills matched`,
+          `${matchCount} of ${normalizedRequiredSkills.length} required skills matched`,
           sameDepartment ? "same department" : sameUniversity ? "same university" : "cross-university candidate",
-          signal.repoSignalCount > 0 ? `${signal.repoSignalCount} repository evidence signals` : "limited repository evidence",
-          signal.endorsementCount > 0 ? `${signal.endorsementCount} peer endorsements` : "no peer endorsements yet"
+          repoSignalCount > 0 ? `${repoSignalCount} repository evidence signals` : "limited repository evidence",
+          endorsementCount > 0 ? `${endorsementCount} peer endorsements` : "no peer endorsements yet"
         ];
 
         return {
@@ -477,9 +482,9 @@ graphRouter.post("/matchmaker/candidates", async (req, res, next) => {
           matchedSkills: signal.matchedSkills,
           missingSkills,
           evidence: {
-            avgConfidence: Number(signal.avgConfidence.toFixed(2)),
-            endorsementCount: signal.endorsementCount,
-            repoSignalCount: signal.repoSignalCount
+            avgConfidence: Number(avgConfidence.toFixed(2)),
+            endorsementCount,
+            repoSignalCount
           },
           reasons
         };
