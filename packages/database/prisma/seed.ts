@@ -2715,8 +2715,87 @@ async function main() {
         universityId: uni.id,
         alumniCardUrl: `https://skillgraph.com/cards/alumni_extra_${uni.shortName.toLowerCase()}_${num}.png`
       };
-    });
     await prisma.alumniProfile.createMany({ data: alumniProfiles });
+  }
+
+  // Sync static students to Neo4j to prevent onboarding redirect
+  console.log("Syncing static students to Neo4j...");
+  const staticStudents = [
+    {
+      name: "Rahim Islam",
+      uniKey: "DU",
+      skills: ["React", "Node.js", "PostgreSQL", "TypeScript", "Docker", "Git"]
+    },
+    {
+      name: "Karim Rahman",
+      uniKey: "BUET",
+      skills: ["Python", "TensorFlow", "Pandas", "scikit-learn", "Git"]
+    },
+    {
+      name: "Nabila Zaman",
+      uniKey: "NSU",
+      skills: ["HTML", "CSS", "TypeScript", "React", "Figma", "Git"]
+    },
+    {
+      name: "Fahim Ahmed",
+      uniKey: "BRACU",
+      skills: ["Python", "Git", "C++", "Java"]
+    }
+  ];
+
+  for (const item of staticStudents) {
+    const user = studentMap[item.name];
+    if (user) {
+      const uni = universityMap[item.uniKey];
+      const session = neo4jDriver.session();
+      try {
+        await session.executeWrite((tx) =>
+          tx.run(
+            `
+            MERGE (st:Student {id: $studentId})
+            SET st.name = $name,
+                st.university = $university,
+                st.universityId = $universityId,
+                st.updatedAt = timestamp()
+            `,
+            {
+              studentId: user.id,
+              name: user.fullName,
+              university: uni?.name ?? "Unknown University",
+              universityId: uni?.id ?? ""
+            }
+          )
+        );
+
+        for (const skillName of item.skills) {
+          await session.executeWrite((tx) =>
+            tx.run(
+              `
+              MERGE (sk:Skill {name: $skillName})
+              ON CREATE SET sk.category = 'Uncategorized'
+              WITH sk
+              MATCH (st:Student {id: $studentId})
+              MERGE (st)-[r:KNOWS]->(sk)
+              SET r.confidence = 0.8,
+                  r.proficiency = 0.8,
+                  r.endorsementCount = 1,
+                  r.lastActive = timestamp(),
+                  r.dormant = false,
+                  r.sourceRepos = ["repo-main"]
+              `,
+              {
+                studentId: user.id,
+                skillName
+              }
+            )
+          );
+        }
+      } catch (err) {
+        console.error(`Failed to sync static student ${item.name} to Neo4j:`, err);
+      } finally {
+        await session.close();
+      }
+    }
   }
 
   await neo4jDriver.close();
