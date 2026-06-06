@@ -4,7 +4,8 @@ import { fail, ok } from "../utils/apiResponse.js";
 
 // Save Capstone Team assignments in the database
 export async function saveTeamAssignments(req: Request, res: Response) {
-  if (!req.user || (req.user.role !== "admin" && req.user.role !== "professor" && req.user.role !== "superadmin")) {
+  const userRole = req.user?.role as string | undefined;
+  if (!req.user || (userRole !== "admin" && userRole !== "professor" && userRole !== "superadmin")) {
     fail(res, "FORBIDDEN", "Only admin or professor can manage assignments", 403);
     return;
   }
@@ -14,6 +15,7 @@ export async function saveTeamAssignments(req: Request, res: Response) {
       id?: string;
       name: string;
       maxMembers: number;
+      targetSkills?: string[];
       memberUserIds: string[];
     }>;
   };
@@ -82,7 +84,7 @@ export async function saveTeamAssignments(req: Request, res: Response) {
           data: {
             projectId: project.id,
             requesterId: professorId,
-            requiredSkills: { limit: team.maxMembers } // Store maxMembers limit in requiredSkills JSON
+            requiredSkills: { limit: team.maxMembers, targetSkills: team.targetSkills || [] }
           }
         });
 
@@ -108,7 +110,8 @@ export async function saveTeamAssignments(req: Request, res: Response) {
 
 // Load Capstone Team assignments from the database
 export async function loadTeamAssignments(req: Request, res: Response) {
-  if (!req.user || (req.user.role !== "admin" && req.user.role !== "professor" && req.user.role !== "superadmin")) {
+  const userRole = req.user?.role as string | undefined;
+  if (!req.user || (userRole !== "admin" && userRole !== "professor" && userRole !== "superadmin")) {
     fail(res, "FORBIDDEN", "Only admin or professor can load assignments", 403);
     return;
   }
@@ -147,9 +150,10 @@ export async function loadTeamAssignments(req: Request, res: Response) {
 
     // Format matches back into frontend structure
     const formattedTeams = requests.map((reqItem) => {
-      // Retrieve the limit from requiredSkills JSON
+      // Retrieve the limit and targetSkills from requiredSkills JSON
       const skillsObj = reqItem.requiredSkills as Record<string, any> | null;
       const maxMembers = skillsObj?.limit !== undefined ? skillsObj.limit : 4;
+      const targetSkills = Array.isArray(skillsObj?.targetSkills) ? skillsObj.targetSkills : [];
 
       // Map member user details
       const members = reqItem.matches.map((match) => ({
@@ -159,13 +163,14 @@ export async function loadTeamAssignments(req: Request, res: Response) {
         studentIdNo: match.user.studentProfile?.studentIdNo || undefined,
         // Frontend will lazy fetch skills or we leave it empty to trigger refresh
         skills: [],
-        scores: { frontend: 0, backend: 0, database: 0 }
+        scores: {}
       }));
 
       return {
         id: reqItem.project.id,
         name: reqItem.project.title,
         maxMembers,
+        targetSkills,
         members
       };
     });
