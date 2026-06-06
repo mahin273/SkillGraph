@@ -10,6 +10,9 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  Linkedin,
+  Twitter,
+  MessageSquare,
 } from "lucide-react";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
@@ -341,6 +344,89 @@ export function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-[#030914] border-t border-white/5 py-16 text-slate-400 relative overflow-hidden">
+        {/* Subtle grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
+        
+        <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8 grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr]">
+          {/* Brand Identity & Mission */}
+          <div className="space-y-6">
+            <Link to="/" className="flex items-center gap-2.5 text-sm font-semibold text-white tracking-wide font-outfit">
+              <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md shadow-blue-500/20">
+                <Network className="size-4.5" />
+              </span>
+              SkillGraph
+            </Link>
+            <p className="text-sm leading-relaxed max-w-sm text-slate-400 font-sans">
+              Connecting academic growth with industry benchmarks. We convert student commits and coursework into verified skill portfolios.
+            </p>
+            {/* Social Icons Hub */}
+            <div className="flex items-center gap-3">
+              {[
+                { Icon: Github, href: "https://github.com", label: "GitHub" },
+                { Icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
+                { Icon: MessageSquare, href: "https://discord.com", label: "Discord" },
+                { Icon: Twitter, href: "https://twitter.com", label: "Twitter" },
+              ].map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 hover:bg-blue-500/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.25)] hover:scale-110 active:scale-95 transition-all duration-300"
+                  aria-label={label}
+                >
+                  <Icon className="size-4.5" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Links Column 1 */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white font-outfit mb-4">Platform</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#platform" className="hover:text-white transition-colors">Skill Galaxy</a></li>
+              <li><a href="#workflow" className="hover:text-white transition-colors">Career GPS</a></li>
+              <li><a href="#auth" className="hover:text-white transition-colors">OAuth Access</a></li>
+              <li><a href="/login" className="hover:text-white transition-colors">Matchmaker</a></li>
+            </ul>
+          </div>
+
+          {/* Navigation Links Column 2 */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white font-outfit mb-4">Resources</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">System APIs</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Security Audit</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">University Directory</a></li>
+            </ul>
+          </div>
+
+          {/* Navigation Links Column 3 */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white font-outfit mb-4">Trust & Safety</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+              <li><span className="text-slate-400 text-xs px-2 py-1 rounded bg-white/5 border border-white/10 inline-block">FERPA Compliant</span></li>
+              <li><span className="text-slate-400 text-xs px-2 py-1 rounded bg-white/5 border border-white/10 inline-block mt-2">SOC 2 Secure</span></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8 mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <p>© {new Date().getFullYear()} SkillGraph. All rights reserved.</p>
+          <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 text-emerald-400 font-medium">
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+            All Systems Operational
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
