@@ -4,9 +4,16 @@ import { env } from "../config/env.js";
 import { fail, ok } from "../utils/apiResponse.js";
 import { decryptToken } from "../utils/crypto.js";
 import { getRedis } from "../utils/redis.js";
+import { globalConfig } from "./admin.controller.js";
 
 const SEVENTY_TWO_HOURS_MS = 72 * 60 * 60 * 1000;
-const RATE_LIMIT_WINDOW_MS = env.NODE_ENV === "development" ? 5 * 1000 : 60 * 60 * 1000;
+
+function getRateLimitWindowMs(): number {
+  if (env.NODE_ENV === "development") {
+    return 5 * 1000;
+  }
+  return globalConfig.scanCooldownHours * 60 * 60 * 1000;
+}
 
 type GithubRepositoryPayload = {
   id: number;
@@ -71,7 +78,7 @@ async function getManualIngestionAvailableAt(userId: string): Promise<Date | und
   const lastManualIngestionAt = parseInt(lastManualIngestion, 10);
   if (Number.isNaN(lastManualIngestionAt)) return undefined;
 
-  const availableAt = lastManualIngestionAt + RATE_LIMIT_WINDOW_MS;
+  const availableAt = lastManualIngestionAt + getRateLimitWindowMs();
   return Date.now() < availableAt ? new Date(availableAt) : undefined;
 }
 
@@ -81,7 +88,7 @@ async function getManualIngestionAvailableAt(userId: string): Promise<Date | und
 async function setRateLimit(userId: string) {
   const redis = await getRedis();
   await redis.set(`ingestion:ratelimit:${userId}`, Date.now().toString(), {
-    PX: RATE_LIMIT_WINDOW_MS
+    PX: getRateLimitWindowMs()
   });
 }
 
@@ -119,7 +126,7 @@ export async function triggerIngestion(req: Request, res: Response) {
   // Set rate limit and schedule next automatic ingestion
   await setRateLimit(req.user.id);
   await scheduleNextIngestion(req.user.id);
-  const nextManualIngestionAvailableAt = new Date(Date.now() + RATE_LIMIT_WINDOW_MS);
+  const nextManualIngestionAvailableAt = new Date(Date.now() + getRateLimitWindowMs());
 
   // Store job status in Redis
   await redis.hSet(`ingestion:status:${req.user.id}`, {

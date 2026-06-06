@@ -6,11 +6,13 @@ import { fail, ok } from "../utils/apiResponse.js";
 // Lists all alumni profiles that are not verified yet
 export async function listPendingAlumni(req: Request, res: Response) {
   try {
+    const universityId = req.user?.universityId;
     const pendingAlumni = await prisma.alumniProfile.findMany({
       where: {
         verified: false,
         // Ensure they have uploaded a card to verify
-        alumniCardUrl: { not: null }
+        alumniCardUrl: { not: null },
+        ...(universityId ? { universityId } : {})
       },
       include: {
         user: true
@@ -65,23 +67,45 @@ export async function verifyAlumni(req: Request, res: Response) {
       return;
     }
 
+    // Enforce university isolation for University Admins
+    if (req.user?.universityId && profile.universityId !== req.user.universityId) {
+      fail(res, "FORBIDDEN", "You can only manage users within your own university", 403);
+      return;
+    }
+
     if (approve) {
-      const updated = await prisma.alumniProfile.update({
-        where: { id },
-        data: {
-          verified: true
-        }
-      });
+      const [updated] = await prisma.$transaction([
+        prisma.alumniProfile.update({
+          where: { id },
+          data: {
+            verified: true
+          }
+        }),
+        prisma.user.update({
+          where: { id: profile.userId },
+          data: {
+            isVerified: true
+          }
+        })
+      ]);
       ok(res, updated);
     } else {
       // Rejection: reset verification status and delete/clear the card image
-      const updated = await prisma.alumniProfile.update({
-        where: { id },
-        data: {
-          verified: false,
-          alumniCardUrl: null
-        }
-      });
+      const [updated] = await prisma.$transaction([
+        prisma.alumniProfile.update({
+          where: { id },
+          data: {
+            verified: false,
+            alumniCardUrl: null
+          }
+        }),
+        prisma.user.update({
+          where: { id: profile.userId },
+          data: {
+            isVerified: false
+          }
+        })
+      ]);
       ok(res, updated);
     }
   } catch (error) {

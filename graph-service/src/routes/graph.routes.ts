@@ -69,7 +69,9 @@ graphRouter.post("/update", async (req, res, next) => {
       MERGE (student)-[knows:KNOWS]->(skill)
       SET knows.confidence = extracted.confidence,
           knows.sourceRepos = extracted.source_repos,
-          knows.updatedAt = datetime()
+          knows.updatedAt = datetime(),
+          knows.proficiency = null,
+          knows.dormant = false
       WITH extracted, skill
       MATCH (project:Project)
       WHERE project.name IN extracted.source_repos OR project.fullName IN extracted.source_repos
@@ -421,6 +423,7 @@ graphRouter.post("/matchmaker/candidates", async (req, res, next) => {
   }
 });
 
+
 // POST /graph/sync — re-sync a student's Neo4j nodes from PostgreSQL
 
 graphRouter.post("/sync", async (req, res, next) => {
@@ -489,6 +492,7 @@ graphRouter.post("/sync", async (req, res, next) => {
   }
 });
 
+
 // GET /graph/roles — return all industry roles from PostgreSQL
 
 graphRouter.get("/roles", async (_req, res, next) => {
@@ -519,6 +523,7 @@ graphRouter.get("/roles", async (_req, res, next) => {
   }
 });
 
+
 // GET /graph/skills/all — return all skill nodes from Neo4j
 
 graphRouter.get("/skills/all", async (_req, res, next) => {
@@ -536,6 +541,7 @@ graphRouter.get("/skills/all", async (_req, res, next) => {
     next(error);
   }
 });
+
 
 // POST /graph/reactivate — reactivate a dormant skill
 

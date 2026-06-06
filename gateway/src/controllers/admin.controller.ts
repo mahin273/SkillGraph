@@ -134,7 +134,7 @@ export async function updateUser(req: Request, res: Response) {
     }
 
     // Auto-update AlumniProfile verified state if isVerified is updated
-    if (isVerified !== undefined && user.role === "alumni") {
+    if (isVerified !== undefined && updatedUser.role === "alumni") {
       await prisma.alumniProfile.updateMany({
         where: { userId: id },
         data: { verified: isVerified }

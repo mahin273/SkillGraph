@@ -8,7 +8,7 @@ export function requireRole(roles: UserRole[]) {
       return;
     }
 
-    if ((req.user.role === "professor" || req.user.role === "alumni") && !req.user.isVerified) {
+    if (["student", "professor", "alumni"].includes(req.user.role) && !req.user.isVerified) {
       res.status(403).json({
         success: false,
         error: {

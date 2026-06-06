@@ -295,7 +295,7 @@ export async function githubCallback(req: Request, res: Response) {
     });
   }
 
-  if (!user.studentProfile) await ensureStudentProfile(user.id, user.githubHandle ?? user.email ?? user.fullName);
+  if (user.role === "student" && !user.studentProfile) await ensureStudentProfile(user.id, user.githubHandle ?? user.email ?? user.fullName);
 
   const encryptedToken = encryptToken(tokenPayload.access_token);
   const existingConnection = await prisma.oauthConnection.findFirst({ where: { userId: user.id, provider: "github" } });
@@ -407,7 +407,7 @@ export async function googleCallback(req: Request, res: Response) {
     });
   }
 
-  if (!user.studentProfile) await ensureStudentProfile(user.id, user.email ?? user.fullName);
+  if (user.role === "student" && !user.studentProfile) await ensureStudentProfile(user.id, user.email ?? user.fullName);
   setAuthCookies(res, user);
   res.redirect(`${env.FRONTEND_URL}/dashboard`);
 }
