@@ -1,7 +1,7 @@
 import type * as React from "react";
 import { cn } from "@/lib/utils"
 
-type ButtonVariant = "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
+type ButtonVariant = "default" | "outline" | "secondary" | "ghost" | "destructive" | "link" | "white" | "outline-white" | "ghost-white";
 type ButtonSize = "default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -15,7 +15,10 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary: "bg-[#eef1f6] text-[#17202a] hover:bg-[#e3e9f2]",
   ghost: "bg-transparent text-[#17202a] hover:bg-[#eef1f6]",
   destructive: "bg-[#d92d20] text-white hover:bg-[#b42318]",
-  link: "bg-transparent text-[#0c66e4] underline-offset-4 hover:underline"
+  link: "bg-transparent text-[#0c66e4] underline-offset-4 hover:underline",
+  white: "bg-white text-[#07111f] hover:bg-white/90",
+  "outline-white": "border border-white/20 bg-white/10 text-white hover:bg-white/15",
+  "ghost-white": "bg-transparent text-white hover:bg-white/10 hover:text-white"
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

@@ -2715,6 +2715,7 @@ async function main() {
         universityId: uni.id,
         alumniCardUrl: `https://skillgraph.com/cards/alumni_extra_${uni.shortName.toLowerCase()}_${num}.png`
       };
+    });
     await prisma.alumniProfile.createMany({ data: alumniProfiles });
   }
 

@@ -108,10 +108,10 @@ export function Landing() {
           </div>
           <div className="flex items-center gap-2">
             <Link to="/login">
-              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">Log in</Button>
+              <Button variant="ghost-white">Log in</Button>
             </Link>
             <Link to="/signup">
-              <Button className="bg-white text-[#07111f] hover:bg-white/90">Sign up</Button>
+              <Button variant="white">Sign up</Button>
             </Link>
           </div>
         </div>
@@ -141,7 +141,7 @@ export function Landing() {
                 </Button>
               </Link>
               <Link to="/login">
-                <Button size="lg" variant="outline" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 sm:w-auto">
+                <Button size="lg" variant="outline-white" className="w-full sm:w-auto">
                   Log in
                 </Button>
               </Link>
