@@ -88,30 +88,76 @@ export function Landing() {
     if (!pageRef.current) return;
 
     const context = gsap.context(() => {
+      // 1. Initial page load transitions
       const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
       timeline
         .from("[data-gsap='nav']", { y: -16, opacity: 0, duration: 0.5 })
         .from("[data-gsap='hero-copy'] > *", { y: 28, opacity: 0, duration: 0.7, stagger: 0.08 }, "-=0.1")
-        .from("[data-gsap='hero-node']", { scale: 0.65, opacity: 0, duration: 0.55, stagger: 0.06 }, "-=0.45")
         .from("[data-gsap='outcome']", { y: 18, opacity: 0, duration: 0.5, stagger: 0.05 }, "-=0.3")
         .from("[data-gsap='section-item']", { y: 22, opacity: 0, duration: 0.55, stagger: 0.06 }, "-=0.1");
 
-      gsap.to("[data-gsap='hero-node']", {
-        y: -12,
-        duration: 2.8,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: 0.18,
-      });
-
+      // 2. Slow background radar rotation
       gsap.to("[data-gsap='radar']", {
         rotate: 360,
-        duration: 25,
+        duration: 35,
         repeat: -1,
         ease: "none",
         transformOrigin: "50% 50%",
       });
+
+      // 3. Active scanning sweeping beam rotation (8s per full scan)
+      gsap.to("[data-gsap='beam-container']", {
+        rotate: 360,
+        duration: 8,
+        repeat: -1,
+        ease: "none",
+        transformOrigin: "50% 50%",
+      });
+
+      // 4. Skills "Discovery" Loop (triggered in sync with the sweeping beam rotation)
+      const discoveryTimeline = gsap.timeline({ repeat: -1 });
+
+      // Reset all nodes and lines at start of cycle
+      discoveryTimeline.set(".hero-node-react, .hero-node-python, .hero-node-apis, .hero-node-docker, .hero-node-neo4j", { scale: 0, opacity: 0 });
+      discoveryTimeline.set(".line-react, .line-python, .line-apis, .line-docker, .line-neo4j", { opacity: 0.05, strokeWidth: 1 });
+
+      // Python (top-right, ~45°): sweep passes it at ~1.0s
+      discoveryTimeline.to(".line-python", { opacity: 0.9, strokeWidth: 2.5, duration: 0.4 }, 0.8)
+                       .to(".hero-node-python", { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 1.1)
+                       .to(".line-python", { opacity: 0.3, strokeWidth: 1.5, duration: 0.3 }, 1.3);
+
+      // APIs (bottom-right, ~135°): sweep passes it at ~3.0s
+      discoveryTimeline.to(".line-apis", { opacity: 0.9, strokeWidth: 2.5, duration: 0.4 }, 2.8)
+                       .to(".hero-node-apis", { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 3.1)
+                       .to(".line-apis", { opacity: 0.3, strokeWidth: 1.5, duration: 0.3 }, 3.3);
+
+      // Docker (bottom-left, ~225°): sweep passes it at ~5.0s
+      discoveryTimeline.to(".line-docker", { opacity: 0.9, strokeWidth: 2.5, duration: 0.4 }, 4.8)
+                       .to(".hero-node-docker", { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 5.1)
+                       .to(".line-docker", { opacity: 0.3, strokeWidth: 1.5, duration: 0.3 }, 5.3);
+
+      // React (top-left, ~315°): sweep passes it at ~7.0s
+      discoveryTimeline.to(".line-react", { opacity: 0.9, strokeWidth: 2.5, duration: 0.4 }, 6.8)
+                       .to(".hero-node-react", { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 7.1)
+                       .to(".line-react", { opacity: 0.3, strokeWidth: 1.5, duration: 0.3 }, 7.3);
+
+      // Center Neo4j node appears when all surrounding skills are discovered
+      discoveryTimeline.to(".line-neo4j", { opacity: 0.9, strokeWidth: 2.5, duration: 0.4 }, 7.5)
+                       .to(".hero-node-neo4j", { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 7.8)
+                       .to(".line-neo4j", { opacity: 0.3, strokeWidth: 1.5, duration: 0.3 }, 8.1);
+
+      // Highlight/pulse all nodes once fully discovered, hold for 3 seconds, then reset/fade out
+      discoveryTimeline.to(".hero-node-react, .hero-node-python, .hero-node-apis, .hero-node-docker, .hero-node-neo4j", { 
+                         borderColor: "rgba(255,255,255,0.45)",
+                         boxShadow: "0 0 25px rgba(59,130,246,0.3)",
+                         duration: 0.6, 
+                         yoyo: true, 
+                         repeat: 3, 
+                         ease: "sine.inOut" 
+                       }, 8.3)
+                       .to(".hero-node-react, .hero-node-python, .hero-node-apis, .hero-node-docker, .hero-node-neo4j", { opacity: 0, scale: 0, duration: 0.8, stagger: 0.1 }, 12.0)
+                       .to(".line-react, .line-python, .line-apis, .line-docker, .line-neo4j", { opacity: 0.05, strokeWidth: 1, duration: 0.8 }, 12.3);
+
     }, pageRef);
 
     return () => context.revert();
@@ -159,7 +205,7 @@ export function Landing() {
               Career intelligence for project-based learning
             </div>
             <h1 className="mt-6 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl font-outfit bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-400 leading-[1.1]">
-              Make every project count toward the next role.
+              Make every course, project, and skill count toward your next role.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
               SkillGraph turns student work into a verified skill profile, career roadmap, and collaboration signal without forcing GitHub at signup.
@@ -187,8 +233,8 @@ export function Landing() {
             <div className="absolute size-[220px] rounded-full border border-white/5 pointer-events-none" />
 
             {/* Radar Sweeping Beam */}
-            <div className="absolute inset-0 size-full pointer-events-none flex items-center justify-center">
-              <div className="size-[540px] rounded-full bg-[conic-gradient(from_0deg,transparent_60%,rgba(59,130,246,0.06)_100%)] animate-[spin_12s_linear_infinite]" />
+            <div data-gsap="beam-container" className="absolute inset-0 size-full pointer-events-none flex items-center justify-center">
+              <div className="size-[540px] rounded-full bg-[conic-gradient(from_0deg,transparent_60%,rgba(59,130,246,0.06)_100%)]" />
             </div>
 
             {/* Glowing Core */}
@@ -198,9 +244,9 @@ export function Landing() {
             </div>
 
             {/* Connection Lines */}
-            <svg className="absolute inset-0 h-full w-full pointer-events-none opacity-40" aria-hidden="true">
+            <svg className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden="true">
               {networkNodes.map((node) => (
-                <line key={node.label} x1="50%" y1="50%" x2={node.left} y2={node.top} stroke="url(#lineGrad)" strokeWidth="1.5" />
+                <line key={node.label} className={`line-${node.label.toLowerCase()}`} x1="50%" y1="50%" x2={node.left} y2={node.top} stroke="url(#lineGrad)" strokeWidth="1.5" />
               ))}
               <defs>
                 <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -213,8 +259,7 @@ export function Landing() {
             {/* Floating Glassmorphism Nodes */}
             {networkNodes.map((node) => (
               <div
-                data-gsap="hero-node"
-                className={`absolute grid ${node.size} place-items-center rounded-2xl border text-sm font-semibold select-none transition-all duration-300 hover:scale-110 hover:border-white/30 z-30 cursor-pointer ${node.tone}`}
+                className={`absolute grid ${node.size} place-items-center rounded-2xl border text-sm font-semibold select-none transition-all duration-300 hover:scale-110 hover:border-white/30 z-30 cursor-pointer ${node.tone} hero-node-${node.label.toLowerCase()}`}
                 key={node.label}
                 style={{ left: node.left, top: node.top }}
               >
