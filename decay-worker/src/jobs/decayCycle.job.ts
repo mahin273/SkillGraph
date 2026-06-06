@@ -11,6 +11,7 @@ interface KnowsEdge {
 }
 
 export async function runDecayCycle() {
+  console.log("Starting skill decay cycle...");
   try {
     // 1. Get all knows relationships from Neo4j
     const query = `
@@ -138,6 +139,25 @@ export async function runDecayCycle() {
             lastActiveDate
           }
         });
+
+        // Create a system notification for the student user
+        try {
+          await prisma.systemNotification.create({
+            data: {
+              userId,
+              type: "SKILL_DECAY",
+              payload: {
+                skillName,
+                oldWeight: currentProficiency,
+                newWeight: newProficiency,
+                isDormant,
+                warningText: `Your skill "${skillName}" has decayed by 15% to ${(newProficiency * 100).toFixed(0)}% due to inactivity over the last 12 months. Make new commits containing this skill to restore your proficiency.`
+              }
+            }
+          });
+        } catch (notifErr) {
+          console.error("Failed to create decay notification:", notifErr);
+        }
       }
     }
     console.log("Skill decay cycle completed.");

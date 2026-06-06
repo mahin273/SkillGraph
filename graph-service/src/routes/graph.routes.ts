@@ -136,6 +136,29 @@ graphRouter.post("/endorsements/mark-endorsed", async (req, res, next) => {
   }
 });
 
+graphRouter.post("/mentor/verify", async (req, res, next) => {
+  try {
+    const payload = z.object({ studentId: z.string(), skillName: z.string() }).parse(req.body);
+    await runWrite(
+      `
+      MERGE (student:Student {id: $studentId})
+      MERGE (skill:Skill {name: $skillName})
+      MERGE (student)-[knows:KNOWS]->(skill)
+      SET knows.endorsed = true,
+          knows.confidence = 1.0,
+          knows.proficiency = 1.0,
+          knows.dormant = false,
+          knows.updatedAt = datetime()
+      `,
+      payload
+    );
+    res.json({ success: true, data: { status: "verified" } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 graphRouter.post("/endorsements/decrement", async (req, res, next) => {
   try {
     const payload = z.object({ studentId: z.string(), skillName: z.string() }).parse(req.body);
@@ -423,7 +446,7 @@ graphRouter.post("/matchmaker/candidates", async (req, res, next) => {
   }
 });
 
-
+//
 // POST /graph/sync — re-sync a student's Neo4j nodes from PostgreSQL
 
 graphRouter.post("/sync", async (req, res, next) => {
@@ -541,7 +564,6 @@ graphRouter.get("/skills/all", async (_req, res, next) => {
     next(error);
   }
 });
-
 
 // POST /graph/reactivate — reactivate a dormant skill
 

@@ -462,3 +462,93 @@ export async function exportResumePdf(req: Request, res: Response) {
     }
   }
 }
+
+export async function analyzeUploadedResume(req: Request, res: Response) {
+  if (!req.user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return;
+  }
+
+  const { text, roleId } = req.body as { text: string; roleId: string };
+
+  if (!text || !roleId) {
+    fail(res, "INVALID_BODY", "text and roleId are required fields", 400);
+    return;
+  }
+
+  try {
+    const student = await prisma.studentProfile.findUnique({
+      where: { userId: req.user.id }
+    });
+
+    if (!student) {
+      fail(res, "STUDENT_NOT_FOUND", "Student profile not found", 404);
+      return;
+    }
+
+    const role = await prisma.industryRole.findUnique({
+      where: { id: roleId },
+      include: {
+        requirements: {
+          include: {
+            skill: true
+          }
+        }
+      }
+    });
+
+    if (!role) {
+      fail(res, "ROLE_NOT_FOUND", "Target industry role not found", 404);
+      return;
+    }
+
+    let totalCriticality = 0;
+    let matchedCriticality = 0;
+    const matchedSkills: string[] = [];
+    const gapSkills: string[] = [];
+
+    const normalizedText = text.toLowerCase();
+
+    for (const reqSkill of role.requirements) {
+      totalCriticality += reqSkill.criticality;
+
+      const skillName = reqSkill.skill.name.toLowerCase();
+      const aliases = (reqSkill.skill.aliases || []).map((a) => a.toLowerCase());
+      const searchTerms = [skillName, ...aliases];
+
+      const isMatched = searchTerms.some((term) => {
+        const escaped = term.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+        const regex = new RegExp(`(?:\\b|\\s|\\W)${escaped}(?:\\b|\\s|\\W)`, "i");
+        return regex.test(normalizedText);
+      });
+
+      if (isMatched) {
+        matchedCriticality += reqSkill.criticality;
+        matchedSkills.push(reqSkill.skill.name);
+      } else {
+        gapSkills.push(reqSkill.skill.name);
+      }
+    }
+
+    const atsScore = totalCriticality > 0 ? Math.round((matchedCriticality / totalCriticality) * 100) : 100;
+
+    const resultRecord = await prisma.resumeExport.create({
+      data: {
+        studentId: student.id,
+        roleId,
+        atsScore
+      }
+    });
+
+    ok(res, {
+      id: resultRecord.id,
+      atsScore,
+      matchedSkills,
+      gapSkills,
+      roleTitle: role.title
+    });
+  } catch (error: any) {
+    console.error("Failed to analyze resume:", error);
+    fail(res, "INTERNAL_ERROR", error.message || "Failed to analyze resume text", 500);
+  }
+}

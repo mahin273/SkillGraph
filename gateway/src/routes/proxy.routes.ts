@@ -6,6 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { CircuitBreaker } from "../utils/circuitBreaker.js";
 import { prisma } from "@skillgraph/database";
 import { fail } from "../utils/apiResponse.js";
+import { searchTalents, sendInterviewInvite } from "../controllers/careerFair.controller.js";
 
 export const proxyRouter = Router();
 
@@ -215,3 +216,6 @@ proxyRouter.post("/simulator/run", requireAuth, asyncHandler(async (req, res) =>
   });
   res.status(result.status).json(result.data);
 }));
+
+proxyRouter.get("/admin/career-fairs/:fairId/search-talents", requireAuth, requireRole(["admin", "professor", "alumni"]), asyncHandler(searchTalents));
+proxyRouter.post("/admin/career-fairs/invite", requireAuth, requireRole(["admin", "professor", "alumni"]), asyncHandler(sendInterviewInvite));

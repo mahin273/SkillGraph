@@ -209,3 +209,187 @@ export async function createCareerFair(req: Request, res: Response) {
     fail(res, "INTERNAL_ERROR", "Failed to create career fair", 500);
   }
 }
+
+export async function getFairBooths(req: Request, res: Response) {
+  const { fairId } = req.params;
+  try {
+    const booths = await prisma.careerFairBooth.findMany({
+      where: { fairId },
+      orderBy: { companyName: "asc" }
+    });
+    ok(res, booths);
+  } catch (error) {
+    console.error("Failed to get fair booths:", error);
+    fail(res, "INTERNAL_ERROR", "Failed to retrieve booths", 500);
+  }
+}
+
+export async function searchTalents(req: Request, res: Response) {
+  const { fairId } = req.params;
+  const { boothId } = req.query as { boothId?: string };
+
+  if (!fairId) {
+    fail(res, "INVALID_QUERY", "fairId is required", 400);
+    return;
+  }
+
+  try {
+    const fair = await prisma.careerFair.findUnique({
+      where: { id: fairId }
+    });
+
+    if (!fair) {
+      fail(res, "FAIR_NOT_FOUND", "Career fair not found", 404);
+      return;
+    }
+
+    let searchSkills: Array<{ name: string; criticality: number }> = [];
+
+    if (boothId) {
+      const booth = await prisma.careerFairBooth.findUnique({
+        where: { id: boothId }
+      });
+      if (booth) {
+        const requiredSkillsList = (booth.requiredSkills as any[]) || [];
+        searchSkills = requiredSkillsList.map((reqSkill) => {
+          if (typeof reqSkill === "string") {
+            return { name: reqSkill, criticality: 1 };
+          } else if (reqSkill && typeof reqSkill === "object") {
+            return { name: reqSkill.name || "", criticality: reqSkill.criticality || 1 };
+          }
+          return { name: "", criticality: 1 };
+        }).filter((s) => s.name);
+      }
+    }
+
+    // Fetch all students of this university
+    const students = await prisma.studentProfile.findMany({
+      where: { universityId: fair.universityId },
+      include: { user: true }
+    });
+
+    const results = [];
+
+    for (const student of students) {
+      let studentSkills: any[] = [];
+      try {
+        const response = await fetch(`${env.GRAPH_SERVICE_URL}/graph/student/${student.userId}/skills`);
+        if (response.ok) {
+          const body = await response.json();
+          studentSkills = body?.data?.skills || [];
+        }
+      } catch (err) {
+        console.error(`Failed to fetch student ${student.userId} skills:`, err);
+      }
+
+      let totalCriticality = 0;
+      let matchedCriticality = 0;
+      const matchedSkills: string[] = [];
+      const gapSkills: string[] = [];
+
+      for (const reqSkill of searchSkills) {
+        const reqName = reqSkill.name.toLowerCase();
+        const criticality = reqSkill.criticality;
+
+        totalCriticality += criticality;
+
+        const hasSkill = studentSkills.some(
+          (s) => s.name.toLowerCase() === reqName && s.confidence >= 0.5 && !s.dormant
+        );
+
+        if (hasSkill) {
+          matchedCriticality += criticality;
+          matchedSkills.push(reqSkill.name);
+        } else {
+          gapSkills.push(reqSkill.name);
+        }
+      }
+
+      const matchPercentage = totalCriticality > 0 ? Math.round((matchedCriticality / totalCriticality) * 100) : 100;
+
+      results.push({
+        studentId: student.id,
+        userId: student.userId,
+        fullName: student.user.fullName,
+        publicHandle: student.publicHandle,
+        matchPercentage,
+        matchedSkills,
+        gapSkills,
+        skills: studentSkills.map(s => ({ name: s.name, confidence: s.confidence, dormant: s.dormant }))
+      });
+    }
+
+    // Sort by match percentage descending
+    results.sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+    ok(res, results);
+  } catch (error: any) {
+    console.error("Failed to search talents:", error);
+    fail(res, "INTERNAL_ERROR", error.message || "Failed to search talents", 500);
+  }
+}
+
+export async function sendInterviewInvite(req: Request, res: Response) {
+  const { studentId, boothId, fairId, message } = req.body as {
+    studentId: string;
+    boothId: string;
+    fairId: string;
+    message?: string;
+  };
+
+  if (!studentId || !boothId || !fairId) {
+    fail(res, "INVALID_BODY", "studentId, boothId, and fairId are required fields", 400);
+    return;
+  }
+
+  try {
+    const student = await prisma.studentProfile.findUnique({
+      where: { id: studentId },
+      include: { user: true }
+    });
+
+    if (!student) {
+      fail(res, "STUDENT_NOT_FOUND", "Student profile not found", 404);
+      return;
+    }
+
+    const booth = await prisma.careerFairBooth.findUnique({
+      where: { id: boothId }
+    });
+
+    if (!booth) {
+      fail(res, "BOOTH_NOT_FOUND", "Booth not found", 404);
+      return;
+    }
+
+    const fair = await prisma.careerFair.findUnique({
+      where: { id: fairId }
+    });
+
+    if (!fair) {
+      fail(res, "FAIR_NOT_FOUND", "Career fair not found", 404);
+      return;
+    }
+
+    // Create the system notification for the student user
+    const inviteNotification = await prisma.systemNotification.create({
+      data: {
+        userId: student.userId,
+        type: "CAREER_FAIR_INVITE",
+        payload: {
+          fairId: fair.id,
+          fairName: fair.name,
+          boothId: booth.id,
+          companyName: booth.companyName,
+          boothNumber: booth.boothNumber || "",
+          message: message || `We noticed your strong matching skills and want to invite you to discuss hiring roles at our booth!`
+        }
+      }
+    });
+
+    ok(res, inviteNotification, 201);
+  } catch (error: any) {
+    console.error("Failed to send interview invitation:", error);
+    fail(res, "INTERNAL_ERROR", error.message || "Failed to send interview invitation", 500);
+  }
+}

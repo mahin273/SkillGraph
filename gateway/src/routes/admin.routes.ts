@@ -32,6 +32,7 @@ import {
   getSecurityThreats,
   exportAnonymizedDataset
 } from "../controllers/admin.controller.js";
+import { saveTeamAssignments, loadTeamAssignments } from "../controllers/teamRequest.controller.js";
 
 export const adminRouter = Router();
 
@@ -233,4 +234,18 @@ adminRouter.get(
   requireAuth,
   requireSuperAdmin,
   asyncHandler(exportAnonymizedDataset)
+);
+
+adminRouter.post(
+  "/admin/team-requests/save",
+  requireAuth,
+  requireRole(["admin", "professor"]),
+  asyncHandler(saveTeamAssignments)
+);
+
+adminRouter.get(
+  "/admin/team-requests/load",
+  requireAuth,
+  requireRole(["admin", "professor"]),
+  asyncHandler(loadTeamAssignments)
 );

@@ -85,7 +85,8 @@ export async function getRecommendedMentors(req: Request, res: Response) {
       include: {
         user: true,
         mentorships: {
-          where: { studentId: student.id }
+          where: { studentId: student.id },
+          include: { skill: true }
         }
       }
     });
@@ -486,3 +487,83 @@ export async function getMyAlumniProfile(req: Request, res: Response) {
     fail(res, "INTERNAL_ERROR", "Failed to retrieve alumni profile", 500);
   }
 }
+
+export async function verifyMentorship(req: Request, res: Response) {
+  if (!req.user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return;
+  }
+
+  const { id } = req.params;
+
+  try {
+    const mentorship = await prisma.alumniMentorship.findUnique({
+      where: { id },
+      include: {
+        alumni: { include: { user: true } },
+        student: { include: { user: true } },
+        skill: true
+      }
+    });
+
+    if (!mentorship) {
+      fail(res, "NOT_FOUND", "Mentorship connection not found", 404);
+      return;
+    }
+
+    // Verify that the authenticated user is the alumnus
+    if (mentorship.alumni.userId !== req.user.id) {
+      fail(res, "FORBIDDEN", "Only the assigned alumnus can verify this mentorship", 403);
+      return;
+    }
+
+    // Update mentorship connection status to completed in PostgreSQL
+    const updated = await prisma.alumniMentorship.update({
+      where: { id },
+      data: {
+        status: "completed",
+        endedAt: new Date()
+      }
+    });
+
+    // Write the validated skill to the student's Neo4j profile in graph-service
+    try {
+      const response = await fetch(`${env.GRAPH_SERVICE_URL}/graph/mentor/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: mentorship.student.userId,
+          skillName: mentorship.skill.name
+        })
+      });
+      if (!response.ok) {
+        console.error("Failed to sync verified skill to Neo4j:", await response.text());
+      }
+    } catch (graphErr) {
+      console.error("Failed to call graph-service for skill verification:", graphErr);
+    }
+
+    // Create a system notification for the student
+    try {
+      await prisma.systemNotification.create({
+        data: {
+          userId: mentorship.student.userId,
+          type: "MENTORSHIP_COMPLETED",
+          payload: {
+            mentorName: mentorship.alumni.user.fullName,
+            skillName: mentorship.skill.name,
+            mentorshipId: mentorship.id
+          }
+        }
+      });
+    } catch (notifErr) {
+      console.error("Failed to notify student of completed/verified mentorship:", notifErr);
+    }
+
+    ok(res, updated);
+  } catch (error: any) {
+    console.error("Failed to verify mentorship:", error);
+    fail(res, "INTERNAL_ERROR", error.message || "Failed to verify mentorship", 500);
+  }
+}
+
