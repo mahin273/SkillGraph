@@ -185,9 +185,9 @@ export function IndustryGapChart() {
                 />
 
                 {/* Values overlay */}
-                <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold text-slate-700">
-                  <span className="text-white drop-shadow-sm">Avg: {Math.round(skill.avgPct)}%</span>
-                  <span className="z-10 bg-slate-800/80 px-1 py-0.2 rounded text-white text-[9px]">Target: {Math.round(skill.reqPct)}%</span>
+                <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold">
+                  <span className={skill.avgPct < 15 ? "text-slate-700" : "text-white drop-shadow-sm"}>Avg: {Math.round(skill.avgPct)}%</span>
+                  <span className="z-10 bg-slate-800/80 px-1 py-0.5 rounded text-white text-[9px]">Target: {Math.round(skill.reqPct)}%</span>
                 </div>
               </div>
             </div>

@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 dotenv.config();
-const seedPath = path.resolve(__dirname, "../seeds/bangladesh-demo.seed.cypher");
+const seedPath = path.resolve(__dirname, "../seeds/demo.seed.cypher");
 const uri = process.env.NEO4J_URI ?? "bolt://localhost:7687";
 const user = process.env.NEO4J_USER ?? "neo4j";
 const password = process.env.NEO4J_PASSWORD ?? "skillgraph-password";
