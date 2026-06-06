@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth.middleware.js";
-import { requireRole } from "../middleware/rbac.middleware.js";
+import { requireRole, requireSuperAdmin } from "../middleware/rbac.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {
   listUsers,
@@ -24,7 +24,13 @@ import {
   exportAuditLogsCsv,
   extractSyllabusSkills,
   listAlumni,
-  createInvitation
+  createInvitation,
+  listUniversities,
+  createUniversity,
+  updateUniversity,
+  getSystemHealth,
+  getSecurityThreats,
+  exportAnonymizedDataset
 } from "../controllers/admin.controller.js";
 
 export const adminRouter = Router();
@@ -184,4 +190,47 @@ adminRouter.get(
   requireAuth,
   requireRole(["admin", "professor"]),
   asyncHandler(listAlumni)
+);
+
+// Super Admin platform-wide operations
+adminRouter.get(
+  "/admin/universities",
+  requireAuth,
+  requireSuperAdmin,
+  asyncHandler(listUniversities)
+);
+
+adminRouter.post(
+  "/admin/universities",
+  requireAuth,
+  requireSuperAdmin,
+  asyncHandler(createUniversity)
+);
+
+adminRouter.put(
+  "/admin/universities/:id",
+  requireAuth,
+  requireSuperAdmin,
+  asyncHandler(updateUniversity)
+);
+
+adminRouter.get(
+  "/admin/health",
+  requireAuth,
+  requireSuperAdmin,
+  asyncHandler(getSystemHealth)
+);
+
+adminRouter.get(
+  "/admin/security/threats",
+  requireAuth,
+  requireSuperAdmin,
+  asyncHandler(getSecurityThreats)
+);
+
+adminRouter.get(
+  "/admin/export-anonymized",
+  requireAuth,
+  requireSuperAdmin,
+  asyncHandler(exportAnonymizedDataset)
 );

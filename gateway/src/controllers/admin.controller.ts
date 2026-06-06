@@ -396,12 +396,39 @@ export async function getKpiStats(req: Request, res: Response) {
 
     const connectionRate = totalUsers > 0 ? Math.round((githubConnections / totalUsers) * 100) : 0;
 
+    let universityLeaderboard: any[] = [];
+    if (!universityId) {
+      const statsByUni = await prisma.university.findMany({
+        select: {
+          id: true,
+          name: true,
+          shortName: true,
+          _count: {
+            select: {
+              users: true,
+              studentProfiles: true,
+              alumniProfiles: true
+            }
+          }
+        }
+      });
+      universityLeaderboard = statsByUni.map(u => ({
+        id: u.id,
+        name: u.name,
+        shortName: u.shortName,
+        totalUsers: u._count.users,
+        studentsCount: u._count.studentProfiles,
+        alumniCount: u._count.alumniProfiles
+      })).sort((a, b) => b.totalUsers - a.totalUsers).slice(0, 5);
+    }
+
     ok(res, {
       totalUsers,
       githubConnections,
       connectionRate,
       totalRoles,
-      pendingAlumni
+      pendingAlumni,
+      universityLeaderboard
     });
   } catch (error: any) {
     fail(res, "DB_ERROR", error.message, 500);
@@ -701,5 +728,312 @@ export async function createInvitation(req: Request, res: Response) {
     }, 201);
   } catch (error: any) {
     fail(res, "DB_ERROR", error.message, 500);
+  }
+}
+
+// 8. Super Admin University & Platform Management
+export async function listUniversities(req: Request, res: Response) {
+  try {
+    const universities = await prisma.university.findMany({
+      include: {
+        _count: {
+          select: {
+            users: true,
+            studentProfiles: true,
+            alumniProfiles: true
+          }
+        }
+      },
+      orderBy: { name: "asc" }
+    });
+    ok(res, { universities });
+  } catch (error: any) {
+    fail(res, "DB_ERROR", error.message, 500);
+  }
+}
+
+export async function createUniversity(req: Request, res: Response) {
+  const { name, shortName, country, allowedDomains } = req.body as {
+    name?: string;
+    shortName?: string;
+    country?: string;
+    allowedDomains?: string[];
+  };
+
+  if (!name || !shortName) {
+    fail(res, "INVALID_INPUT", "Name and Short Name are required", 400);
+    return;
+  }
+
+  try {
+    const existing = await prisma.university.findFirst({
+      where: {
+        OR: [
+          { name },
+          { shortName }
+        ]
+      }
+    });
+
+    if (existing) {
+      fail(res, "UNIVERSITY_EXISTS", "University with this name or short name already exists", 400);
+      return;
+    }
+
+    const university = await prisma.university.create({
+      data: {
+        name,
+        shortName,
+        country: country || "Bangladesh",
+        allowedDomains: allowedDomains || []
+      }
+    });
+
+    // Automatically seed standard departments
+    const defaultDepts = [
+      { name: "Computer Science and Engineering", code: "CSE" },
+      { name: "Software Engineering", code: "SWE" },
+      { name: "Electrical and Electronic Engineering", code: "EEE" },
+      { name: "Business Administration", code: "BBA" }
+    ];
+
+    await prisma.department.createMany({
+      data: defaultDepts.map(d => ({
+        name: d.name,
+        code: d.code,
+        universityId: university.id
+      }))
+    });
+
+    // Audit log
+    await prisma.auditLog.create({
+      data: {
+        userId: req.user!.id,
+        action: "UNIVERSITY_CREATE",
+        entity: "University",
+        entityId: university.id,
+        metadata: { name, shortName },
+        ipAddress: req.ip || "127.0.0.1"
+      }
+    });
+
+    ok(res, { university }, 201);
+  } catch (error: any) {
+    fail(res, "DB_ERROR", error.message, 500);
+  }
+}
+
+export async function updateUniversity(req: Request, res: Response) {
+  const { id } = req.params;
+  const { name, shortName, country, allowedDomains } = req.body as {
+    name?: string;
+    shortName?: string;
+    country?: string;
+    allowedDomains?: string[];
+  };
+
+  try {
+    const university = await prisma.university.findUnique({ where: { id } });
+    if (!university) {
+      fail(res, "UNIVERSITY_NOT_FOUND", "University not found", 404);
+      return;
+    }
+
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (shortName !== undefined) updateData.shortName = shortName;
+    if (country !== undefined) updateData.country = country;
+    if (allowedDomains !== undefined) updateData.allowedDomains = allowedDomains;
+
+    const updated = await prisma.university.update({
+      where: { id },
+      data: updateData
+    });
+
+    // Audit log
+    await prisma.auditLog.create({
+      data: {
+        userId: req.user!.id,
+        action: "UNIVERSITY_UPDATE",
+        entity: "University",
+        entityId: id,
+        metadata: updateData,
+        ipAddress: req.ip || "127.0.0.1"
+      }
+    });
+
+    ok(res, { university: updated });
+  } catch (error: any) {
+    fail(res, "DB_ERROR", error.message, 500);
+  }
+}
+
+export async function getSystemHealth(req: Request, res: Response) {
+  try {
+    // 1. PostgreSQL ping
+    let dbStatus = "unhealthy";
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      dbStatus = "healthy";
+    } catch (e) {}
+
+    // 2. Redis ping
+    let redisStatus = "unhealthy";
+    try {
+      const redis = await getRedis();
+      await redis.ping();
+      redisStatus = "healthy";
+    } catch (e) {}
+
+    // 3. PostgreSQL Database storage size
+    let dbSize = "Unknown";
+    try {
+      const result: any[] = await prisma.$queryRawUnsafe("SELECT pg_size_pretty(pg_database_size('skillgraph')) as size;");
+      dbSize = result[0]?.size || "Unknown";
+    } catch (e) {}
+
+    // 4. Graph Service ping
+    let graphStatus = "unhealthy";
+    const graphUrl = process.env.GRAPH_SERVICE_URL || "http://graph-service:3001";
+    try {
+      const res = await fetch(`${graphUrl.replace("localhost", "graph-service")}/health`);
+      if (res.ok) graphStatus = "healthy";
+    } catch (e) {
+      try {
+        const res = await fetch(`${graphUrl}/health`);
+        if (res.ok) graphStatus = "healthy";
+      } catch (e2) {}
+    }
+
+    // 5. NLP Service ping
+    let nlpStatus = "unhealthy";
+    const nlpUrl = process.env.NLP_SERVICE_URL || "http://nlp-service:8001";
+    try {
+      const res = await fetch(`${nlpUrl.replace("localhost", "nlp-service")}/health`);
+      if (res.ok) nlpStatus = "healthy";
+    } catch (e) {
+      try {
+        const res = await fetch(`${nlpUrl}/health`);
+        if (res.ok) nlpStatus = "healthy";
+      } catch (e2) {}
+    }
+
+    // 6. Notification Service ping
+    let notificationStatus = "unhealthy";
+    const notifUrl = process.env.NOTIFICATION_SERVICE_URL || "http://notification-service:3002";
+    try {
+      const res = await fetch(`${notifUrl}/health`);
+      if (res.ok) notificationStatus = "healthy";
+    } catch (e) {
+      try {
+        const res = await fetch("http://localhost:3002/health");
+        if (res.ok) notificationStatus = "healthy";
+      } catch (e2) {}
+    }
+
+    ok(res, {
+      services: {
+        gateway: "healthy",
+        postgres: dbStatus,
+        redis: redisStatus,
+        graphService: graphStatus,
+        nlpService: nlpStatus,
+        notificationService: notificationStatus
+      },
+      metrics: {
+        databaseSize: dbSize
+      }
+    });
+  } catch (error: any) {
+    fail(res, "HEALTH_CHECK_ERROR", error.message, 500);
+  }
+}
+
+export async function getSecurityThreats(req: Request, res: Response) {
+  try {
+    const [loginSuccess, loginFailed, configUpdates, recentFailures] = await Promise.all([
+      prisma.auditLog.count({ where: { action: "USER_LOGIN" } }),
+      prisma.auditLog.count({ where: { action: "USER_LOGIN_FAILED" } }),
+      prisma.auditLog.count({ where: { action: "CONFIG_UPDATE" } }),
+      prisma.auditLog.findMany({
+        where: { action: "USER_LOGIN_FAILED" },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        include: {
+          user: {
+            select: {
+              email: true,
+              fullName: true
+            }
+          }
+        }
+      })
+    ]);
+
+    ok(res, {
+      threatMetrics: {
+        loginSuccess,
+        loginFailed,
+        configUpdates,
+        activeThreatLevel: loginFailed > 20 ? "HIGH" : loginFailed > 5 ? "MEDIUM" : "LOW"
+      },
+      recentFailures: recentFailures.map(log => ({
+        id: log.id,
+        email: log.user?.email || "Unknown",
+        fullName: log.user?.fullName || "Unknown",
+        ipAddress: log.ipAddress,
+        createdAt: log.createdAt
+      }))
+    });
+  } catch (error: any) {
+    fail(res, "DB_ERROR", error.message, 500);
+  }
+}
+
+export async function exportAnonymizedDataset(req: Request, res: Response) {
+  try {
+    const students = await prisma.studentProfile.findMany({
+      include: {
+        university: { select: { shortName: true } },
+        department: { select: { code: true } }
+      }
+    });
+
+    const graphUrl = process.env.GRAPH_SERVICE_URL || "http://graph-service:3001";
+    
+    const anonymizedData = await Promise.all(
+      students.map(async (student, idx) => {
+        let skills: string[] = [];
+        try {
+          const res = await fetch(`${graphUrl.replace("localhost", "graph-service")}/graph/student/${student.userId}/skills`);
+          if (res.ok) {
+            const data = await res.json() as any;
+            skills = (data.skills || []).map((s: any) => s.name);
+          }
+        } catch (e) {
+          try {
+            const res = await fetch(`${graphUrl}/graph/student/${student.userId}/skills`);
+            if (res.ok) {
+              const data = await res.json() as any;
+              skills = (data.skills || []).map((s: any) => s.name);
+            }
+          } catch (e2) {}
+        }
+
+        return {
+          anonymizedId: `STUDENT-${idx + 1001}`,
+          university: student.university?.shortName || "Unknown",
+          department: student.department?.code || "Unknown",
+          graduationYear: student.graduationYear,
+          skills
+        };
+      })
+    );
+
+    res.setHeader("Content-Disposition", 'attachment; filename="anonymized_skills_dataset.json"');
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(anonymizedData, null, 2));
+  } catch (error: any) {
+    fail(res, "EXPORT_ERROR", error.message, 500);
   }
 }

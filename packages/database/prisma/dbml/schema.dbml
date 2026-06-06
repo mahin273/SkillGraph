@@ -470,6 +470,7 @@ Enum UserRole {
   professor
   admin
   alumni
+  superadmin
 }
 
 Enum InvitationStatus {

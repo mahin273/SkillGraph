@@ -159,7 +159,7 @@ export async function getFairMatches(req: Request, res: Response) {
 
 // Admin-only creation endpoint for uploading career fairs and booths
 export async function createCareerFair(req: Request, res: Response) {
-  if (!req.user || (req.user.role !== "admin" && req.user.role !== "professor")) {
+  if (!req.user || (req.user.role !== "admin" && req.user.role !== "professor" && req.user.role !== "superadmin")) {
     fail(res, "FORBIDDEN", "Only admin or professor can create career fairs", 403);
     return;
   }

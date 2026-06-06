@@ -3,7 +3,13 @@ import type { UserRole } from "@prisma/client";
 
 export function requireRole(roles: UserRole[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !roles.includes(req.user.role)) {
+    if (!req.user) {
+      res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Insufficient role", statusCode: 403 } });
+      return;
+    }
+
+    const hasRole = roles.includes(req.user.role) || (req.user.role === "superadmin" && roles.includes("admin"));
+    if (!hasRole) {
       res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Insufficient role", statusCode: 403 } });
       return;
     }
@@ -22,4 +28,19 @@ export function requireRole(roles: UserRole[]) {
 
     next();
   };
+}
+
+export function requireSuperAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.user || req.user.role !== "superadmin") {
+    res.status(403).json({
+      success: false,
+      error: {
+        code: "FORBIDDEN",
+        message: "Super admin privileges are required for this action.",
+        statusCode: 403
+      }
+    });
+    return;
+  }
+  next();
 }

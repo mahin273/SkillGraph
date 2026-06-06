@@ -43,7 +43,7 @@ async function checkStudentAccess(req: any, res: any, studentId: string): Promis
   }
 
   // 1. Super Admin has global access
-  if (user.role === "admin" && !user.universityId) {
+  if (user.role === "superadmin") {
     return true;
   }
 

@@ -16,6 +16,7 @@ export async function submitEndorsement(req: Request, res: Response) {
     return;
   }
 
+  // Validate endorser != endorsee
   if (req.user.id === endorsedId) {
     fail(res, "SELF_ENDORSEMENT", "Cannot endorse yourself", 422);
     return;
@@ -29,6 +30,7 @@ export async function submitEndorsement(req: Request, res: Response) {
     return;
   }
 
+  // Check project_collaborators for shared project
   const sharedProject = await prisma.projectCollaborator.findFirst({
     where: {
       userId: req.user.id,
@@ -47,6 +49,7 @@ export async function submitEndorsement(req: Request, res: Response) {
     return;
   }
 
+  // Check for duplicate triple (endorser, endorsee, skill)
   const existingEndorsement = await prisma.peerEndorsement.findUnique({
     where: { endorserId_endorsedId_skillId: { endorserId: req.user.id, endorsedId, skillId: skill.id } }
   });
@@ -56,10 +59,12 @@ export async function submitEndorsement(req: Request, res: Response) {
     return;
   }
 
+  // Write to peer_endorsements
   const endorsement = await prisma.peerEndorsement.create({
     data: { endorserId: req.user.id, endorsedId, skillId: skill.id }
   });
 
+  // Call Graph Service to increment endorsementCount
   const graphResponse = await fetch(`${env.GRAPH_SERVICE_URL}/graph/endorsements`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -75,6 +80,7 @@ export async function submitEndorsement(req: Request, res: Response) {
     });
 
     if (endorsementCount >= 2) {
+      // Set endorsed = true when count >= 2
       await fetch(`${env.GRAPH_SERVICE_URL}/graph/endorsements/mark-endorsed`, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -82,6 +88,8 @@ export async function submitEndorsement(req: Request, res: Response) {
       }).catch(() => undefined);
     }
   }
+
+  // Publish ENDORSEMENT_RECEIVED event to notifications:publish Redis channel
   try {
     const redis = await getRedis();
     const endorser = await prisma.user.findUnique({ where: { id: req.user.id } });
@@ -134,29 +142,31 @@ export async function deleteEndorsement(req: Request, res: Response) {
     return;
   }
 
-  const endorsement = await prisma.peerEndorsement.findUnique({
-    where: { id: req.params.id },
-    include: { skill: true }
+  const endorsement = await prisma.peerEndorsement.findUnique({ 
+    where: { id: req.params.id }, 
+    include: { skill: true } 
   });
-
+  
   if (!endorsement) {
     fail(res, "ENDORSEMENT_NOT_FOUND", "Endorsement does not exist", 404);
     return;
   }
-
-  if (endorsement.endorserId !== req.user.id && req.user.role !== "admin") {
+  
+  if (endorsement.endorserId !== req.user.id && req.user.role !== "admin" && req.user.role !== "superadmin") {
     fail(res, "FORBIDDEN", "Only the endorser or an admin can delete this endorsement", 403);
     return;
   }
 
+  // Delete the endorsement record
   await prisma.peerEndorsement.delete({ where: { id: endorsement.id } });
 
+  // Decrement endorsementCount on the KNOWS edge
   await fetch(`${env.GRAPH_SERVICE_URL}/graph/endorsements/decrement`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      studentId: endorsement.endorsedId,
-      skillName: endorsement.skill.name
+    body: JSON.stringify({ 
+      studentId: endorsement.endorsedId, 
+      skillName: endorsement.skill.name 
     })
   }).catch(() => undefined);
 

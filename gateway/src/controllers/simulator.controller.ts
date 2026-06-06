@@ -143,7 +143,7 @@ export async function deleteSimulation(req: Request, res: Response) {
         fail(res, "FORBIDDEN", "You do not have permission to delete this simulation", 403);
         return;
       }
-    } else if (req.user.role === "professor" || req.user.role === "admin") {
+    } else if (req.user.role === "professor" || req.user.role === "admin" || req.user.role === "superadmin") {
       if (req.user.universityId && simulation.student?.universityId !== req.user.universityId) {
         fail(res, "FORBIDDEN", "You do not have permission to delete this simulation", 403);
         return;

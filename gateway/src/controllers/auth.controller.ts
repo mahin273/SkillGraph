@@ -579,16 +579,48 @@ export async function loginWithEmail(req: Request, res: Response) {
 
   const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (!user?.passwordHash || !(await verifyPassword(password, user.passwordHash))) {
+    if (user) {
+      await prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          action: "USER_LOGIN_FAILED",
+          entity: "User",
+          entityId: user.id,
+          metadata: { source: "email_login" },
+          ipAddress: req.ip || "127.0.0.1"
+        }
+      });
+    }
     fail(res, "INVALID_CREDENTIALS", "Email or password is incorrect", 401);
     return;
   }
 
   if (!user.emailVerifiedAt) {
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: "USER_LOGIN_FAILED",
+        entity: "User",
+        entityId: user.id,
+        metadata: { source: "email_login", reason: "email_not_verified" },
+        ipAddress: req.ip || "127.0.0.1"
+      }
+    });
     fail(res, "EMAIL_NOT_VERIFIED", "Please verify your email before signing in", 403);
     return;
   }
 
   setAuthCookies(res, user);
+  await prisma.auditLog.create({
+    data: {
+      userId: user.id,
+      action: "USER_LOGIN",
+      entity: "User",
+      entityId: user.id,
+      metadata: { source: "email_login" },
+      ipAddress: req.ip || "127.0.0.1"
+    }
+  });
   ok(res, { id: user.id, email: user.email, fullName: user.fullName });
 }
 
@@ -637,10 +669,18 @@ export async function getCurrentUser(req: Request, res: Response) {
       departmentName: null,
       graduationYear: user.alumniProfile.graduationYear
     };
-  } else if (user.role === "professor") {
+  } else if (user.role === "professor" || user.role === "admin") {
     academicProfilePayload = {
       universityId: user.universityId,
       universityName: user.university?.name ?? null,
+      departmentId: null,
+      departmentName: null,
+      graduationYear: null
+    };
+  } else if (user.role === "superadmin") {
+    academicProfilePayload = {
+      universityId: null,
+      universityName: null,
       departmentId: null,
       departmentName: null,
       graduationYear: null
