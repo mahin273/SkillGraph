@@ -31,6 +31,12 @@ export async function getStudentSkills(studentId: string) {
   return response.data.data;
 }
 
+export async function getStudentsSkillsBulk(studentIds: string[]) {
+  const response = await api.post("/graph/students/skills", { studentIds });
+  return response.data.data;
+}
+
+
 export async function getStudentGalaxy(studentId: string) {
   const response = await api.get(`/graph/galaxy/${studentId}`);
   return response.data.data as GalaxyData;

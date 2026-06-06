@@ -59,7 +59,7 @@ export function Onboarding() {
     if (step !== 2 || !userId) return;
 
     let cancelled = false;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let timeoutId: NodeJS.Timeout;
 
     const poll = async () => {
       try {

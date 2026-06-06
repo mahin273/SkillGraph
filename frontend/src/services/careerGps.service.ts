@@ -31,6 +31,7 @@ export interface CareerGPSData {
     practiceProject: string;
     milestones: string[];
     resources: Array<{
+      id: string;
       title: string;
       type: string;
       url?: string;

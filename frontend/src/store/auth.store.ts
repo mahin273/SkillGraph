@@ -2,9 +2,11 @@ import { create } from "zustand";
 
 type AuthState = {
   userId?: string;
+  role?: string;
   githubHandle?: string;
   email?: string;
   emailVerified?: boolean;
+  isVerified?: boolean;
   githubConnected?: boolean;
   googleConnected?: boolean;
   fullName?: string;
@@ -21,9 +23,11 @@ type AuthState = {
   clearUser: () => void;
   setUser: (user: {
     id: string;
+    role?: string;
     githubHandle?: string;
     email?: string;
     emailVerified?: boolean;
+    isVerified?: boolean;
     githubConnected?: boolean;
     googleConnected?: boolean;
     fullName: string;
@@ -43,9 +47,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUserId: (userId) => set({ userId }),
   setUser: (user) => set({
     userId: user.id,
+    role: user.role,
     githubHandle: user.githubHandle,
     email: user.email,
     emailVerified: user.emailVerified,
+    isVerified: user.isVerified,
     githubConnected: user.githubConnected,
     googleConnected: user.googleConnected,
     fullName: user.fullName,
@@ -55,9 +61,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   }),
   clearUser: () => set({
     userId: undefined,
+    role: undefined,
     githubHandle: undefined,
     email: undefined,
     emailVerified: undefined,
+    isVerified: undefined,
     githubConnected: undefined,
     googleConnected: undefined,
     fullName: undefined,

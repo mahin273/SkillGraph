@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listStudents, getAllSkills, saveTeamAssignments, loadTeamAssignments } from "../../services/admin.service";
-import { getStudentSkills } from "../../services/graph.service";
+import { getStudentSkills, getStudentsSkillsBulk } from "../../services/graph.service";
 import { 
   Users, Sparkles, Plus, Trash2, ShieldCheck, 
   HelpCircle, UserPlus, RefreshCw, BarChart, Save
@@ -142,19 +142,23 @@ export function TeamBuilder() {
   const fetchAndProcessStudents = async () => {
     try {
       setLoading(true);
+      setError(undefined);
       const rawStudents = await listStudents();
       
-      const processed: StudentNode[] = [];
-      for (const st of rawStudents) {
-        // Fetch graph skills
-        let graphSkills: any[] = [];
-        try {
-          graphSkills = await getStudentSkills(st.id);
-        } catch (e) {
-          // Fallback if graph skills fetch fails
-        }
+      if (rawStudents.length === 0) {
+        setStudents([]);
+        setUnassigned([]);
+        return;
+      }
 
-        const skillsMapped = graphSkills.map((sk) => {
+      // Fetch all graph skills in a single bulk request
+      const studentIds = rawStudents.map((st) => st.id);
+      const skillsResponse = await getStudentsSkillsBulk(studentIds);
+      const skillsByStudent = skillsResponse.skills || {};
+
+      const processed: StudentNode[] = rawStudents.map((st) => {
+        const graphSkills = skillsByStudent[st.id] || [];
+        const skillsMapped = graphSkills.map((sk: any) => {
           let proficiency = sk.proficiency || 0.5;
           return {
             name: sk.name,
@@ -163,19 +167,18 @@ export function TeamBuilder() {
           };
         });
 
-        processed.push({
+        return {
           id: st.id,
           fullName: st.fullName,
           email: st.email,
           studentIdNo: st.studentProfile?.studentIdNo,
           skills: skillsMapped,
           scores: {}
-        });
-      }
+        };
+      });
 
       setStudents(processed);
       setUnassigned(processed);
-      setError(undefined);
     } catch (err: any) {
       setError(err.message || "Failed to load students list");
     } finally {
@@ -455,6 +458,16 @@ export function TeamBuilder() {
         </div>
       </div>
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm flex items-start gap-2.5">
+          <span className="text-base">⚠️</span>
+          <div>
+            <p className="font-semibold text-xs uppercase tracking-wider">Error Loading Students</p>
+            <p className="text-xs mt-0.5">{error}</p>
+          </div>
+        </div>
+      )}
+
       {/* Project Requirements & Tech Stack Configuration */}
       <div className="bg-white p-5 border border-[#dfe3ea] rounded-lg shadow-sm space-y-4">
         <h3 className="text-xs font-bold text-[#17202a] uppercase tracking-wider">
@@ -527,11 +540,18 @@ export function TeamBuilder() {
           onDrop={(e) => onDrop(e, "unassigned")}
         >
           <h3 className="text-xs font-bold text-[#17202a] uppercase tracking-wider pb-2 border-b border-[#edf0f5]">
-            Unassigned Pool ({unassigned.length})
+            Unassigned Pool ({loading ? "..." : unassigned.length})
           </h3>
 
           <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
-            {unassigned.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-center">
+                <RefreshCw className="size-6 text-[#0c66e4] animate-spin" />
+                <span className="text-xs text-[#626f86]">Loading student profiles & skills...</span>
+              </div>
+            ) : error ? (
+              <p className="text-center text-xs text-red-500 py-6">{error}</p>
+            ) : unassigned.length === 0 ? (
               <p className="text-center text-xs text-gray-400 py-6">All students assigned to teams.</p>
             ) : (
               unassigned.map((student) => (

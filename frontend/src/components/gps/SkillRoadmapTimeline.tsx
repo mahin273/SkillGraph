@@ -13,6 +13,7 @@ interface RoadmapItem {
   practiceProject?: string;
   milestones?: string[];
   resources?: Array<{
+    id: string;
     title: string;
     type: string;
     url?: string;
@@ -21,6 +22,8 @@ interface RoadmapItem {
 
 interface SkillRoadmapTimelineProps {
   roadmap: RoadmapItem[];
+  completedResourcesMap?: Record<string, boolean>;
+  onToggleResourceComplete?: (resourceId: string) => void;
 }
 
 function getCriticalityLabel(criticality?: number) {
@@ -30,7 +33,11 @@ function getCriticalityLabel(criticality?: number) {
   return "Supporting";
 }
 
-export function SkillRoadmapTimeline({ roadmap }: SkillRoadmapTimelineProps) {
+export function SkillRoadmapTimeline({
+  roadmap,
+  completedResourcesMap = {},
+  onToggleResourceComplete
+}: SkillRoadmapTimelineProps) {
   if (roadmap.length === 0) {
     return (
       <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-8 text-center">
@@ -111,27 +118,49 @@ export function SkillRoadmapTimeline({ roadmap }: SkillRoadmapTimelineProps) {
                     <p className="text-sm font-semibold text-[#17202a]">Resources</p>
                   </div>
                   <div className="mt-2 space-y-2">
-                    {(item.resources ?? []).map((resource) => (
-                      resource.url ? (
-                        <a
-                          key={`${item.skillId}-${resource.title}`}
-                          href={resource.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center justify-between gap-2 rounded-md border border-[#dfe3ea] bg-white px-2 py-1.5 text-sm text-[#17202a] hover:border-[#0c66e4]"
-                        >
-                          <span className="truncate">{resource.title}</span>
-                          <ExternalLink className="size-3.5 text-[#626f86]" />
-                        </a>
-                      ) : (
+                    {(item.resources ?? []).map((resource) => {
+                      const isCompleted = !!completedResourcesMap[resource.id];
+                      return (
                         <div
                           key={`${item.skillId}-${resource.title}`}
-                          className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1.5 text-sm text-[#17202a]"
+                          className={`flex items-center gap-2 rounded-md border p-1.5 text-sm transition-all bg-white ${
+                            isCompleted ? "border-[#abf5d1] bg-[#fafdff]" : "border-[#dfe3ea] hover:border-[#0c66e4]"
+                          }`}
                         >
-                          {resource.title}
+                          {onToggleResourceComplete && (
+                            <button
+                              type="button"
+                              onClick={() => onToggleResourceComplete(resource.id)}
+                              className="flex-shrink-0 focus:outline-none transition-transform active:scale-90"
+                              title={isCompleted ? "Mark incomplete" : "Mark complete"}
+                            >
+                              {isCompleted ? (
+                                <CheckCircle2 className="size-4 text-[#1f845a] fill-[#e3fcef]" />
+                              ) : (
+                                <div className="size-4 rounded-full border border-[#626f86] hover:border-[#0c66e4]" />
+                              )}
+                            </button>
+                          )}
+                          {resource.url ? (
+                            <a
+                              href={resource.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className={`flex-1 flex items-center justify-between gap-2 min-w-0 text-[#17202a] hover:text-[#0c66e4] ${
+                                isCompleted ? "text-[#626f86] line-through decoration-1" : ""
+                              }`}
+                            >
+                              <span className="truncate">{resource.title}</span>
+                              <ExternalLink className="size-3 text-[#626f86] flex-shrink-0" />
+                            </a>
+                          ) : (
+                            <span className={`flex-1 truncate ${isCompleted ? "text-[#626f86] line-through decoration-1" : "text-[#17202a]"}`}>
+                              {resource.title}
+                            </span>
+                          )}
                         </div>
-                      )
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>

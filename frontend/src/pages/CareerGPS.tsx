@@ -16,7 +16,8 @@ import {
 import { getCurrentUser } from "../services/auth.service";
 import { useAuthStore } from "../store/auth.store";
 import { useCareerGPS } from "../hooks/useCareerGPS";
-import { getCareerGPSHistory, type CareerGPSData, type CareerGPSHistoryItem } from "../services/careerGps.service";
+import { getCareerGPSHistory, type CareerGPSHistoryItem } from "../services/careerGps.service";
+import { getCompletedResources, completeResource } from "../services/resources.service";
 import { RoleSelector } from "../components/gps/RoleSelector";
 import { GPSProgressRing } from "../components/gps/GPSProgressRing";
 import { CompletedSkillBadge } from "../components/gps/CompletedSkillBadge";
@@ -37,173 +38,6 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
-function pdfText(value: string) {
-  return value
-    .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "")
-    .replace(/\\/g, "\\\\")
-    .replace(/\(/g, "\\(")
-    .replace(/\)/g, "\\)");
-}
-
-function wrapPdfText(text: string, maxChars: number) {
-  const words = text.replace(/\s+/g, " ").trim().split(" ");
-  const lines: string[] = [];
-  let line = "";
-
-  words.forEach((word) => {
-    const next = line ? `${line} ${word}` : word;
-    if (next.length > maxChars && line) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = next;
-    }
-  });
-
-  if (line) lines.push(line);
-  return lines.length ? lines : [""];
-}
-
-function createCareerGPSPdf(data: CareerGPSData) {
-  const pageWidth = 595;
-  const pageHeight = 842;
-  const margin = 44;
-  const contentWidth = pageWidth - margin * 2;
-  const bottom = pageHeight - 48;
-  const pages: string[][] = [[]];
-  let pageIndex = 0;
-  let y = margin;
-
-  const current = () => pages[pageIndex];
-  const command = (value: string) => current().push(value);
-  const color = (hex: string) => {
-    const normalized = hex.replace("#", "");
-    const r = parseInt(normalized.slice(0, 2), 16) / 255;
-    const g = parseInt(normalized.slice(2, 4), 16) / 255;
-    const b = parseInt(normalized.slice(4, 6), 16) / 255;
-    return `${r.toFixed(3)} ${g.toFixed(3)} ${b.toFixed(3)}`;
-  };
-  const rect = (x: number, top: number, width: number, height: number, fill: string) => {
-    command(`${color(fill)} rg ${x} ${pageHeight - top - height} ${width} ${height} re f`);
-  };
-  const text = (value: string, x: number, top: number, size = 10, fill = "#17202a", font = "F1") => {
-    command(`BT /${font} ${size} Tf ${color(fill)} rg ${x} ${pageHeight - top} Td (${pdfText(value)}) Tj ET`);
-  };
-  const line = (x1: number, top1: number, x2: number, top2: number, stroke = "#dfe3ea") => {
-    command(`${color(stroke)} RG 1 w ${x1} ${pageHeight - top1} m ${x2} ${pageHeight - top2} l S`);
-  };
-  const newPage = () => {
-    pages.push([]);
-    pageIndex += 1;
-    y = margin;
-  };
-  const ensureSpace = (height: number) => {
-    if (y + height > bottom) newPage();
-  };
-  const paragraph = (value: string, x: number, maxChars: number, size = 10, fill = "#44546f", leading = 14) => {
-    wrapPdfText(value, maxChars).forEach((lineText) => {
-      text(lineText, x, y, size, fill);
-      y += leading;
-    });
-  };
-  const sectionTitle = (value: string) => {
-    ensureSpace(42);
-    y += 12;
-    text(value, margin, y, 14, "#17202a", "F2");
-    y += 12;
-    line(margin, y, pageWidth - margin, y);
-    y += 18;
-  };
-
-  rect(0, 0, pageWidth, 96, "#f7f8fa");
-  rect(0, 0, 8, 96, "#0c66e4");
-  text("Career GPS", margin, 34, 22, "#17202a", "F2");
-  text(data.targetRole.name, margin, 58, 13, "#44546f");
-  text(`Generated ${new Date().toLocaleDateString()}`, pageWidth - 180, 36, 10, "#626f86");
-  y = 124;
-
-  const cardGap = 12;
-  const cardWidth = (contentWidth - cardGap * 2) / 3;
-  [
-    ["Progress", `${data.completionPercentage}%`, `${data.skillsCompleted} of ${data.totalSkillsRequired} skills`],
-    ["Estimated time", `${data.estimatedWeeks} weeks`, `${data.roadmap.reduce((total, item) => total + item.estimatedWeeks, 0)} roadmap weeks`],
-    ["Skills to learn", String(data.skillsRemaining), `${data.completedSkills.length} already covered`]
-  ].forEach(([label, value, sub], index) => {
-    const x = margin + index * (cardWidth + cardGap);
-    rect(x, y, cardWidth, 86, "#ffffff");
-    command(`${color("#dfe3ea")} RG 1 w ${x} ${pageHeight - y - 86} ${cardWidth} 86 re S`);
-    text(label, x + 14, y + 22, 9, "#626f86", "F2");
-    text(value, x + 14, y + 50, 22, "#0c66e4", "F2");
-    text(sub, x + 14, y + 70, 9, "#44546f");
-  });
-  y += 112;
-
-  sectionTitle("Skills To Learn");
-  if (data.missingSkills.length === 0) {
-    paragraph("You already cover every required skill for this role.", margin, 82);
-  } else {
-    data.missingSkills.forEach((skill) => {
-      ensureSpace(34);
-      text(skill.name, margin, y, 11, "#17202a", "F2");
-      text(`${skill.category} | Difficulty ${skill.learningDifficulty}/5`, margin + 260, y, 9, "#626f86");
-      y += 18;
-    });
-  }
-
-  sectionTitle("Learning Roadmap");
-  if (data.roadmap.length === 0) {
-    paragraph("No roadmap items are needed for this role right now.", margin, 82);
-  } else {
-    data.roadmap.forEach((item, index) => {
-      const objectiveLines = wrapPdfText(item.objective, 82);
-      const projectLines = wrapPdfText(item.practiceProject, 82);
-      const estimatedHeight = 70 + (objectiveLines.length + projectLines.length + item.milestones.length) * 14;
-      ensureSpace(estimatedHeight);
-      rect(margin, y - 8, contentWidth, estimatedHeight - 8, "#f7f8fa");
-      text(`${index + 1}. ${item.skillName}`, margin + 14, y + 12, 12, "#17202a", "F2");
-      text(`${item.estimatedWeeks} weeks | Difficulty ${item.difficulty}/5`, margin + 360, y + 12, 9, "#0c66e4", "F2");
-      y += 34;
-      paragraph(`Objective: ${item.objective}`, margin + 14, 82, 9, "#44546f", 13);
-      paragraph(`Project: ${item.practiceProject}`, margin + 14, 82, 9, "#44546f", 13);
-      item.milestones.forEach((milestone) => paragraph(`- ${milestone}`, margin + 14, 80, 9, "#44546f", 13));
-      y += 18;
-    });
-  }
-
-  pages.forEach((page, index) => {
-    page.push(`BT /F1 9 Tf ${color("#626f86")} rg ${margin} 24 Td (SkillGraph Career GPS) Tj ET`);
-    page.push(`BT /F1 9 Tf ${color("#626f86")} rg ${pageWidth - 92} 24 Td (Page ${index + 1} of ${pages.length}) Tj ET`);
-  });
-
-  const objects: string[] = [
-    "<< /Type /Catalog /Pages 2 0 R >>",
-    `<< /Type /Pages /Kids [${pages.map((_, index) => `${index * 2 + 3} 0 R`).join(" ")}] /Count ${pages.length} >>`
-  ];
-
-  pages.forEach((page, index) => {
-    const pageObjectId = index * 2 + 3;
-    const contentObjectId = pageObjectId + 1;
-    const stream = `${page.join("\n")}\n`;
-    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> >> >> /Contents ${contentObjectId} 0 R >>`);
-    objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
-  });
-
-  let pdf = "%PDF-1.4\n";
-  const offsets = [0];
-  objects.forEach((object, index) => {
-    offsets.push(pdf.length);
-    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
-  });
-  const xref = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
-  offsets.slice(1).forEach((offset) => {
-    pdf += `${String(offset).padStart(10, "0")} 00000 n \n`;
-  });
-  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
-
-  return new Blob([pdf], { type: "application/pdf" });
-}
-
 export function CareerGPS() {
   const { userId, setUser } = useAuthStore();
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
@@ -213,10 +47,42 @@ export function CareerGPS() {
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [history, setHistory] = useState<CareerGPSHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [completedResourcesMap, setCompletedResourcesMap] = useState<Record<string, boolean>>({});
   const { data, loading, error, save } = useCareerGPS({
     studentId: userId ?? null,
     targetRoleId: selectedRoleId
   });
+
+  useEffect(() => {
+    if (!userId) return;
+
+    getCompletedResources(userId)
+      .then((resources) => {
+        const map: Record<string, boolean> = {};
+        for (const item of resources) {
+          map[item.id] = true;
+        }
+        setCompletedResourcesMap(map);
+      })
+      .catch((err) => console.error("Failed to load completed resources:", err));
+  }, [userId]);
+
+  const handleToggleResourceComplete = async (resourceId: string) => {
+    const wasCompleted = !!completedResourcesMap[resourceId];
+    try {
+      setCompletedResourcesMap((prev) => ({
+        ...prev,
+        [resourceId]: !wasCompleted
+      }));
+      await completeResource(resourceId, !wasCompleted);
+    } catch (err) {
+      console.error("Failed to toggle resource completion:", err);
+      setCompletedResourcesMap((prev) => ({
+        ...prev,
+        [resourceId]: wasCompleted
+      }));
+    }
+  };
 
   useEffect(() => {
     if (userId) return;
@@ -271,21 +137,6 @@ export function CareerGPS() {
   const roadmapWeeks = data?.roadmap.reduce((total, item) => total + item.estimatedWeeks, 0) ?? 0;
 
   const handleSave = async () => {
-    if (!selectedRoleId) {
-      setSaveStatus("Select a target role before saving.");
-      return;
-    }
-
-    if (loading) {
-      setSaveStatus("Wait for the career path to finish calculating before saving.");
-      return;
-    }
-
-    if (!data) {
-      setSaveStatus("Generate a career path before saving.");
-      return;
-    }
-
     setSaving(true);
     setSaveStatus(null);
 
@@ -302,13 +153,29 @@ export function CareerGPS() {
   const handleExport = () => {
     if (!data) return;
 
-    const blob = createCareerGPSPdf(data);
+    const lines = [
+      `Career GPS: ${data.targetRole.name}`,
+      `Progress: ${data.completionPercentage}%`,
+      `Estimated time: ${data.estimatedWeeks} weeks`,
+      "",
+      "Skills to learn:",
+      ...data.missingSkills.map((skill) => `- ${skill.name} (${skill.category})`),
+      "",
+      "Roadmap:",
+      ...data.roadmap.flatMap((item, index) => [
+        `${index + 1}. ${item.skillName} - ${item.estimatedWeeks} weeks`,
+        `   Objective: ${item.objective}`,
+        `   Project: ${item.practiceProject}`,
+        `   Milestones: ${item.milestones.join("; ")}`
+      ])
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${data.targetRole.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-career-gps.pdf`;
+    link.download = `${data.targetRole.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-career-gps.txt`;
     link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -338,7 +205,7 @@ export function CareerGPS() {
             type="button"
             size="lg"
             onClick={handleSave}
-            disabled={saving || loading}
+            disabled={!data || saving}
             className="gap-2 bg-[#0c66e4] text-white hover:bg-[#0055cc]"
           >
             {saving ? <RefreshCw className="size-4 animate-spin" /> : <Save className="size-4" />}
@@ -346,12 +213,6 @@ export function CareerGPS() {
           </Button>
         </div>
       </header>
-
-      {saveStatus && (
-        <div className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 text-sm text-[#17202a] shadow-sm">
-          {saveStatus}
-        </div>
-      )}
 
       <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
         <CardContent className="p-4">
@@ -361,6 +222,12 @@ export function CareerGPS() {
           }} />
         </CardContent>
       </Card>
+
+      {saveStatus && (
+        <div className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 text-sm text-[#17202a] shadow-sm">
+          {saveStatus}
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -497,7 +364,11 @@ export function CareerGPS() {
                 </div>
               </CardHeader>
               <CardContent className="p-4">
-                <SkillRoadmapTimeline roadmap={data.roadmap} />
+                <SkillRoadmapTimeline
+                  roadmap={data.roadmap}
+                  completedResourcesMap={completedResourcesMap}
+                  onToggleResourceComplete={handleToggleResourceComplete}
+                />
               </CardContent>
             </Card>
           </div>

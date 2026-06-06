@@ -88,6 +88,52 @@ async function checkStudentAccess(req: any, res: any, studentId: string): Promis
   return false;
 }
 
+async function checkMultipleStudentsAccess(req: any, res: any, studentIds: string[]): Promise<boolean> {
+  const user = req.user;
+  if (!user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return false;
+  }
+
+  // 1. Super Admin has global access
+  if (user.role === "superadmin") {
+    return true;
+  }
+
+  // 2. Resolve target students
+  const students = await prisma.user.findMany({
+    where: {
+      id: { in: studentIds },
+      role: "student"
+    },
+    select: { id: true, universityId: true }
+  });
+
+  // 3. Student can only access their own data
+  if (user.role === "student") {
+    const isOnlySelf = studentIds.every(id => id === user.id);
+    if (!isOnlySelf) {
+      fail(res, "FORBIDDEN", "Students can only access their own data", 403);
+      return false;
+    }
+    return true;
+  }
+
+  // 4. Professor or University Admin can access if in the same university
+  if ((user.role === "professor" || user.role === "admin") && user.universityId) {
+    const invalidStudent = students.find(s => s.universityId !== user.universityId);
+    if (invalidStudent) {
+      fail(res, "FORBIDDEN", "You can only access students from your own university", 403);
+      return false;
+    }
+    return true;
+  }
+
+  // 5. Block anyone else
+  fail(res, "FORBIDDEN", "You do not have permission to access these students' data", 403);
+  return false;
+}
+
 proxyRouter.get("/graph/roles", requireAuth, asyncHandler(async (_req, res) => {
   const result = await proxyToGraph(`${env.GRAPH_SERVICE_URL}/graph/roles`);
   res.status(result.status).json(result.data);
@@ -101,6 +147,25 @@ proxyRouter.get("/graph/student/:id/skills", requireAuth, asyncHandler(async (re
   const result = await proxyToGraph(`${env.GRAPH_SERVICE_URL}/graph/student/${studentId}/skills`);
   res.status(result.status).json(result.data);
 }));
+
+proxyRouter.post("/graph/students/skills", requireAuth, asyncHandler(async (req, res) => {
+  const { studentIds } = req.body;
+  if (!Array.isArray(studentIds)) {
+    fail(res, "INVALID_BODY", "studentIds must be an array of strings", 400);
+    return;
+  }
+
+  const isAuthorized = await checkMultipleStudentsAccess(req, res, studentIds);
+  if (!isAuthorized) return;
+
+  const result = await proxyToGraph(`${env.GRAPH_SERVICE_URL}/graph/students/skills`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ studentIds })
+  });
+  res.status(result.status).json(result.data);
+}));
+
 
 proxyRouter.get("/graph/galaxy/:studentId", requireAuth, asyncHandler(async (req, res) => {
   const studentId = req.params.studentId;

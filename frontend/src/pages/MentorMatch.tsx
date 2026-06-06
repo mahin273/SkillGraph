@@ -37,9 +37,12 @@ import { Badge } from "../components/ui/badge";
 import { useAuthStore } from "../store/auth.store";
 
 export function MentorMatch() {
-  const { userId, fullName, academicProfile } = useAuthStore();
+  const { userId, fullName, academicProfile, role } = useAuthStore();
   const uniName = academicProfile?.universityName || "University";
-  const [activeTab, setActiveTab] = useState<"find_mentor" | "mentor_hub">("find_mentor");
+  const isAlumni = role === "alumni";
+  const [activeTab, setActiveTab] = useState<"find_mentor" | "mentor_hub">(
+    isAlumni ? "mentor_hub" : "find_mentor"
+  );
 
   // Data states
   const [mentors, setMentors] = useState<AlumniProfile[]>([]);
@@ -106,7 +109,6 @@ export function MentorMatch() {
           setWillingToMentor(ownProfile.willingToMentor ?? true);
           setMentoringSkills(ownProfile.mentoringSkills || []);
           setAlumniCardUrl(ownProfile.alumniCardUrl || "");
-          setActiveTab('mentor_hub');
         }
 
         if (rolesData.length > 0) {
@@ -126,10 +128,10 @@ export function MentorMatch() {
 
   // Fetch recommended mentors when role changes
   useEffect(() => {
-    if (myProfile) return;
+    if (isAlumni) return;
     if (!selectedRoleId && roles.length > 0) return;
     void loadMentors(selectedRoleId);
-  }, [selectedRoleId, myProfile]);
+  }, [selectedRoleId, isAlumni]);
 
   async function loadMentors(roleId: string) {
     try {

@@ -34,13 +34,41 @@ const links = [
 
 export function Sidebar() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const { fullName, avatarUrl, publicHandle, clearUser } = useAuthStore();
+  const { fullName, avatarUrl, publicHandle, role, isVerified, clearUser } = useAuthStore();
 
   async function handleLogout() {
     await logout();
     clearUser();
     window.location.href = "/";
   }
+
+  const isUnverified = isVerified === false && ["student", "professor", "alumni"].includes(role || "");
+
+  const visibleLinks = links
+    .map((link) => {
+      if (link.to === "/admin" && role === "professor") {
+        return { ...link, label: "Analytics" };
+      }
+      if (link.to === "/admin" && (role === "admin" || role === "superadmin")) {
+        return { ...link, label: "Dashboard", icon: LayoutDashboard };
+      }
+      return link;
+    })
+    .filter((link) => {
+      if (isUnverified) {
+        return link.to === "/settings";
+      }
+      if (role === "admin" || role === "superadmin") {
+        return ["/admin", "/settings"].includes(link.to);
+      }
+      if (role === "alumni") {
+        return ["/dashboard", "/career-fair", "/settings"].includes(link.to);
+      }
+      if (role === "professor") {
+        return ["/admin", "/settings"].includes(link.to);
+      }
+      return link.to !== "/admin";
+    });
 
   return (
     <aside className="shrink-0 lg:sticky lg:top-0 lg:h-screen lg:w-72 lg:border-r lg:border-[#dfe3ea] lg:bg-[#fbfbfc] lg:px-3 lg:py-4">
@@ -80,7 +108,7 @@ export function Sidebar() {
         </div>
 
         <nav className="grid gap-1">
-          {links.map(({ to, label, icon: Icon }) => (
+          {visibleLinks.map(({ to, label, icon: Icon }) => (
             <NavLink
               className={({ isActive }) =>
                 [
@@ -123,7 +151,7 @@ export function Sidebar() {
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe3ea] bg-white/95 px-3 py-2 backdrop-blur lg:hidden">
         <nav className="flex justify-around gap-1">
-          {links.slice(0, 5).map(({ to, label, icon: Icon }) => (
+          {visibleLinks.slice(0, 5).map(({ to, label, icon: Icon }) => (
             <NavLink
               className={({ isActive }) =>
                 [

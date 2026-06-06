@@ -224,6 +224,61 @@ graphRouter.get("/student/:id/skills", async (req, res, next) => {
   }
 });
 
+graphRouter.post("/students/skills", async (req, res, next) => {
+  try {
+    const { studentIds } = z.object({ studentIds: z.array(z.string()) }).parse(req.body);
+    const records = await runRead<{
+      studentId: string;
+      name: string;
+      confidence: number;
+      proficiency: number;
+      endorsementCount: number;
+      endorsed: boolean;
+      dormant: boolean;
+      category: string;
+    }>(
+      `
+      MATCH (student:Student)-[knows:KNOWS]->(skill:Skill)
+      WHERE student.id IN $studentIds
+      RETURN student.id AS studentId,
+             skill.name AS name,
+             knows.confidence AS confidence,
+             coalesce(knows.proficiency, knows.confidence) AS proficiency,
+             coalesce(knows.endorsementCount, 0) AS endorsementCount,
+             coalesce(knows.endorsed, false) AS endorsed,
+             coalesce(knows.dormant, false) AS dormant,
+             coalesce(skill.category, 'Uncategorized') AS category
+      ORDER BY knows.confidence DESC, skill.name ASC
+      `,
+      { studentIds }
+    );
+
+    const skillsByStudent: Record<string, any[]> = {};
+    for (const id of studentIds) {
+      skillsByStudent[id] = [];
+    }
+    for (const r of records) {
+      if (!skillsByStudent[r.studentId]) {
+        skillsByStudent[r.studentId] = [];
+      }
+      skillsByStudent[r.studentId].push({
+        name: r.name,
+        confidence: r.confidence,
+        proficiency: r.proficiency,
+        endorsementCount: r.endorsementCount,
+        endorsed: r.endorsed,
+        dormant: r.dormant,
+        category: r.category
+      });
+    }
+
+    res.json({ success: true, data: { skills: skillsByStudent } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 graphRouter.get("/galaxy/:studentId", async (req, res, next) => {
   try {
     const records = await runRead<any>(

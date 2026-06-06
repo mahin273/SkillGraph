@@ -90,7 +90,7 @@ function getConfidence(node: GalaxyNode) {
 }
 
 export function Dashboard() {
-  const { userId, fullName, publicHandle, academicProfile, setUser } = useAuthStore();
+  const { userId, fullName, publicHandle, role, setUser } = useAuthStore();
   const [selectedNode, setSelectedNode] = useState<GalaxyNode | null>(null);
   const [ingesting, setIngesting] = useState(false);
   const [ingestionStatus, setIngestionStatus] = useState<IngestionStatus | null>(null);
@@ -277,7 +277,7 @@ export function Dashboard() {
   };
 
   const navigate = useNavigate();
-  const galaxy = useGalaxy({ studentId: academicProfile ? userId : undefined });
+  const galaxy = useGalaxy({ studentId: role === "student" ? userId : undefined });
   const { nodes, links, loading: loadingGalaxy, error: galaxyError, refresh } = galaxy;
   const skillNodes = useMemo(() => nodes.filter(isSkillNode), [nodes]);
   const activeSkills = skillNodes.filter((node) => node.name && !node.dormant).length;
@@ -363,25 +363,27 @@ export function Dashboard() {
   }, [setUser]);
 
   useEffect(() => {
-    if (userId && !academicProfile) {
-      navigate("/admin");
+    if (userId && role) {
+      if (role === "admin" || role === "professor" || role === "superadmin") {
+        navigate("/admin");
+      }
     }
-  }, [userId, academicProfile, navigate]);
+  }, [userId, role, navigate]);
 
   useEffect(() => {
-    if (userId && academicProfile && !loadingGalaxy && nodes.length === 0 && !galaxyError) {
+    if (userId && role === "student" && !loadingGalaxy && nodes.length === 0 && !galaxyError) {
       navigate("/onboarding");
     }
-  }, [userId, academicProfile, loadingGalaxy, nodes.length, galaxyError, navigate]);
+  }, [userId, role, loadingGalaxy, nodes.length, galaxyError, navigate]);
 
   useEffect(() => {
-    if (userId && academicProfile) {
+    if (userId && role === "student") {
       void fetchDecayed();
     }
-  }, [userId, academicProfile]);
+  }, [userId, role]);
 
   useEffect(() => {
-    if (!userId || !academicProfile) return;
+    if (!userId || role !== "student") return;
 
     let cancelled = false;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -494,7 +496,7 @@ export function Dashboard() {
     }
   }
 
-  if (!academicProfile) {
+  if (role === "alumni") {
     return <AlumniDashboard />;
   }
 

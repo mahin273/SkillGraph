@@ -26,7 +26,7 @@ import { useAuthStore } from "../store/auth.store";
 import { CareerFairRecruiter } from "../components/admin/CareerFairRecruiter";
 
 export function CareerFair() {
-  const { academicProfile } = useAuthStore();
+  const { role } = useAuthStore();
   const [fairs, setFairs] = useState<IFCareerFair[]>([]);
   const [selectedFairId, setSelectedFairId] = useState<string>("");
   const [matches, setMatches] = useState<CareerFairMatch[]>([]);
@@ -59,9 +59,9 @@ export function CareerFair() {
   }, []);
 
   useEffect(() => {
-    if (!selectedFairId || !academicProfile) {
+    if (!selectedFairId || role !== "student") {
       setMatches([]);
-      if (academicProfile === null) setLoading(false);
+      if (role && role !== "student") setLoading(false);
       return;
     }
 
@@ -80,7 +80,7 @@ export function CareerFair() {
     }
 
     void loadMatches();
-  }, [selectedFairId, academicProfile]);
+  }, [selectedFairId, role]);
 
   const selectedFair = fairs.find((f) => f.id === selectedFairId);
 
@@ -168,7 +168,7 @@ export function CareerFair() {
             </p>
           </CardContent>
         </Card>
-      ) : !academicProfile ? (
+      ) : role !== "student" ? (
         <>
           {selectedFair && (
             <CareerFairRecruiter fairId={selectedFair.id} />
