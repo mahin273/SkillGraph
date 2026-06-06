@@ -152,7 +152,8 @@ export async function deleteEndorsement(req: Request, res: Response) {
     return;
   }
   
-  if (endorsement.endorserId !== req.user.id && req.user.role !== "admin" && req.user.role !== "superadmin") {
+  const userRole = req.user.role as string;
+  if (endorsement.endorserId !== req.user.id && userRole !== "admin" && userRole !== "superadmin") {
     fail(res, "FORBIDDEN", "Only the endorser or an admin can delete this endorsement", 403);
     return;
   }

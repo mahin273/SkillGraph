@@ -134,8 +134,8 @@ export async function deleteSimulation(req: Request, res: Response) {
       return;
     }
 
-    // Role-based access control check for deletion
-    if (req.user.role === "student") {
+    const userRole = req.user.role as string;
+    if (userRole === "student") {
       const student = await prisma.studentProfile.findUnique({
         where: { userId: req.user.id }
       });
@@ -143,7 +143,7 @@ export async function deleteSimulation(req: Request, res: Response) {
         fail(res, "FORBIDDEN", "You do not have permission to delete this simulation", 403);
         return;
       }
-    } else if (req.user.role === "professor" || req.user.role === "admin" || req.user.role === "superadmin") {
+    } else if (userRole === "professor" || userRole === "admin" || userRole === "superadmin") {
       if (req.user.universityId && simulation.student?.universityId !== req.user.universityId) {
         fail(res, "FORBIDDEN", "You do not have permission to delete this simulation", 403);
         return;

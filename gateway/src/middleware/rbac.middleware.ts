@@ -8,13 +8,14 @@ export function requireRole(roles: UserRole[]) {
       return;
     }
 
-    const hasRole = roles.includes(req.user.role) || (req.user.role === "superadmin" && roles.includes("admin"));
+    const userRole = req.user.role as string;
+    const hasRole = roles.includes(req.user.role) || (userRole === "superadmin" && roles.includes("admin"));
     if (!hasRole) {
       res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Insufficient role", statusCode: 403 } });
       return;
     }
 
-    if (["student", "professor", "alumni"].includes(req.user.role) && !req.user.isVerified) {
+    if (["student", "professor", "alumni"].includes(userRole) && !req.user.isVerified) {
       res.status(403).json({
         success: false,
         error: {
@@ -31,7 +32,8 @@ export function requireRole(roles: UserRole[]) {
 }
 
 export function requireSuperAdmin(req: Request, res: Response, next: NextFunction) {
-  if (!req.user || req.user.role !== "superadmin") {
+  const userRole = req.user?.role as string | undefined;
+  if (!req.user || userRole !== "superadmin") {
     res.status(403).json({
       success: false,
       error: {
