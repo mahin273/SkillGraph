@@ -244,7 +244,7 @@ export function Settings() {
               ) : (
                 <label className="grid gap-2 text-sm font-medium text-[#17202a]">
                   University
-                  <span className="grid gap-2">
+                  <div className="grid gap-2">
                     <select
                       value={universityId}
                       onChange={(event) => {
@@ -252,7 +252,7 @@ export function Settings() {
                         setDepartmentId("");
                         setAcademicStatus(null);
                       }}
-                      className="h-9 rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20"
+                      className="h-9 w-full rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20"
                     >
                       <option value="">Select university</option>
                       {academicOptions.universities.length === 0 && (
@@ -266,7 +266,7 @@ export function Settings() {
                         </option>
                       ))}
                     </select>
-                    <span className="flex gap-2">
+                    <div className="flex gap-2">
                       <input
                         type="text"
                         value={newUniversityName}
@@ -292,8 +292,8 @@ export function Settings() {
                         <Plus className="size-4" />
                         {addingUniversity ? "Adding..." : "Add"}
                       </Button>
-                    </span>
-                  </span>
+                    </div>
+                  </div>
                 </label>
               )}
 
@@ -301,7 +301,7 @@ export function Settings() {
               {isStudent && (
                 <label className="grid gap-2 text-sm font-medium text-[#17202a]">
                   Department
-                  <span className="grid gap-2">
+                  <div className="grid gap-2">
                     <select
                       value={departmentId}
                       onChange={(event) => {
@@ -309,7 +309,7 @@ export function Settings() {
                         setAcademicStatus(null);
                       }}
                       disabled={!selectedUniversity}
-                      className="h-9 rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20 disabled:opacity-60"
+                      className="h-9 w-full rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20 disabled:opacity-60"
                     >
                       <option value="">Select department</option>
                       {selectedUniversity && selectedUniversity.departments.length === 0 && (
@@ -323,7 +323,7 @@ export function Settings() {
                         </option>
                       ))}
                     </select>
-                    <span className="flex gap-2">
+                    <div className="flex gap-2">
                       <input
                         type="text"
                         value={newDepartmentName}
@@ -350,8 +350,8 @@ export function Settings() {
                         <Plus className="size-4" />
                         {addingDepartment ? "Adding..." : "Add"}
                       </Button>
-                    </span>
-                  </span>
+                    </div>
+                  </div>
                 </label>
               )}
             </div>
