@@ -61,14 +61,40 @@ export async function getPathResources(req: Request, res: Response) {
     return;
   }
 
-  const missingSkills = path.missingSkillsJson as Array<{ id: string; name: string }>;
-  const skillIds = missingSkills.map((s) => s.id);
+  const missingSkills = path.missingSkillsJson as Array<any>;
+  const skillIds: string[] = [];
+  const skillNames: string[] = [];
+
+  for (const s of missingSkills) {
+    if (typeof s === "string") {
+      skillNames.push(s);
+    } else if (s && typeof s === "object") {
+      if (s.id) {
+        skillIds.push(s.id);
+      } else if (s.name) {
+        skillNames.push(s.name);
+      }
+    }
+  }
+
+  if (skillIds.length === 0 && skillNames.length === 0) {
+    ok(res, []);
+    return;
+  }
+
+  const conditions: any[] = [];
+  if (skillIds.length > 0) {
+    conditions.push({ skillId: { in: skillIds } });
+  }
+  if (skillNames.length > 0) {
+    conditions.push({ skill: { name: { in: skillNames, mode: "insensitive" } } });
+  }
 
   const resources = await prisma.learningResource.findMany({
     where: {
       skills: {
         some: {
-          skillId: { in: skillIds }
+          OR: conditions
         }
       }
     },

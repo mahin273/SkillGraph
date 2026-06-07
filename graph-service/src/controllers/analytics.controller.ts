@@ -76,9 +76,11 @@ export async function getMissingSkills(req: Request, res: Response) {
     const counts: Record<string, number> = {};
     for (const path of paths) {
       if (path.missingSkillsJson && Array.isArray(path.missingSkillsJson)) {
-        const missing = path.missingSkillsJson as Array<{ name: string }>;
+        const missing = path.missingSkillsJson as Array<any>;
         for (const skill of missing) {
-          counts[skill.name] = (counts[skill.name] || 0) + 1;
+          if (!skill) continue;
+          const name = typeof skill === "string" ? skill : (skill.name || "Unknown");
+          counts[name] = (counts[name] || 0) + 1;
         }
       }
     }
