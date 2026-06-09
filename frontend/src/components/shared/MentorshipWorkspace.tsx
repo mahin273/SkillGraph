@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BookOpen,
   Award,
@@ -7,13 +7,19 @@ import {
   RefreshCw,
   Zap,
   HelpCircle,
-  FileCheck
+  FileCheck,
+  MessageCircle,
+  Send
 } from "lucide-react";
 import {
+  getMentorshipMessages,
+  sendMentorshipMessage,
   updateMentorshipMilestones,
-  verifyMentorshipRequest
+  verifyMentorshipRequest,
+  type MentorshipMessage
 } from "../../services/mentorship.service";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "../../store/auth.store";
 
 interface MentorshipWorkspaceProps {
   mentorshipId: string;
@@ -32,6 +38,7 @@ export function MentorshipWorkspace({
   initialStatus,
   onRefresh
 }: MentorshipWorkspaceProps) {
+  const { userId } = useAuthStore();
   // Load milestone checked states from localStorage (since we don't have DB column)
   const storageKey = `mentorship_${mentorshipId}_milestones`;
   const [checkedMilestones, setCheckedMilestones] = useState<boolean[]>(() => {
@@ -45,6 +52,12 @@ export function MentorshipWorkspace({
 
   const [verifying, setVerifying] = useState(false);
   const [status, setStatus] = useState(initialStatus);
+  const [messages, setMessages] = useState<MentorshipMessage[]>([]);
+  const [messageDraft, setMessageDraft] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const milestonesList = [
     {
@@ -65,6 +78,48 @@ export function MentorshipWorkspace({
   ];
 
   const allDone = checkedMilestones.every((m) => m === true);
+  const canUseChat = status !== "requested";
+  const canSendMessage = status === "active";
+
+  useEffect(() => {
+    setStatus(initialStatus);
+  }, [initialStatus]);
+
+  useEffect(() => {
+    if (!canUseChat) return;
+
+    let cancelled = false;
+
+    async function loadMessages() {
+      try {
+        setChatLoading(true);
+        setChatError(null);
+        const data = await getMentorshipMessages(mentorshipId);
+        if (!cancelled) {
+          setMessages(data);
+        }
+      } catch (err) {
+        console.error("Failed to load mentorship chat:", err);
+        if (!cancelled) {
+          setChatError("Could not load chat history.");
+        }
+      } finally {
+        if (!cancelled) {
+          setChatLoading(false);
+        }
+      }
+    }
+
+    void loadMessages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mentorshipId, canUseChat]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [messages]);
 
   const handleCheckboxChange = async (index: number) => {
     if (partnerRole !== "mentor" || status === "completed") return;
@@ -100,6 +155,25 @@ export function MentorshipWorkspace({
     }
   };
 
+  const handleSendMessage = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const body = messageDraft.trim();
+    if (!body || !canSendMessage) return;
+
+    setSendingMessage(true);
+    setChatError(null);
+    try {
+      const message = await sendMentorshipMessage(mentorshipId, body);
+      setMessages((current) => [...current, message]);
+      setMessageDraft("");
+    } catch (err) {
+      console.error("Failed to send mentorship message:", err);
+      setChatError("Could not send your message.");
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
   return (
     <div className="rounded-xl border border-[#dfe3ea] bg-white p-5 shadow-sm flex flex-col gap-4">
       {/* Workspace Header */}
@@ -129,6 +203,95 @@ export function MentorshipWorkspace({
           </span>
         )}
       </div>
+
+      {/* Chat */}
+      {canUseChat && (
+        <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa]">
+          <div className="flex items-center justify-between border-b border-[#dfe3ea] px-3 py-2">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="size-4 text-[#0c66e4]" />
+              <div>
+                <h5 className="text-xs font-bold text-[#17202a]">Mentorship Chat</h5>
+                <p className="text-[10px] text-[#626f86]">Messages with {partnerName}</p>
+              </div>
+            </div>
+            {!canSendMessage && (
+              <span className="rounded-full border border-[#dfe3ea] bg-white px-2 py-0.5 text-[10px] font-bold text-[#626f86]">
+                Read-only
+              </span>
+            )}
+          </div>
+
+          <div className="flex max-h-56 min-h-28 flex-col gap-2 overflow-y-auto p-3">
+            {chatLoading ? (
+              <div className="flex flex-1 items-center justify-center text-xs text-[#626f86]">
+                Loading chat...
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex flex-1 items-center justify-center rounded border border-dashed border-[#cfd7e3] bg-white px-3 py-6 text-center text-xs text-[#626f86]">
+                No messages yet. Start the conversation about goals, meeting time, or next steps.
+              </div>
+            ) : (
+              messages.map((message) => {
+                const isMine = message.senderId === userId;
+
+                return (
+                  <div
+                    key={message.id}
+                    className={`flex flex-col gap-1 ${isMine ? "items-end" : "items-start"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-lg px-3 py-2 text-xs leading-relaxed shadow-xs ${
+                        isMine
+                          ? "bg-[#0c66e4] text-white"
+                          : "border border-[#dfe3ea] bg-white text-[#17202a]"
+                      }`}
+                    >
+                      {message.body}
+                    </div>
+                    <span className="px-1 text-[10px] text-[#626f86]">
+                      {isMine ? "You" : message.sender.fullName} ·{" "}
+                      {new Date(message.createdAt).toLocaleString([], {
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit"
+                      })}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {chatError && (
+            <div className="border-t border-[#dfe3ea] bg-[#fff6f6] px-3 py-2 text-xs text-[#ae2a19]">
+              {chatError}
+            </div>
+          )}
+
+          <form onSubmit={handleSendMessage} className="flex gap-2 border-t border-[#dfe3ea] bg-white p-2">
+            <textarea
+              value={messageDraft}
+              onChange={(event) => setMessageDraft(event.target.value)}
+              disabled={!canSendMessage || sendingMessage}
+              maxLength={2000}
+              rows={2}
+              placeholder={canSendMessage ? "Write a message..." : "Chat is read-only after verification."}
+              className="min-h-10 flex-1 resize-none rounded-md border border-[#cfd7e3] px-3 py-2 text-xs text-[#17202a] outline-none focus:border-[#0c66e4] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            />
+            <Button
+              type="submit"
+              disabled={!messageDraft.trim() || !canSendMessage || sendingMessage}
+              className="self-end bg-[#0c66e4] px-3 text-white hover:bg-[#0052cc]"
+              aria-label="Send mentorship message"
+            >
+              {sendingMessage ? <RefreshCw className="size-4 animate-spin" /> : <Send className="size-4" />}
+            </Button>
+          </form>
+        </div>
+      )}
 
       {/* Checklist items */}
       <div className="flex flex-col gap-3">

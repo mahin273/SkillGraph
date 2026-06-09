@@ -24,6 +24,20 @@ export interface MentorshipRequest {
   skillId?: string;
 }
 
+export interface MentorshipMessage {
+  id: string;
+  mentorshipId: string;
+  senderId: string;
+  body: string;
+  createdAt: string;
+  sender: {
+    id: string;
+    fullName: string;
+    avatarUrl?: string | null;
+    role: string;
+  };
+}
+
 export async function getRecommendedMentors(targetRoleId?: string): Promise<AlumniProfile[]> {
   const response = await api.get("/mentors/recommended", {
     params: targetRoleId ? { targetRoleId } : {}
@@ -90,6 +104,16 @@ export async function updateMentorshipMilestones(mentorshipId: string, milestone
 
 export async function verifyMentorshipRequest(mentorshipId: string): Promise<any> {
   const response = await api.post(`/mentors/request/${mentorshipId}/verify`);
+  return response.data.data;
+}
+
+export async function getMentorshipMessages(mentorshipId: string): Promise<MentorshipMessage[]> {
+  const response = await api.get(`/mentors/request/${mentorshipId}/messages`);
+  return response.data.data;
+}
+
+export async function sendMentorshipMessage(mentorshipId: string, body: string): Promise<MentorshipMessage> {
+  const response = await api.post(`/mentors/request/${mentorshipId}/messages`, { body });
   return response.data.data;
 }
 

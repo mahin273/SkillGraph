@@ -4,6 +4,24 @@ import { fail, ok } from "../utils/apiResponse.js";
 import { env } from "../config/env.js";
 import { setAuthCookies } from "./auth.controller.js";
 
+async function findParticipantMentorship(mentorshipId: string, userId: string) {
+  const mentorship = await prisma.alumniMentorship.findUnique({
+    where: { id: mentorshipId },
+    include: {
+      alumni: { include: { user: true } },
+      student: { include: { user: true } },
+      skill: true
+    }
+  });
+
+  if (!mentorship) {
+    return { mentorship: null, forbidden: false };
+  }
+
+  const isParticipant = mentorship.alumni.userId === userId || mentorship.student.userId === userId;
+  return { mentorship, forbidden: !isParticipant };
+}
+
 // Fetch recommended alumni mentors based on student's missing skills or weak skills
 export async function getRecommendedMentors(req: Request, res: Response) {
   if (!req.user) {
@@ -292,6 +310,137 @@ export async function acceptMentorship(req: Request, res: Response) {
   } catch (error) {
     console.error("Failed to accept mentorship:", error);
     fail(res, "INTERNAL_ERROR", "Failed to accept mentorship request", 500);
+  }
+}
+
+export async function getMentorshipMessages(req: Request, res: Response) {
+  if (!req.user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return;
+  }
+
+  const { id } = req.params;
+
+  try {
+    const { mentorship, forbidden } = await findParticipantMentorship(id, req.user.id);
+
+    if (!mentorship) {
+      fail(res, "NOT_FOUND", "Mentorship connection not found", 404);
+      return;
+    }
+
+    if (forbidden) {
+      fail(res, "FORBIDDEN", "Only mentorship participants can view this chat", 403);
+      return;
+    }
+
+    if (mentorship.status === "requested") {
+      fail(res, "CHAT_NOT_AVAILABLE", "Chat is available after the mentor accepts the request", 403);
+      return;
+    }
+
+    const messages = await prisma.mentorshipMessage.findMany({
+      where: { mentorshipId: id },
+      orderBy: { createdAt: "asc" },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+            role: true
+          }
+        }
+      }
+    });
+
+    ok(res, messages);
+  } catch (error) {
+    console.error("Failed to get mentorship messages:", error);
+    fail(res, "INTERNAL_ERROR", "Failed to retrieve mentorship messages", 500);
+  }
+}
+
+export async function sendMentorshipMessage(req: Request, res: Response) {
+  if (!req.user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return;
+  }
+
+  const { id } = req.params;
+  const { body } = req.body as { body?: string };
+  const messageBody = body?.trim();
+
+  if (!messageBody) {
+    fail(res, "INVALID_BODY", "Message body is required", 400);
+    return;
+  }
+
+  if (messageBody.length > 2000) {
+    fail(res, "INVALID_BODY", "Message body must be 2000 characters or fewer", 400);
+    return;
+  }
+
+  try {
+    const { mentorship, forbidden } = await findParticipantMentorship(id, req.user.id);
+
+    if (!mentorship) {
+      fail(res, "NOT_FOUND", "Mentorship connection not found", 404);
+      return;
+    }
+
+    if (forbidden) {
+      fail(res, "FORBIDDEN", "Only mentorship participants can send messages", 403);
+      return;
+    }
+
+    if (mentorship.status !== "active") {
+      fail(res, "CHAT_NOT_AVAILABLE", "Messages can only be sent after the mentor accepts the request", 403);
+      return;
+    }
+
+    const message = await prisma.mentorshipMessage.create({
+      data: {
+        mentorshipId: id,
+        senderId: req.user.id,
+        body: messageBody
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+            role: true
+          }
+        }
+      }
+    });
+
+    const recipientId =
+      mentorship.alumni.userId === req.user.id ? mentorship.student.userId : mentorship.alumni.userId;
+
+    try {
+      await prisma.systemNotification.create({
+        data: {
+          userId: recipientId,
+          type: "MENTORSHIP_MESSAGE",
+          payload: {
+            mentorshipId: mentorship.id,
+            senderName: message.sender.fullName || "Mentorship partner",
+            skillName: mentorship.skill.name,
+            preview: messageBody.slice(0, 120)
+          }
+        }
+      });
+    } catch (notifErr) {
+      console.error("Failed to create mentorship message notification:", notifErr);
+    }
+
+    ok(res, message, 201);
+  } catch (error) {
+    console.error("Failed to send mentorship message:", error);
+    fail(res, "INTERNAL_ERROR", "Failed to send mentorship message", 500);
   }
 }
 

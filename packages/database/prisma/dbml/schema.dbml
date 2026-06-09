@@ -31,6 +31,7 @@ Table users {
   sentInvitations project_invitations [not null]
   receivedInvites project_invitations [not null]
   notifications system_notifications [not null]
+  mentorshipMessages mentorship_messages [not null]
   auditLogs audit_logs [not null]
   universityId String
   university universities
@@ -409,6 +410,17 @@ Table alumni_mentorships {
   student student_profiles [not null]
   alumni alumni_profiles [not null]
   skill skills [not null]
+  messages mentorship_messages [not null]
+}
+
+Table mentorship_messages {
+  id String [pk]
+  mentorshipId String [not null]
+  senderId String [not null]
+  body String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  mentorship alumni_mentorships [not null]
+  sender users [not null]
 }
 
 Table resume_exports {
@@ -570,6 +582,10 @@ Ref: alumni_mentorships.studentId > student_profiles.id
 Ref: alumni_mentorships.alumniId > alumni_profiles.id
 
 Ref: alumni_mentorships.skillId > skills.id
+
+Ref: mentorship_messages.mentorshipId > alumni_mentorships.id [delete: Cascade]
+
+Ref: mentorship_messages.senderId > users.id [delete: Cascade]
 
 Ref: resume_exports.studentId > student_profiles.id
 

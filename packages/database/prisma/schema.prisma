@@ -61,6 +61,7 @@ model User {
   sentInvitations    ProjectInvitation[]  @relation("InvitationSender")
   receivedInvites    ProjectInvitation[]  @relation("InvitationRecipient")
   notifications      SystemNotification[]
+  mentorshipMessages MentorshipMessage[]
   auditLogs          AuditLog[]
   universityId       String?              @map("university_id") @db.Uuid
   university         University?          @relation("UniversityUsers", fields: [universityId], references: [id])
@@ -481,8 +482,23 @@ model AlumniMentorship {
   student   StudentProfile   @relation(fields: [studentId], references: [id])
   alumni    AlumniProfile    @relation(fields: [alumniId], references: [id])
   skill     Skill            @relation(fields: [skillId], references: [id])
+  messages  MentorshipMessage[]
 
   @@map("alumni_mentorships")
+}
+
+model MentorshipMessage {
+  id           String            @id @default(uuid()) @db.Uuid
+  mentorshipId String            @map("mentorship_id") @db.Uuid
+  senderId     String            @map("sender_id") @db.Uuid
+  body         String
+  createdAt    DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  mentorship   AlumniMentorship  @relation(fields: [mentorshipId], references: [id], onDelete: Cascade)
+  sender       User              @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([mentorshipId, createdAt])
+  @@index([senderId])
+  @@map("mentorship_messages")
 }
 
 model ResumeExport {
