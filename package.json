@@ -27,7 +27,8 @@
     "db:seed": "npm --workspace @skillgraph/database run db:seed",
     "db:seed:docker": "docker compose run --rm gateway npm --workspace @skillgraph/database run db:seed",
     "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
   },
   "engines": {
     "node": ">=20"
