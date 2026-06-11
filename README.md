@@ -1,6 +1,6 @@
 # SkillGraph
 
-SkillGraph is an academic-to-industry career GPS platform. The repository is structured as a microservice monorepo based on `SkillGraph_Design_Doc.md`.
+SkillGraph is an academic-to-industry career GPS platform. The repository is structured as a microservice monorepo.
 
 ## Services
 
