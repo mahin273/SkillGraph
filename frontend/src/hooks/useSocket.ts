@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { api } from "../services/api";
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
+  const [socketState, setSocketState] = useState<Socket | null>(null);
 
   useEffect(() => {
     const connectSocket = async () => {
@@ -34,6 +35,7 @@ export function useSocket() {
         });
 
         socketRef.current = socket;
+        setSocketState(socket);
       } catch (error) {
         console.error("Failed to connect socket:", error);
       }
@@ -45,9 +47,10 @@ export function useSocket() {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
+        setSocketState(null);
       }
     };
   }, []);
 
-  return socketRef.current;
+  return socketState;
 }

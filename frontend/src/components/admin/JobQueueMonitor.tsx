@@ -83,26 +83,26 @@ export function JobQueueMonitor() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Total Jobs</div>
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Jobs</div>
           <div className="mt-1 text-2xl font-bold text-[#17202a]">{stats.total}</div>
         </div>
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Queued</div>
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Queued</div>
           <div className="mt-1 text-2xl font-bold text-[#0c66e4]">{stats.queued}</div>
         </div>
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Processing</div>
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Processing</div>
           <div className="mt-1 text-2xl font-bold text-[#e2b200] flex items-center gap-1.5">
             {stats.processing > 0 && <Loader2 className="size-5 animate-spin" />}
             {stats.processing}
           </div>
         </div>
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Completed</div>
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Completed</div>
           <div className="mt-1 text-2xl font-bold text-[#1f845a]">{stats.completed}</div>
         </div>
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Failed</div>
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Failed</div>
           <div className="mt-1 text-2xl font-bold text-[#ca3521]">{stats.failed}</div>
         </div>
       </div>
@@ -116,12 +116,12 @@ export function JobQueueMonitor() {
             </div>
             <div>
               <h2 className="text-base font-semibold text-[#17202a]">Background Ingestion Monitor</h2>
-              <p className="text-xs text-[#626f86]">Monitor background jobs parsing GitHub repositories and computing skill growth.</p>
+              <p className="text-xs text-muted-foreground">Monitor background jobs parsing GitHub repositories and computing skill growth.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative w-full sm:w-48">
-              <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+              <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search user..."
@@ -156,14 +156,14 @@ export function JobQueueMonitor() {
         {error && <div className="text-sm text-red-500 mb-4">{error}</div>}
 
         {loading && jobs.length === 0 ? (
-          <div className="text-center py-8 text-sm text-[#626f86]">Loading jobs catalog...</div>
+          <div className="text-center py-8 text-sm text-muted-foreground">Loading jobs catalog...</div>
         ) : filteredJobs.length === 0 ? (
-          <div className="text-center py-8 text-sm text-[#626f86]">No active or historical ingestion jobs found.</div>
+          <div className="text-center py-8 text-sm text-muted-foreground">No active or historical ingestion jobs found.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-[#dfe3ea] bg-[#f7f8fa] text-[#44546f] font-semibold uppercase">
+                <tr className="border-b border-[#dfe3ea] bg-[#f7f8fa] text-muted-foreground font-semibold uppercase">
                   <th className="p-3">User ID</th>
                   <th className="p-3">Job ID</th>
                   <th className="p-3">Status</th>
@@ -177,7 +177,7 @@ export function JobQueueMonitor() {
                 {filteredJobs.map((job) => (
                   <tr key={job.jobId || job.userId} className="hover:bg-[#f7f8fa]">
                     <td className="p-3 font-medium text-[#17202a]">{job.userId}</td>
-                    <td className="p-3 text-[#626f86]">{job.jobId || "N/A"}</td>
+                    <td className="p-3 text-muted-foreground">{job.jobId || "N/A"}</td>
                     <td className="p-3">
                       {job.status === "queued" && (
                         <span className="inline-flex items-center gap-1 rounded bg-[#deebff] px-2 py-0.5 font-semibold text-[#0747a6]">
@@ -210,13 +210,13 @@ export function JobQueueMonitor() {
                         "-"
                       )}
                     </td>
-                    <td className="p-3 text-[#626f86]">
+                    <td className="p-3 text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="size-3" />
                         {getDuration(job)}
                       </span>
                     </td>
-                    <td className="p-3 text-[#626f86]">
+                    <td className="p-3 text-muted-foreground">
                       {job.queuedAt ? new Date(job.queuedAt).toLocaleString() : "N/A"}
                     </td>
                   </tr>
@@ -240,7 +240,7 @@ export function JobQueueMonitor() {
                   <div key={job.jobId || job.userId} className="rounded-lg border border-[#ffebe6] bg-[#ffebe6]/40 p-4">
                     <div className="flex items-center justify-between text-xs mb-2">
                       <span className="font-semibold text-[#bf2600]">User: {job.userId}</span>
-                      <span className="text-[#626f86]">Job ID: {job.jobId || "N/A"}</span>
+                      <span className="text-muted-foreground">Job ID: {job.jobId || "N/A"}</span>
                     </div>
                     <p className="text-xs font-mono text-[#ca3521] bg-white p-2.5 rounded border border-[#ffebe6] whitespace-pre-wrap">
                       {job.error || "Unknown ingestion failure. Please check queue server container logs."}

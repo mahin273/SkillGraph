@@ -444,6 +444,61 @@ export async function sendMentorshipMessage(req: Request, res: Response) {
   }
 }
 
+export async function updateMentorshipMilestones(req: Request, res: Response) {
+  if (!req.user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return;
+  }
+
+  const { id } = req.params;
+  const { milestones } = req.body as { milestones?: string[] };
+
+  if (!Array.isArray(milestones) || milestones.some((item) => typeof item !== "string")) {
+    fail(res, "INVALID_BODY", "milestones must be an array of strings", 400);
+    return;
+  }
+
+  try {
+    const mentorship = await prisma.alumniMentorship.findUnique({
+      where: { id },
+      include: {
+        alumni: true
+      }
+    });
+
+    if (!mentorship) {
+      fail(res, "NOT_FOUND", "Mentorship connection not found", 404);
+      return;
+    }
+
+    if (mentorship.alumni.userId !== req.user.id) {
+      fail(res, "FORBIDDEN", "Only the assigned mentor can update milestones", 403);
+      return;
+    }
+
+    if (mentorship.status === "completed") {
+      fail(res, "MENTORSHIP_COMPLETED", "Completed mentorship milestones cannot be changed", 409);
+      return;
+    }
+
+    const uniqueMilestones = Array.from(new Set(milestones.map((item) => item.trim()).filter(Boolean)));
+    const updated = await prisma.alumniMentorship.update({
+      where: { id },
+      data: { milestones: uniqueMilestones },
+      include: {
+        alumni: { include: { user: true } },
+        student: { include: { user: true } },
+        skill: true
+      }
+    });
+
+    ok(res, updated);
+  } catch (error) {
+    console.error("Failed to update mentorship milestones:", error);
+    fail(res, "INTERNAL_ERROR", "Failed to update mentorship milestones", 500);
+  }
+}
+
 // Complete a mentorship connection
 export async function completeMentorship(req: Request, res: Response) {
   if (!req.user) {

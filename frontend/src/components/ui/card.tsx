@@ -40,7 +40,7 @@ function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
 function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("text-sm text-[#626f86]", className)}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   )

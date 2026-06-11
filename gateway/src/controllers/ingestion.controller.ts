@@ -4,7 +4,7 @@ import { env } from "../config/env.js";
 import { fail, ok } from "../utils/apiResponse.js";
 import { decryptToken } from "../utils/crypto.js";
 import { getRedis } from "../utils/redis.js";
-import { globalConfig } from "./admin.controller.js";
+import { globalConfig } from "../config/platform.js";
 
 const SEVENTY_TWO_HOURS_MS = 72 * 60 * 60 * 1000;
 

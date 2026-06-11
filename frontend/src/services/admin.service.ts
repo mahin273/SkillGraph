@@ -157,6 +157,13 @@ export interface GithubConnection {
   lastUsedAt?: string;
 }
 
+export interface GithubRateLimit {
+  remaining: number;
+  limit: number;
+  resetAt: string;
+  resetMins: number;
+}
+
 export interface SkillCategory {
   id: string;
   name: string;
@@ -169,9 +176,18 @@ export async function getIngestionJobs(): Promise<IngestionJob[]> {
   return response.data.data;
 }
 
-export async function getGithubConnections(): Promise<GithubConnection[]> {
+export async function getGithubConnections(): Promise<{ connections: GithubConnection[]; rateLimit: GithubRateLimit | null }> {
   const response = await api.get("/admin/github-connections");
-  return response.data.data;
+  const data = response.data.data;
+
+  if (Array.isArray(data)) {
+    return { connections: data, rateLimit: null };
+  }
+
+  return {
+    connections: data.connections ?? [],
+    rateLimit: data.rateLimit ?? null
+  };
 }
 
 export async function getCategories(): Promise<SkillCategory[]> {

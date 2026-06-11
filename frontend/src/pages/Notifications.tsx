@@ -43,7 +43,7 @@ export function Notifications() {
   if (loading) {
     return (
       <div className="grid min-h-[60vh] place-items-center">
-        <p className="text-sm text-[#626f86]">Loading notifications...</p>
+        <p className="text-sm text-muted-foreground">Loading notifications...</p>
       </div>
     );
   }
@@ -51,12 +51,12 @@ export function Notifications() {
   return (
     <div className="mx-auto grid w-full max-w-[1200px] gap-4 pb-20 lg:pb-4">
       <header className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">Inbox</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Inbox</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#17202a]">Notifications</h1>
       </header>
       {notifications.length === 0 ? (
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-8 text-center shadow-sm">
-          <p className="text-sm text-[#626f86]">No new notifications</p>
+          <p className="text-sm text-muted-foreground">No new notifications</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -74,10 +74,10 @@ export function Notifications() {
                       <p className="text-sm font-semibold text-[#17202a]">
                         {getNotificationTitle(notification.type)}
                       </p>
-                      <p className="mt-1 text-sm text-[#44546f]">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {getNotificationMessage(notification)}
                       </p>
-                      <p className="mt-1 text-xs text-[#626f86]">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {new Date(notification.createdAt).toLocaleString()}
                       </p>
                     </div>

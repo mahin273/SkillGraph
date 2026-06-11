@@ -180,14 +180,14 @@ export function CareerGPS() {
 
   return (
     <section className="mx-auto grid w-full max-w-[1500px] gap-4 pb-20 lg:pb-4">
-      <header className="flex flex-col gap-3 rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">
-            <Route className="size-3.5 text-[#0c66e4]" />
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            <Route className="size-3.5 text-primary" />
             Career navigation
           </div>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#17202a]">Career GPS</h1>
-          <p className="mt-1 text-sm text-[#626f86]">Compare your current skill graph with target roles.</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Career GPS</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Compare your current skill graph with target roles.</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -206,7 +206,7 @@ export function CareerGPS() {
             size="lg"
             onClick={handleSave}
             disabled={!data || saving}
-            className="gap-2 bg-[#0c66e4] text-white hover:bg-[#0055cc]"
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {saving ? <RefreshCw className="size-4 animate-spin" /> : <Save className="size-4" />}
             {saving ? "Saving..." : "Save path"}
@@ -214,7 +214,7 @@ export function CareerGPS() {
         </div>
       </header>
 
-      <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
+      <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
         <CardContent className="p-4">
           <RoleSelector value={selectedRoleId} onChange={(roleId) => {
             setSelectedRoleId(roleId || null);
@@ -224,21 +224,21 @@ export function CareerGPS() {
       </Card>
 
       {saveStatus && (
-        <div className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 text-sm text-[#17202a] shadow-sm">
+        <div className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm">
           {saveStatus}
         </div>
       )}
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       )}
 
       {loading && (
-        <Card className="rounded-lg border-[#dfe3ea] bg-white p-8 text-center shadow-sm">
-          <RefreshCw className="mx-auto size-5 animate-spin text-[#0c66e4]" />
-          <p className="mt-3 text-sm text-[#626f86]">Calculating your career path...</p>
+        <Card className="rounded-xl border-border bg-card p-8 text-center shadow-sm">
+          <RefreshCw className="mx-auto size-5 animate-spin text-primary" />
+          <p className="mt-3 text-sm text-muted-foreground">Calculating your career path...</p>
         </Card>
       )}
 
@@ -246,55 +246,55 @@ export function CareerGPS() {
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="grid gap-4">
             <section className="grid gap-3 md:grid-cols-3">
-              <Card className="rounded-lg border-[#dfe3ea] bg-white py-4 shadow-sm">
+              <Card className="rounded-xl border-border bg-card py-4 shadow-sm">
                 <CardContent className="flex flex-col items-center px-4">
                   <GPSProgressRing percentage={data.completionPercentage} />
-                  <h2 className="mt-3 text-sm font-semibold text-[#17202a]">{data.targetRole.name}</h2>
-                  <p className="mt-1 text-xs text-[#626f86]">
+                  <h2 className="mt-3 text-sm font-semibold text-foreground">{data.targetRole.name}</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {data.skillsCompleted} of {data.totalSkillsRequired} required skills
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-lg border-[#dfe3ea] bg-white py-4 shadow-sm">
+              <Card className="rounded-xl border-border bg-card py-4 shadow-sm">
                 <CardContent className="flex items-start gap-3 px-4">
-                  <div className="grid size-9 place-items-center rounded-lg bg-[#e9f2ff] text-[#0c66e4]">
+                  <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
                     <Clock className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-[#626f86]">Estimated time</p>
-                    <p className="mt-1 text-2xl font-semibold text-[#17202a]">{data.estimatedWeeks} weeks</p>
-                    <p className="mt-1 text-xs text-[#626f86]">{roadmapWeeks} scheduled roadmap weeks</p>
+                    <p className="text-xs font-medium text-muted-foreground">Estimated time</p>
+                    <p className="mt-1 text-2xl font-semibold text-foreground">{data.estimatedWeeks} weeks</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{roadmapWeeks} scheduled roadmap weeks</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-lg border-[#dfe3ea] bg-white py-4 shadow-sm">
+              <Card className="rounded-xl border-border bg-card py-4 shadow-sm">
                 <CardContent className="flex items-start gap-3 px-4">
-                  <div className="grid size-9 place-items-center rounded-lg bg-[#fff4e5] text-[#974f0c]">
+                  <div className="grid size-9 place-items-center rounded-lg bg-amber-500/10 text-amber-600">
                     <Target className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-[#626f86]">Skills to learn</p>
-                    <p className="mt-1 text-2xl font-semibold text-[#17202a]">{data.skillsRemaining}</p>
-                    <p className="mt-1 text-xs text-[#626f86]">{data.completedSkills.length} already covered</p>
+                    <p className="text-xs font-medium text-muted-foreground">Skills to learn</p>
+                    <p className="mt-1 text-2xl font-semibold text-foreground">{data.skillsRemaining}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{data.completedSkills.length} already covered</p>
                   </div>
                 </CardContent>
               </Card>
             </section>
 
-            <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-              <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
+            <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+              <CardHeader className="border-b border-border px-4 py-3">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <CardTitle className="text-sm font-semibold text-[#17202a]">Skill breakdown</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-foreground">Skill breakdown</CardTitle>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <div className="relative sm:w-64">
-                      <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+                      <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         value={skillQuery}
                         onChange={(event) => setSkillQuery(event.target.value)}
                         placeholder="Search skills"
-                        className="h-9 border-[#cfd7e3] bg-[#f7f8fa] pl-8"
+                        className="h-9 border-input bg-background pl-8"
                       />
                     </div>
                     <Button
@@ -312,12 +312,12 @@ export function CareerGPS() {
               <CardContent className="grid gap-4 p-4 lg:grid-cols-2">
                 <div>
                   <div className="mb-3 flex items-center gap-2">
-                    <TrendingUp className="size-4 text-[#1f845a]" />
-                    <h3 className="text-sm font-semibold text-[#17202a]">Completed ({filteredCompletedSkills.length})</h3>
+                    <TrendingUp className="size-4 text-emerald-600" />
+                    <h3 className="text-sm font-semibold text-foreground">Completed ({filteredCompletedSkills.length})</h3>
                   </div>
                   <div className="space-y-2">
                     {filteredCompletedSkills.length === 0 ? (
-                      <p className="rounded-lg border border-dashed border-[#cfd7e3] p-4 text-sm text-[#626f86]">
+                      <p className="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
                         No completed skills match this view.
                       </p>
                     ) : (
@@ -330,12 +330,12 @@ export function CareerGPS() {
 
                 <div>
                   <div className="mb-3 flex items-center gap-2">
-                    <Target className="size-4 text-[#974f0c]" />
-                    <h3 className="text-sm font-semibold text-[#17202a]">To learn ({filteredMissingSkills.length})</h3>
+                    <Target className="size-4 text-amber-600" />
+                    <h3 className="text-sm font-semibold text-foreground">To learn ({filteredMissingSkills.length})</h3>
                   </div>
                   <div className="space-y-2">
                     {filteredMissingSkills.length === 0 ? (
-                      <p className="rounded-lg border border-dashed border-[#cfd7e3] p-4 text-sm text-[#626f86]">
+                      <p className="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
                         All required skills are covered in this view.
                       </p>
                     ) : (
@@ -353,10 +353,10 @@ export function CareerGPS() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-              <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
+            <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+              <CardHeader className="border-b border-border px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
-                  <CardTitle className="text-sm font-semibold text-[#17202a]">Learning roadmap</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-foreground">Learning roadmap</CardTitle>
                   <Button type="button" variant="outline" onClick={handleExport} disabled={!data} className="gap-2">
                     <Download className="size-4" />
                     Export
@@ -374,56 +374,56 @@ export function CareerGPS() {
           </div>
 
           <aside className="grid gap-4 self-start xl:sticky xl:top-4">
-            <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-              <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#17202a]">
-                  <CheckCircle2 className="size-4 text-[#1f845a]" />
+            <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+              <CardHeader className="border-b border-border px-4 py-3">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                  <CheckCircle2 className="size-4 text-emerald-600" />
                   Next best steps
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 p-4">
                 {data.roadmap.slice(0, 3).map((item, index) => (
-                  <div key={item.skillId} className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-3">
-                    <p className="text-xs font-medium text-[#626f86]">Step {index + 1}</p>
-                    <p className="mt-1 text-sm font-semibold text-[#17202a]">{item.skillName}</p>
-                    <p className="mt-1 text-xs leading-5 text-[#626f86]">
+                  <div key={item.skillId} className="rounded-xl border border-border bg-muted/45 p-3">
+                    <p className="text-xs font-medium text-muted-foreground">Step {index + 1}</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{item.skillName}</p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
                       {item.objective}
                     </p>
-                    <p className="mt-2 text-xs font-medium text-[#17202a]">
+                    <p className="mt-2 text-xs font-medium text-foreground">
                       {item.estimatedWeeks} weeks, difficulty {item.difficulty}/5
                     </p>
                   </div>
                 ))}
                 {data.roadmap.length === 0 && (
-                  <p className="text-sm text-[#626f86]">You already cover every required skill for this role.</p>
+                  <p className="text-sm text-muted-foreground">You already cover every required skill for this role.</p>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-              <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#17202a]">
-                  <History className="size-4 text-[#0c66e4]" />
+            <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+              <CardHeader className="border-b border-border px-4 py-3">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <History className="size-4 text-primary" />
                   Saved paths
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 p-4">
-                {historyLoading && <p className="text-sm text-[#626f86]">Loading saved paths...</p>}
+                {historyLoading && <p className="text-sm text-muted-foreground">Loading saved paths...</p>}
                 {!historyLoading && history.length === 0 && (
-                  <p className="text-sm text-[#626f86]">Saved paths will appear here after you save one.</p>
+                  <p className="text-sm text-muted-foreground">Saved paths will appear here after you save one.</p>
                 )}
                 {!historyLoading && history.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => setSelectedRoleId(item.roleId)}
-                    className="w-full rounded-lg border border-[#dfe3ea] bg-white p-3 text-left transition hover:border-[#0c66e4] hover:bg-[#f7f8fa]"
+                    className="w-full rounded-xl border border-border bg-card p-3 text-left transition hover:border-primary hover:bg-accent"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate text-sm font-semibold text-[#17202a]">{item.roleName}</p>
-                      <span className="text-xs font-medium text-[#0c66e4]">{item.completionPercentage}%</span>
+                      <p className="truncate text-sm font-semibold text-foreground">{item.roleName}</p>
+                      <span className="text-xs font-medium text-primary">{item.completionPercentage}%</span>
                     </div>
-                    <p className="mt-1 text-xs text-[#626f86]">{formatDate(item.lastUpdated)}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{formatDate(item.lastUpdated)}</p>
                   </button>
                 ))}
               </CardContent>
@@ -433,10 +433,10 @@ export function CareerGPS() {
       )}
 
       {!selectedRoleId && !loading && (
-        <Card className="rounded-lg border-[#dfe3ea] bg-white p-10 text-center shadow-sm">
-          <Target className="mx-auto size-10 text-[#0c66e4]" />
-          <h2 className="mt-4 text-lg font-semibold text-[#17202a]">Select a target role</h2>
-          <p className="mt-2 text-sm text-[#626f86]">Choose a role above to generate your personalized skill gap, timeline, and saved path.</p>
+        <Card className="rounded-xl border-border bg-card p-10 text-center shadow-sm">
+          <Target className="mx-auto size-10 text-primary" />
+          <h2 className="mt-4 text-lg font-semibold text-foreground">Select a target role</h2>
+          <p className="mt-2 text-sm text-muted-foreground">Choose a role above to generate your personalized skill gap, timeline, and saved path.</p>
         </Card>
       )}
     </section>

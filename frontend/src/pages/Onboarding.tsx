@@ -175,14 +175,14 @@ export function Onboarding() {
                   ? "bg-[#0c66e4] text-white"
                   : step > item.s
                   ? "bg-[#1f845a] text-white"
-                  : "bg-[#f7f8fa] text-[#626f86] border border-[#cfd7e3]"
+                  : "bg-[#f7f8fa] text-muted-foreground border border-[#cfd7e3]"
               }`}
             >
               {step > item.s ? "✓" : item.s}
             </span>
             <span
               className={`text-sm hidden sm:inline ${
-                step === item.s ? "font-semibold text-[#17202a]" : "text-[#626f86]"
+                step === item.s ? "font-semibold text-[#17202a]" : "text-muted-foreground"
               }`}
             >
               {item.label}
@@ -211,7 +211,7 @@ export function Onboarding() {
             <CardTitle className="text-2xl font-bold text-[#17202a]">
               Welcome to SkillGraph!
             </CardTitle>
-            <p className="text-sm text-[#626f86] mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Let's set up your profile to map your skills from academia to industry expectations.
             </p>
           </CardHeader>
@@ -221,7 +221,7 @@ export function Onboarding() {
                 <Github className="size-5" />
                 Connect your GitHub Account
               </h3>
-              <p className="text-sm text-[#626f86] mt-1.5 leading-relaxed">
+              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
                 SkillGraph uses LLMs to extract languages, frameworks, and packages from your code commits and README files.
               </p>
               
@@ -262,7 +262,7 @@ export function Onboarding() {
               </div>
             </div>
             <h3 className="text-xl font-bold text-[#17202a]">AI Code Analysis in Progress</h3>
-            <p className="text-sm text-[#626f86] mt-2 max-w-md leading-relaxed">
+            <p className="text-sm text-muted-foreground mt-2 max-w-md leading-relaxed">
               We are normalizing repository texts, extracting features using LLMs, and matching them with industry skill graph nodes.
             </p>
             <div className="mt-6 rounded-md bg-[#f7f8fa] border border-[#cfd7e3] px-6 py-3 font-semibold text-[#17202a]">
@@ -282,7 +282,7 @@ export function Onboarding() {
         <Card className="w-full border-[#dfe3ea] bg-white shadow-lg animate-in fade-in">
           <CardHeader>
             <CardTitle className="text-xl font-bold text-[#17202a]">Verify Your Extracted Skills</CardTitle>
-            <p className="text-sm text-[#626f86] mt-1.5">
+            <p className="text-sm text-muted-foreground mt-1.5">
               Below are the skills identified by the AI. Add any missing skills or remove incorrect ones.
             </p>
           </CardHeader>
@@ -303,7 +303,7 @@ export function Onboarding() {
 
             <div className="min-h-[200px] rounded-lg border border-[#edf0f5] bg-[#fbfcfe] p-4">
               {detectedSkills.length === 0 ? (
-                <div className="flex h-[180px] flex-col items-center justify-center text-center text-[#626f86]">
+                <div className="flex h-[180px] flex-col items-center justify-center text-center text-muted-foreground">
                   <AlertCircle className="size-8 text-[#a8b3c7] mb-2" />
                   <p className="text-sm font-semibold">No skills logged yet</p>
                   <p className="text-xs text-[#a8b3c7] mt-1">Use the search bar above to manually log your skills.</p>
@@ -317,7 +317,7 @@ export function Onboarding() {
                     >
                       <div className="min-w-0">
                         <p className="truncate text-xs font-semibold text-[#17202a]">{skill.name}</p>
-                        <p className="text-[10px] text-[#626f86]">{(skill.confidence * 100).toFixed(0)}% Match</p>
+                        <p className="text-[10px] text-muted-foreground">{(skill.confidence * 100).toFixed(0)}% Match</p>
                       </div>
                       <button
                         onClick={() => handleRemoveSkill(skill.name)}
@@ -349,7 +349,7 @@ export function Onboarding() {
         <div className="w-full space-y-6 animate-in fade-in">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-[#17202a]">Select Your Target Career Goal</h3>
-            <p className="text-sm text-[#626f86] mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Which professional role are you aiming to transition to from your university studies?
             </p>
           </div>
@@ -376,7 +376,7 @@ export function Onboarding() {
                   />
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-[#626f86] leading-relaxed line-clamp-3">
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
                     {role.description || "Learn and develop industry-recommended competencies for this technical position."}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
@@ -389,7 +389,7 @@ export function Onboarding() {
                       </span>
                     ))}
                     {role.requiredSkills.length > 3 && (
-                      <span className="px-1.5 py-0.5 text-[9px] font-semibold text-[#626f86]">
+                      <span className="px-1.5 py-0.5 text-[9px] font-semibold text-muted-foreground">
                         +{role.requiredSkills.length - 3} more
                       </span>
                     )}

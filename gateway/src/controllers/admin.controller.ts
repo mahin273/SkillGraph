@@ -4,16 +4,8 @@ import { prisma } from "@skillgraph/database";
 import { ok, fail } from "../utils/apiResponse.js";
 import { getRedis } from "../utils/redis.js";
 import { sendInvitationEmail, sendApprovalEmail } from "../utils/email.js";
-
-// In-memory global configuration settings for demo purposes
-export let globalConfig = {
-  skillDecayRate: 0.15,
-  scanCooldownHours: 1,
-  sessionDurationSeconds: 900,
-  isMaintenanceMode: false,
-  isIngestionDisabled: false,
-  isNlpThrottled: false
-};
+import { decryptToken } from "../utils/crypto.js";
+import { loadPlatformConfig, updatePlatformConfig } from "../config/platform.js";
 
 // 1. User Directory & Moderation (Admin only)
 export async function listUsers(req: Request, res: Response) {
@@ -165,7 +157,11 @@ export async function listAuditLogs(req: Request, res: Response) {
 
 // 3. System Configuration (Admin only)
 export async function getConfig(req: Request, res: Response) {
-  ok(res, globalConfig);
+  try {
+    ok(res, await loadPlatformConfig());
+  } catch (error: any) {
+    fail(res, "CONFIG_LOAD_ERROR", error.message, 500);
+  }
 }
 
 export async function updateConfig(req: Request, res: Response) {
@@ -185,14 +181,20 @@ export async function updateConfig(req: Request, res: Response) {
     isNlpThrottled?: boolean;
   };
 
-  if (skillDecayRate !== undefined) globalConfig.skillDecayRate = skillDecayRate;
-  if (scanCooldownHours !== undefined) globalConfig.scanCooldownHours = scanCooldownHours;
-  if (sessionDurationSeconds !== undefined) globalConfig.sessionDurationSeconds = sessionDurationSeconds;
-  if (isMaintenanceMode !== undefined) globalConfig.isMaintenanceMode = isMaintenanceMode;
-  if (isIngestionDisabled !== undefined) globalConfig.isIngestionDisabled = isIngestionDisabled;
-  if (isNlpThrottled !== undefined) globalConfig.isNlpThrottled = isNlpThrottled;
+  try {
+    const updated = await updatePlatformConfig({
+      ...(skillDecayRate !== undefined ? { skillDecayRate } : {}),
+      ...(scanCooldownHours !== undefined ? { scanCooldownHours } : {}),
+      ...(sessionDurationSeconds !== undefined ? { sessionDurationSeconds } : {}),
+      ...(isMaintenanceMode !== undefined ? { isMaintenanceMode } : {}),
+      ...(isIngestionDisabled !== undefined ? { isIngestionDisabled } : {}),
+      ...(isNlpThrottled !== undefined ? { isNlpThrottled } : {})
+    });
 
-  ok(res, globalConfig);
+    ok(res, updated);
+  } catch (error: any) {
+    fail(res, "CONFIG_SAVE_ERROR", error.message, 500);
+  }
 }
 
 // 4. Department Student Directory (Professor/Admin)
@@ -485,7 +487,52 @@ export async function listGithubConnections(req: Request, res: Response) {
       lastUsedAt: conn.lastUsedAt
     }));
 
-    ok(res, data);
+    let rateLimit: {
+      remaining: number;
+      limit: number;
+      resetAt: string;
+      resetMins: number;
+    } | null = null;
+
+    const latestConnection = connections[0];
+    if (latestConnection) {
+      try {
+        const token = decryptToken(latestConnection.accessTokenEnc);
+        const response = await fetch("https://api.github.com/rate_limit", {
+          headers: {
+            accept: "application/vnd.github+json",
+            authorization: `Bearer ${token}`,
+            "user-agent": "skillgraph-gateway"
+          }
+        });
+
+        if (response.ok) {
+          const body = await response.json() as {
+            resources?: {
+              core?: {
+                limit: number;
+                remaining: number;
+                reset: number;
+              }
+            }
+          };
+          const core = body.resources?.core;
+          if (core) {
+            const resetMs = core.reset * 1000;
+            rateLimit = {
+              limit: core.limit,
+              remaining: core.remaining,
+              resetAt: new Date(resetMs).toISOString(),
+              resetMins: Math.max(0, Math.ceil((resetMs - Date.now()) / 60000))
+            };
+          }
+        }
+      } catch (rateLimitError) {
+        console.error("Failed to fetch GitHub rate limit:", rateLimitError);
+      }
+    }
+
+    ok(res, { connections: data, rateLimit });
   } catch (error: any) {
     fail(res, "DB_ERROR", error.message, 500);
   }
@@ -888,7 +935,7 @@ export async function getSystemHealth(req: Request, res: Response) {
     // 3. PostgreSQL Database storage size
     let dbSize = "Unknown";
     try {
-      const result: any[] = await prisma.$queryRawUnsafe("SELECT pg_size_pretty(pg_database_size('skillgraph')) as size;");
+      const result: any[] = await prisma.$queryRaw`SELECT pg_size_pretty(pg_database_size(current_database())) as size;`;
       dbSize = result[0]?.size || "Unknown";
     } catch (e) {}
 

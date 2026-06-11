@@ -121,7 +121,7 @@ export function AlumniVerificationQueue() {
                     href={`https://github.com/${alumnus.githubHandle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#626f86] hover:underline"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground hover:underline"
                   >
                     GitHub: @{alumnus.githubHandle}
                   </a>

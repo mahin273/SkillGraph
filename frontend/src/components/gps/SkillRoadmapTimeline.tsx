@@ -43,7 +43,7 @@ export function SkillRoadmapTimeline({
       <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-8 text-center">
         <CheckCircle2 className="mx-auto size-8 text-[#1f845a]" />
         <p className="mt-3 text-sm font-medium text-[#17202a]">No skills to learn right now.</p>
-        <p className="mt-1 text-sm text-[#626f86]">You already cover the required skills for this role.</p>
+        <p className="mt-1 text-sm text-muted-foreground">You already cover the required skills for this role.</p>
       </div>
     );
   }
@@ -69,20 +69,20 @@ export function SkillRoadmapTimeline({
                     {item.category && <Badge variant="secondary">{item.category}</Badge>}
                     <Badge variant="outline">{getCriticalityLabel(item.criticality)}</Badge>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-[#44546f]">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {item.objective ?? `Build practical confidence with ${item.skillName}.`}
                   </p>
                 </div>
 
                 <div className="grid min-w-32 grid-cols-2 gap-2 text-left lg:text-right">
                   <div>
-                    <p className="text-xs font-medium text-[#626f86]">Time</p>
+                    <p className="text-xs font-medium text-muted-foreground">Time</p>
                     <p className="text-sm font-semibold text-[#17202a]">
                       {item.estimatedWeeks} {item.estimatedWeeks === 1 ? "week" : "weeks"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-[#626f86]">Difficulty</p>
+                    <p className="text-xs font-medium text-muted-foreground">Difficulty</p>
                     <p className="text-sm font-semibold text-[#17202a]">{item.difficulty}/5</p>
                   </div>
                 </div>
@@ -90,7 +90,7 @@ export function SkillRoadmapTimeline({
 
               {item.prerequisites.length > 0 && (
                 <div className="mt-4">
-                  <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">Review first</p>
+                  <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Review first</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {item.prerequisites.map((prereq) => (
                       <Badge key={prereq} variant="secondary" className="text-xs">
@@ -107,7 +107,7 @@ export function SkillRoadmapTimeline({
                     <Hammer className="size-4 text-[#0c66e4]" />
                     <p className="text-sm font-semibold text-[#17202a]">Practice project</p>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-[#44546f]">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {item.practiceProject ?? `Create a portfolio artifact using ${item.skillName}.`}
                   </p>
                 </div>
@@ -137,7 +137,7 @@ export function SkillRoadmapTimeline({
                               {isCompleted ? (
                                 <CheckCircle2 className="size-4 text-[#1f845a] fill-[#e3fcef]" />
                               ) : (
-                                <div className="size-4 rounded-full border border-[#626f86] hover:border-[#0c66e4]" />
+                                <div className="size-4 rounded-full border border-muted-foreground hover:border-[#0c66e4]" />
                               )}
                             </button>
                           )}
@@ -147,14 +147,14 @@ export function SkillRoadmapTimeline({
                               target="_blank"
                               rel="noreferrer"
                               className={`flex-1 flex items-center justify-between gap-2 min-w-0 text-[#17202a] hover:text-[#0c66e4] ${
-                                isCompleted ? "text-[#626f86] line-through decoration-1" : ""
+                                isCompleted ? "text-muted-foreground line-through decoration-1" : ""
                               }`}
                             >
                               <span className="truncate">{resource.title}</span>
-                              <ExternalLink className="size-3 text-[#626f86] flex-shrink-0" />
+                              <ExternalLink className="size-3 text-muted-foreground flex-shrink-0" />
                             </a>
                           ) : (
-                            <span className={`flex-1 truncate ${isCompleted ? "text-[#626f86] line-through decoration-1" : "text-[#17202a]"}`}>
+                            <span className={`flex-1 truncate ${isCompleted ? "text-muted-foreground line-through decoration-1" : "text-[#17202a]"}`}>
                               {resource.title}
                             </span>
                           )}
@@ -172,7 +172,7 @@ export function SkillRoadmapTimeline({
                 </div>
                 <div className="mt-2 grid gap-2 md:grid-cols-3">
                   {(item.milestones ?? []).map((milestone) => (
-                    <div key={milestone} className="rounded-lg border border-[#dfe3ea] bg-white p-3 text-sm leading-5 text-[#44546f]">
+                    <div key={milestone} className="rounded-lg border border-[#dfe3ea] bg-white p-3 text-sm leading-5 text-muted-foreground">
                       {milestone}
                     </div>
                   ))}

@@ -9,7 +9,8 @@ import {
   registerAlumni,
   getMyAlumniProfile,
   verifyMentorship,
-  sendMentorshipMessage
+  sendMentorshipMessage,
+  updateMentorshipMilestones
 } from "../controllers/mentorship.controller.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -23,9 +24,7 @@ mentorshipRouter.put("/request/:id/accept", requireAuth, asyncHandler(acceptMent
 mentorshipRouter.put("/request/:id/complete", requireAuth, asyncHandler(completeMentorship));
 mentorshipRouter.get("/request/:id/messages", requireAuth, asyncHandler(getMentorshipMessages));
 mentorshipRouter.post("/request/:id/messages", requireAuth, asyncHandler(sendMentorshipMessage));
-mentorshipRouter.put("/request/:id/milestones", requireAuth, asyncHandler(async (req, res) => {
-  res.json({ success: true, data: { status: "updated" } });
-}));
+mentorshipRouter.put("/request/:id/milestones", requireAuth, asyncHandler(updateMentorshipMilestones));
 mentorshipRouter.post("/request/:id/verify", requireAuth, asyncHandler(verifyMentorship));
 mentorshipRouter.delete("/request/:id", requireAuth, asyncHandler(declineMentorship));
 mentorshipRouter.post("/register", requireAuth, asyncHandler(registerAlumni));

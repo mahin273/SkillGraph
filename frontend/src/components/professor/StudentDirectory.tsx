@@ -67,11 +67,11 @@ export function StudentDirectory() {
           </div>
           <div>
             <h2 className="text-base font-semibold text-[#17202a]">Department Students & Talents</h2>
-            <p className="text-xs text-[#626f86]">Monitor student career readiness and skill graphs.</p>
+            <p className="text-xs text-muted-foreground">Monitor student career readiness and skill graphs.</p>
           </div>
         </div>
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search name, ID, or target role"
@@ -85,7 +85,7 @@ export function StudentDirectory() {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-[#17202a]">
           <thead>
-            <tr className="border-b border-[#cfd7e3] text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+            <tr className="border-b border-[#cfd7e3] text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <th className="pb-3 pr-4">Student</th>
               <th className="pb-3 px-4">Student ID</th>
               <th className="pb-3 px-4">Academic track</th>
@@ -106,26 +106,26 @@ export function StudentDirectory() {
                 >
                   <td className="py-3.5 pr-4 font-medium">
                     <div className="flex items-center gap-2">
-                      <User className="size-4 text-[#626f86]" />
+                      <User className="size-4 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-semibold">{st.fullName}</p>
-                        <p className="text-xs text-[#626f86]">{st.email}</p>
+                        <p className="text-xs text-muted-foreground">{st.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="py-3.5 px-4 text-xs font-mono text-[#626f86]">
+                  <td className="py-3.5 px-4 text-xs font-mono text-muted-foreground">
                     {profile?.studentIdNo || "N/A"}
                   </td>
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-1 text-xs text-[#17202a]">
-                      <BookOpen className="size-3.5 text-[#626f86]" />
+                      <BookOpen className="size-3.5 text-muted-foreground" />
                       <span>
                         {profile?.university?.shortName || "UIU"}{" "}
                         {profile?.department?.code ? `(${profile.department.code})` : ""}
                       </span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-4 text-xs text-[#626f86]">
+                  <td className="py-3.5 px-4 text-xs text-muted-foreground">
                     Class of {profile?.graduationYear || "N/A"}
                   </td>
                   <td className="py-3.5 px-4">
@@ -135,7 +135,7 @@ export function StudentDirectory() {
                         {activePath.role.title}
                       </span>
                     ) : (
-                      <span className="text-xs text-[#626f86]">No active path</span>
+                      <span className="text-xs text-muted-foreground">No active path</span>
                     )}
                   </td>
                   <td className="py-3.5 pl-4">
@@ -150,7 +150,7 @@ export function StudentDirectory() {
                         <span className="text-xs font-semibold">{activePath.completionPct}%</span>
                       </div>
                     ) : (
-                      <span className="text-xs text-[#626f86]">-</span>
+                      <span className="text-xs text-muted-foreground">-</span>
                     )}
                   </td>
                 </tr>
@@ -171,13 +171,13 @@ export function StudentDirectory() {
                   <h3 className="text-base font-bold text-[#17202a]">
                     {students.find((s) => s.id === selectedStudentId)?.fullName}
                   </h3>
-                  <p className="text-xs text-[#626f86]">
+                  <p className="text-xs text-muted-foreground">
                     {students.find((s) => s.id === selectedStudentId)?.email}
                   </p>
                 </div>
                 <button
                   onClick={() => setSelectedStudentId(null)}
-                  className="rounded p-1 text-[#626f86] hover:bg-[#edf0f5] hover:text-[#17202a]"
+                  className="rounded p-1 text-muted-foreground hover:bg-[#edf0f5] hover:text-[#17202a]"
                 >
                   <X className="size-5" />
                 </button>
@@ -185,22 +185,22 @@ export function StudentDirectory() {
 
               {/* Body */}
               {loadingGalaxy ? (
-                <div className="text-center py-12 text-xs text-[#626f86] flex flex-col items-center justify-center gap-2">
+                <div className="text-center py-12 text-xs text-muted-foreground flex flex-col items-center justify-center gap-2">
                   <RefreshCw className="size-6 animate-spin text-[#0c66e4]" />
                   <span>Fetching student skill graph from Neo4j...</span>
                 </div>
               ) : !studentGalaxy || !studentGalaxy.nodes || studentGalaxy.nodes.length === 0 ? (
-                <p className="text-center py-12 text-xs text-[#626f86]">No skill graph matches recorded for this student.</p>
+                <p className="text-center py-12 text-xs text-muted-foreground">No skill graph matches recorded for this student.</p>
               ) : (
                 <div className="space-y-6">
                   {/* Summary Stats */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[#f7f8fa] border border-[#dfe3ea] p-3 rounded-lg text-xs">
-                      <span className="text-[#626f86] block">Total Mapped Skills</span>
+                      <span className="text-muted-foreground block">Total Mapped Skills</span>
                       <strong className="text-sm text-[#17202a]">{studentGalaxy.nodes.filter((n: any) => n.labels?.includes("Skill")).length} skills</strong>
                     </div>
                     <div className="bg-[#f7f8fa] border border-[#dfe3ea] p-3 rounded-lg text-xs">
-                      <span className="text-[#626f86] block">GitHub Repositories</span>
+                      <span className="text-muted-foreground block">GitHub Repositories</span>
                       <strong className="text-sm text-[#17202a]">{studentGalaxy.nodes.filter((n: any) => n.labels?.includes("Repository")).length} repos</strong>
                     </div>
                   </div>
@@ -256,7 +256,7 @@ export function StudentDirectory() {
                           </div>
                         ))}
                       {studentGalaxy.nodes.filter((n: any) => n.labels?.includes("Repository")).length === 0 && (
-                        <p className="text-xs text-[#626f86] italic">No active GitHub repositories linked</p>
+                        <p className="text-xs text-muted-foreground italic">No active GitHub repositories linked</p>
                       )}
                     </div>
                   </div>

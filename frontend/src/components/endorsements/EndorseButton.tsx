@@ -18,7 +18,7 @@ export function EndorseButton({ endorsedId, skillId, skillName, onEndorsed, disa
     setError(null);
 
     try {
-      await api.post("/api/v1/endorsements/submit", {
+      await api.post("/endorsements/submit", {
         endorsedId,
         skillId,
         skillName

@@ -70,7 +70,7 @@ export function SystemConfigEditor() {
         </div>
         <div>
           <h2 className="text-base font-semibold text-[#17202a]">Global Platform Settings</h2>
-          <p className="text-xs text-[#626f86]">Tweak skill calculation weights and session limits.</p>
+          <p className="text-xs text-muted-foreground">Tweak skill calculation weights and session limits.</p>
         </div>
       </div>
 
@@ -88,7 +88,7 @@ export function SystemConfigEditor() {
               className="h-9 w-32 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4]"
               required
             />
-            <span className="text-xs text-[#626f86]">(e.g., 0.15 = 15% decay per dormant year)</span>
+            <span className="text-xs text-muted-foreground">(e.g., 0.15 = 15% decay per dormant year)</span>
           </div>
         </label>
 
@@ -104,7 +104,7 @@ export function SystemConfigEditor() {
               className="h-9 w-32 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4]"
               required
             />
-            <span className="text-xs text-[#626f86]">Hours required between manual student scans.</span>
+            <span className="text-xs text-muted-foreground">Hours required between manual student scans.</span>
           </div>
         </label>
 
@@ -119,7 +119,7 @@ export function SystemConfigEditor() {
               className="h-9 w-32 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4]"
               required
             />
-            <span className="text-xs text-[#626f86]">How long user sessions stay valid before auto-logout.</span>
+            <span className="text-xs text-muted-foreground">How long user sessions stay valid before auto-logout.</span>
           </div>
         </label>
         <div className="border-t border-[#edf0f5] pt-4 my-2">
@@ -136,7 +136,7 @@ export function SystemConfigEditor() {
               />
               <label htmlFor="isMaintenanceMode" className="grid gap-0.5 text-sm font-medium text-[#17202a] cursor-pointer">
                 Platform Maintenance Mode
-                <span className="text-xs font-normal text-[#626f86]">
+                <span className="text-xs font-normal text-muted-foreground">
                   Put the gateway in maintenance mode. Blocks standard students and professors from accessing the platform.
                 </span>
               </label>
@@ -152,7 +152,7 @@ export function SystemConfigEditor() {
               />
               <label htmlFor="isIngestionDisabled" className="grid gap-0.5 text-sm font-medium text-[#17202a] cursor-pointer">
                 Disable Manual Ingestion Scans
-                <span className="text-xs font-normal text-[#626f86]">
+                <span className="text-xs font-normal text-muted-foreground">
                   Disable manual student GitHub repository ingestion triggers to reduce API rate-limit pressure.
                 </span>
               </label>
@@ -168,7 +168,7 @@ export function SystemConfigEditor() {
               />
               <label htmlFor="isNlpThrottled" className="grid gap-0.5 text-sm font-medium text-[#17202a] cursor-pointer">
                 NLP Model Throttle
-                <span className="text-xs font-normal text-[#626f86]">
+                <span className="text-xs font-normal text-muted-foreground">
                   Throttle manual or background AI/NLP analysis requests to manage API quota/costs.
                 </span>
               </label>

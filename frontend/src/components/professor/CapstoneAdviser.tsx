@@ -59,13 +59,13 @@ export function CapstoneAdviser() {
         </div>
         <div>
           <h2 className="text-base font-semibold text-[#17202a]">Capstone Team Matching Advisor</h2>
-          <p className="text-xs text-[#626f86]">Monitor student team requests and review matchmaking scores.</p>
+          <p className="text-xs text-muted-foreground">Monitor student team requests and review matchmaking scores.</p>
         </div>
       </div>
 
       <div className="space-y-6">
         {requests.length === 0 ? (
-          <div className="text-center py-6 text-xs text-[#626f86]">No active capstone matching requests found.</div>
+          <div className="text-center py-6 text-xs text-muted-foreground">No active capstone matching requests found.</div>
         ) : (
           requests.map((req) => (
             <div key={req.id} className="rounded-lg border border-[#dfe3ea] p-4 bg-[#f7f8fa]">
@@ -75,9 +75,9 @@ export function CapstoneAdviser() {
                   <h3 className="text-sm font-bold text-[#17202a]">
                     Project: {req.project?.title || "Academic Project"}
                   </h3>
-                  <p className="mt-1 text-xs text-[#626f86]">{req.project?.description || "No description provided."}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{req.project?.description || "No description provided."}</p>
                 </div>
-                <div className="text-xs text-right text-[#626f86]">
+                <div className="text-xs text-right text-muted-foreground">
                   <p className="font-semibold text-[#17202a]">Owner: {req.requester?.fullName}</p>
                   <p>{req.requester?.email}</p>
                 </div>
@@ -85,7 +85,7 @@ export function CapstoneAdviser() {
 
               {/* Required Skills */}
               <div className="mb-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Required Skills:
                 </span>
                 <div className="mt-1 flex flex-wrap gap-1.5">
@@ -93,20 +93,20 @@ export function CapstoneAdviser() {
                     req.requiredSkills.map((sk: string) => (
                       <span
                         key={sk}
-                        className="rounded-md bg-[#eef1f6] border border-[#cfd7e3] px-2 py-0.5 text-xs text-[#44546f] font-medium"
+                        className="rounded-md bg-[#eef1f6] border border-[#cfd7e3] px-2 py-0.5 text-xs text-muted-foreground font-medium"
                       >
                         {sk}
                       </span>
                     ))
                   ) : (
-                    <span className="text-xs text-[#626f86]">None specified</span>
+                    <span className="text-xs text-muted-foreground">None specified</span>
                   )}
                 </div>
               </div>
 
               {/* Match List */}
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#626f86] flex items-center gap-1">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                   <Sparkles className="size-3.5 text-[#0c66e4]" />
                   Matching Candidate Recommendations:
                 </span>
@@ -117,10 +117,10 @@ export function CapstoneAdviser() {
                       className="rounded-lg border border-[#dfe3ea] bg-white p-3 shadow-sm flex items-center justify-between"
                     >
                       <div className="flex items-center gap-2">
-                        <User className="size-4 text-[#626f86]" />
+                        <User className="size-4 text-muted-foreground" />
                         <div>
                           <p className="text-xs font-semibold text-[#17202a]">{match.user?.fullName}</p>
-                          <p className="text-[10px] text-[#626f86]">
+                          <p className="text-[10px] text-muted-foreground">
                             {match.user?.studentProfile?.universityId ? "Department Student" : "External Student"}
                           </p>
                         </div>
@@ -135,14 +135,14 @@ export function CapstoneAdviser() {
                     </div>
                   ))}
                   {(!req.matches || req.matches.length === 0) && (
-                    <span className="text-xs text-[#626f86] p-1">No matches found for this request.</span>
+                    <span className="text-xs text-muted-foreground p-1">No matches found for this request.</span>
                   )}
                 </div>
               </div>
 
               {/* Alumni Mentorship Matches */}
               <div className="mt-4 pt-4 border-t border-[#e2e6ed]">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#626f86] flex items-center gap-1">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                   <ShieldCheck className="size-3.5 text-[#1f845a]" />
                   Recommended Alumni Mentors:
                 </span>
@@ -154,7 +154,7 @@ export function CapstoneAdviser() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
-                          <User className="size-4 text-[#626f86]" />
+                          <User className="size-4 text-muted-foreground" />
                           <div>
                             <p className="text-xs font-semibold text-[#17202a]">{mentor.name}</p>
                             <p className="text-[10px] text-gray-500">
@@ -168,8 +168,8 @@ export function CapstoneAdviser() {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1">
                         {mentor.overlap.map((sk: string) => (
-                          <span key={sk} className="inline-flex items-center gap-0.5 rounded bg-[#edf0f5] text-[#44546f] px-1 py-0.5 text-[9px]">
-                            <Tag className="size-2 text-[#626f86]" />
+                          <span key={sk} className="inline-flex items-center gap-0.5 rounded bg-[#edf0f5] text-muted-foreground px-1 py-0.5 text-[9px]">
+                            <Tag className="size-2 text-muted-foreground" />
                             {sk}
                           </span>
                         ))}
@@ -177,7 +177,7 @@ export function CapstoneAdviser() {
                     </div>
                   ))}
                   {getMatchingAlumni(req.requiredSkills || []).length === 0 && (
-                    <span className="text-xs text-[#626f86] p-1">No verified matching mentors found for this project stacks.</span>
+                    <span className="text-xs text-muted-foreground p-1">No verified matching mentors found for this project stacks.</span>
                   )}
                 </div>
               </div>

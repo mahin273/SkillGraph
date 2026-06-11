@@ -194,7 +194,7 @@ export function AlumniDashboard() {
           <h1 className="text-2xl font-bold tracking-tight text-[#17202a]">
             Welcome back, {fullName}!
           </h1>
-          <p className="text-sm text-[#626f86] mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Alumni portal for <span className="font-semibold text-[#0c66e4]">{uniName}</span>
           </p>
         </div>
@@ -234,7 +234,7 @@ export function AlumniDashboard() {
           className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "overview"
               ? "bg-white text-[#0c66e4] shadow-xs"
-              : "text-[#626f86] hover:bg-[#ebecf0] hover:text-[#17202a]"
+              : "text-muted-foreground hover:bg-[#ebecf0] hover:text-[#17202a]"
           }`}
         >
           <Activity className="size-4" />
@@ -245,7 +245,7 @@ export function AlumniDashboard() {
           className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "analytics"
               ? "bg-white text-[#0c66e4] shadow-xs"
-              : "text-[#626f86] hover:bg-[#ebecf0] hover:text-[#17202a]"
+              : "text-muted-foreground hover:bg-[#ebecf0] hover:text-[#17202a]"
           }`}
         >
           <Layers className="size-4" />
@@ -256,7 +256,7 @@ export function AlumniDashboard() {
           className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "profile"
               ? "bg-white text-[#0c66e4] shadow-xs"
-              : "text-[#626f86] hover:bg-[#ebecf0] hover:text-[#17202a]"
+              : "text-muted-foreground hover:bg-[#ebecf0] hover:text-[#17202a]"
           }`}
         >
           <Settings className="size-4" />
@@ -271,9 +271,9 @@ export function AlumniDashboard() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Active Mentees</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Mentees</p>
                 <h3 className="mt-1 text-2xl font-bold text-[#17202a]">{metrics.active}</h3>
-                <p className="text-[10px] text-[#626f86] mt-0.5">Students in active support</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Students in active support</p>
               </div>
               <div className="grid size-10 place-items-center rounded-lg bg-[#e9f2ff] text-[#0c66e4]">
                 <HeartHandshake className="size-5" />
@@ -282,9 +282,9 @@ export function AlumniDashboard() {
 
             <Card className="border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Pending Requests</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending Requests</p>
                 <h3 className="mt-1 text-2xl font-bold text-[#17202a]">{metrics.pending}</h3>
-                <p className="text-[10px] text-[#626f86] mt-0.5">Awaiting your response</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Awaiting your response</p>
               </div>
               <div className="grid size-10 place-items-center rounded-lg bg-[#fff4e5] text-[#974f0c]">
                 <Clock className="size-5" />
@@ -293,9 +293,9 @@ export function AlumniDashboard() {
 
             <Card className="border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Completed Sessions</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Completed Sessions</p>
                 <h3 className="mt-1 text-2xl font-bold text-[#17202a]">{metrics.completed}</h3>
-                <p className="text-[10px] text-[#626f86] mt-0.5">Successful connections</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Successful connections</p>
               </div>
               <div className="grid size-10 place-items-center rounded-lg bg-[#e7f8ef] text-[#1f845a]">
                 <Award className="size-5" />
@@ -304,9 +304,9 @@ export function AlumniDashboard() {
 
             <Card className="border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Skills Mentored</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Skills Mentored</p>
                 <h3 className="mt-1 text-2xl font-bold text-[#17202a]">{metrics.skills}</h3>
-                <p className="text-[10px] text-[#626f86] mt-0.5">Registered mentoring skills</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Registered mentoring skills</p>
               </div>
               <div className="grid size-10 place-items-center rounded-lg bg-[#fdd0ec] text-[#d0248e]">
                 <Sparkles className="size-5" />
@@ -327,16 +327,16 @@ export function AlumniDashboard() {
 
             <CardContent className="p-5">
               {loading ? (
-                <div className="py-12 flex justify-center text-[#626f86] italic">Loading connections...</div>
+                <div className="py-12 flex justify-center text-muted-foreground italic">Loading connections...</div>
               ) : !myProfile ? (
                 <div className="py-12 text-center">
-                  <p className="text-[#626f86] italic mb-4">Please set up your alumnus profile first to start receiving mentorship connections.</p>
+                  <p className="text-muted-foreground italic mb-4">Please set up your alumnus profile first to start receiving mentorship connections.</p>
                   <Button onClick={() => setActiveTab("profile")} className="bg-[#0c66e4] hover:bg-[#0052cc] text-white">
                     Setup Profile Now
                   </Button>
                 </div>
               ) : !myProfile.mentorships || myProfile.mentorships.length === 0 ? (
-                <div className="py-12 text-center text-[#626f86] italic border border-dashed border-[#dfe3ea] bg-[#f7f8fa] rounded-lg">
+                <div className="py-12 text-center text-muted-foreground italic border border-dashed border-[#dfe3ea] bg-[#f7f8fa] rounded-lg">
                   No student connection requests received yet. Verified profiles appear to students seeking matches.
                 </div>
               ) : (
@@ -355,7 +355,7 @@ export function AlumniDashboard() {
                               <h4 className="font-bold text-[#17202a] text-sm">
                                 {studentUser?.fullName || "Student"}
                               </h4>
-                              <p className="text-[10px] text-[#626f86] mt-0.5">
+                              <p className="text-[10px] text-muted-foreground mt-0.5">
                                 Connected for:
                               </p>
                               <Badge className="bg-[#e9f2ff] text-[#0c66e4] border border-[#0c66e4]/10 hover:bg-[#e9f2ff] text-[10px] font-bold mt-1 py-0.5 px-2">
@@ -397,7 +397,7 @@ export function AlumniDashboard() {
                           {/* Contact information for active students */}
                           {isActive && studentUser && (
                             <div className="mt-4 rounded-md border border-[#dfe3ea] bg-white p-3 text-xs flex flex-col gap-2 shadow-2xs">
-                              <span className="font-bold text-[#626f86] uppercase text-[9px]">Student Contact Details</span>
+                              <span className="font-bold text-muted-foreground uppercase text-[9px]">Student Contact Details</span>
                               {studentUser.email && (
                                 <a href={`mailto:${studentUser.email}`} className="flex items-center gap-1.5 text-[#0c66e4] hover:underline font-semibold overflow-hidden text-ellipsis">
                                   <Mail className="size-3.5 shrink-0" />
@@ -489,7 +489,7 @@ export function AlumniDashboard() {
                                 <MessageCircle className="size-3.5" />
                                 {openChatId === req.id ? "Hide Chat" : "View Chat"}
                               </Button>
-                              <span className="text-xs text-[#626f86] italic text-center w-full flex items-center justify-center gap-1.5 py-1">
+                              <span className="text-xs text-muted-foreground italic text-center w-full flex items-center justify-center gap-1.5 py-1">
                                 <CheckCircle2 className="size-4 text-emerald-600" />
                                 Mentorship completed
                               </span>
@@ -587,7 +587,7 @@ export function AlumniDashboard() {
                 <div className="flex items-center gap-2 p-3.5 bg-[#f7f8fa] border border-[#dfe3ea] rounded-lg justify-between shadow-2xs">
                   <div>
                     <div className="font-bold text-sm text-[#17202a]">Willing to mentor students</div>
-                    <div className="text-xs text-[#626f86]">Toggle to display your profile in matching recommendations.</div>
+                    <div className="text-xs text-muted-foreground">Toggle to display your profile in matching recommendations.</div>
                   </div>
                   <input
                     type="checkbox"
@@ -599,7 +599,7 @@ export function AlumniDashboard() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Current Company</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Current Company</label>
                     <Input
                       type="text"
                       placeholder="e.g. Google, Apple"
@@ -611,7 +611,7 @@ export function AlumniDashboard() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Current Role</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Current Role</label>
                     <Input
                       type="text"
                       placeholder="e.g. Senior Software Engineer"
@@ -625,7 +625,7 @@ export function AlumniDashboard() {
 
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Years of Experience</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Years of Experience</label>
                     <Input
                       type="number"
                       min={0}
@@ -638,7 +638,7 @@ export function AlumniDashboard() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Graduation Year</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Graduation Year</label>
                     <Input
                       type="number"
                       min={1990}
@@ -651,7 +651,7 @@ export function AlumniDashboard() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">LinkedIn URL</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">LinkedIn URL</label>
                     <Input
                       type="url"
                       placeholder="https://linkedin.com/in/username"
@@ -663,7 +663,7 @@ export function AlumniDashboard() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#626f86] uppercase">Alumni ID Card Photo</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Alumni ID Card Photo</label>
                   <div className="flex items-center gap-4 rounded-lg border border-[#cfd7e3] bg-white p-3">
                     <input
                       type="file"
@@ -677,14 +677,14 @@ export function AlumniDashboard() {
                       </div>
                     )}
                   </div>
-                  <p className="text-[10px] text-[#626f86]">
+                  <p className="text-[10px] text-muted-foreground">
                     Upload a picture of your alumni association card, university certificate, or ID card.
                   </p>
                 </div>
 
                 {/* Skills Mentoring Search and Select */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#626f86] uppercase">Skills You Can Mentor</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Skills You Can Mentor</label>
                   {mentoringSkills.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 p-2.5 rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] mb-1">
                       {mentoringSkills.map((skill, idx) => (
@@ -721,7 +721,7 @@ export function AlumniDashboard() {
                             className="flex w-full items-center justify-between px-3 py-2 text-sm text-left hover:bg-[#f7f8fa] transition-colors"
                           >
                             <span>{suggestion.name}</span>
-                            <span className="text-xs text-[#626f86] font-medium">{suggestion.category}</span>
+                            <span className="text-xs text-muted-foreground font-medium">{suggestion.category}</span>
                           </button>
                         ))}
                       </div>

@@ -220,7 +220,7 @@ export function SkillTaxonomyManager() {
                 className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                   selectedCategoryFilter === "" 
                     ? "bg-[#deebff] text-[#0747a6]" 
-                    : "text-[#44546f] hover:bg-[#f7f8fa] hover:text-[#17202a]"
+                    : "text-muted-foreground hover:bg-[#f7f8fa] hover:text-[#17202a]"
                 }`}
               >
                 All Categories ({skills.length})
@@ -234,7 +234,7 @@ export function SkillTaxonomyManager() {
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
                       selectedCategoryFilter === cat.name
                         ? "bg-[#deebff] text-[#0747a6]" 
-                        : "text-[#44546f] hover:bg-[#f7f8fa] hover:text-[#17202a]"
+                        : "text-muted-foreground hover:bg-[#f7f8fa] hover:text-[#17202a]"
                     }`}
                   >
                     <span>{cat.name}</span>
@@ -259,7 +259,7 @@ export function SkillTaxonomyManager() {
                   </h3>
                   <button 
                     onClick={() => setShowSkillForm(false)}
-                    className="text-[#626f86] hover:text-[#17202a]"
+                    className="text-muted-foreground hover:text-[#17202a]"
                   >
                     <X className="size-4" />
                   </button>
@@ -302,7 +302,7 @@ export function SkillTaxonomyManager() {
                       rows={3}
                       className="mt-1 w-full rounded border border-[#cfd7e3] p-2.5 text-xs outline-none focus:border-[#0c66e4]"
                     />
-                    <span className="text-[10px] font-normal text-[#626f86] mt-1 block">
+                    <span className="text-[10px] font-normal text-muted-foreground mt-1 block">
                       Aliases help the NLP parser map variations of skills in student files and repos to this standard node.
                     </span>
                   </label>
@@ -338,12 +338,12 @@ export function SkillTaxonomyManager() {
                 </div>
                 <div>
                   <h2 className="text-base font-semibold text-[#17202a]">Skill Taxonomy Catalog</h2>
-                  <p className="text-xs text-[#626f86]">Manage skill entities, link them to parent categories, and configure aliases.</p>
+                  <p className="text-xs text-muted-foreground">Manage skill entities, link them to parent categories, and configure aliases.</p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative w-full sm:w-48">
-                  <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+                  <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Search name or alias..."
@@ -373,14 +373,14 @@ export function SkillTaxonomyManager() {
             {error && <div className="text-sm text-red-500 mb-4">{error}</div>}
 
             {loading ? (
-              <div className="text-center py-8 text-sm text-[#626f86]">Loading skills catalog...</div>
+              <div className="text-center py-8 text-sm text-muted-foreground">Loading skills catalog...</div>
             ) : filteredSkills.length === 0 ? (
-              <div className="text-center py-8 text-sm text-[#626f86]">No skills found matching filter.</div>
+              <div className="text-center py-8 text-sm text-muted-foreground">No skills found matching filter.</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-[#dfe3ea] bg-[#f7f8fa] text-[#44546f] font-semibold uppercase">
+                    <tr className="border-b border-[#dfe3ea] bg-[#f7f8fa] text-muted-foreground font-semibold uppercase">
                       <th className="p-3">Skill Name</th>
                       <th className="p-3">Category</th>
                       <th className="p-3">Aliases (Synonyms)</th>
@@ -391,8 +391,8 @@ export function SkillTaxonomyManager() {
                     {filteredSkills.map((skill) => (
                       <tr key={skill.id} className="hover:bg-[#f7f8fa]">
                         <td className="p-3 font-semibold text-[#17202a]">{skill.name}</td>
-                        <td className="p-3 text-[#626f86]">
-                          <Badge variant="secondary" className="bg-[#edf0f5] text-[#44546f]">
+                        <td className="p-3 text-muted-foreground">
+                          <Badge variant="secondary" className="bg-[#edf0f5] text-muted-foreground">
                             {skill.category || "Uncategorized"}
                           </Badge>
                         </td>

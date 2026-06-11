@@ -18,14 +18,14 @@ function labelFor(node: GalaxyNode) {
 
 // Category color mapping
 const CATEGORY_COLORS: Record<string, string> = {
-  Languages: "#3b82f6", // blue
-  Frameworks: "#10b981", // green
-  DevOps: "#ef4444", // red
-  Databases: "#eab308", // yellow
-  Cloud: "#8b5cf6", // purple
-  "ML/AI": "#ec4899", // pink
-  Testing: "#06b6d4", // cyan
-  Uncategorized: "#64748b", // slate
+  Languages: "#2563eb", // blue-600
+  Frameworks: "#16a34a", // green-600
+  DevOps: "#dc2626", // red-600
+  Databases: "#ca8a04", // yellow-600
+  Cloud: "#7c3aed", // purple-600
+  "ML/AI": "#db2777", // pink-600
+  Testing: "#0891b2", // cyan-600
+  Uncategorized: "#71717a", // zinc-500
 };
 
 function getCategoryColor(category?: string): string {
@@ -64,12 +64,12 @@ export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false,
     // Render links
     const link = root
       .append("g")
-      .attr("stroke", "#a8b3c7")
-      .attr("stroke-opacity", 0.7)
+      .attr("stroke", "#e4e4e7") // zinc-200
+      .attr("stroke-opacity", 0.8)
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", (d) => (d.type === "KNOWS" ? 2.4 : 1.5));
+      .attr("stroke-width", (d) => (d.type === "KNOWS" ? 2.0 : 1.2));
 
     // Render nodes
     const node = root
@@ -95,9 +95,9 @@ export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false,
       })
       .attr("fill", (d) => {
         // Student nodes
-        if (d.handle) return "#0f172a";
+        if (d.handle) return "#18181b"; // zinc-900
         // Project nodes
-        if (d.fullName) return "#f97316";
+        if (d.fullName) return "#ea580c"; // orange-600
         // Skill nodes colored by category
         return getCategoryColor(d.category);
       })
@@ -139,9 +139,9 @@ export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false,
       .text(labelFor)
       .attr("text-anchor", "middle")
       .attr("dy", 42)
-      .attr("fill", "#334155")
-      .attr("font-size", 11)
-      .attr("font-weight", 600);
+      .attr("fill", "#09090b") // zinc-950
+      .attr("font-size", 10.5)
+      .attr("font-weight", 500);
 
     // Apply search filter
     if (searchFilter) {
@@ -217,14 +217,14 @@ export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false,
 
   if (data.nodes.length === 0) {
     return (
-      <div className="grid min-h-[560px] place-items-center rounded-lg border border-dashed border-[#cfd7e3] bg-[#f7f8fa] p-6 text-center text-[#626f86]">
+      <div className="grid min-h-[560px] place-items-center rounded-xl border border-dashed border-border bg-muted/45 p-6 text-center text-muted-foreground">
         <OnboardingEmptyState />
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-[560px] overflow-hidden rounded-lg border border-[#edf0f5] bg-[#fbfcfe]">
+    <div className="relative min-h-[560px] overflow-hidden rounded-xl border border-border bg-card">
       <svg ref={svgRef} className="h-[560px] w-full" role="img" aria-label="Skill Galaxy force graph" />
       <SkillTooltip node={hovered} />
     </div>

@@ -182,13 +182,13 @@ export function CourseMapper() {
           </div>
           <div>
             <h2 className="text-base font-semibold text-[#17202a]">Syllabus Course Skill-Mapping</h2>
-            <p className="text-xs text-[#626f86]">Pre-fill student skill graphs via curriculum accomplishments.</p>
+            <p className="text-xs text-muted-foreground">Pre-fill student skill graphs via curriculum accomplishments.</p>
           </div>
         </div>
 
         <div className="space-y-4">
           {courses.length === 0 ? (
-            <div className="text-center py-6 text-xs text-[#626f86]">No university-approved courses mapped yet. Use the sidebar editor to add one.</div>
+            <div className="text-center py-6 text-xs text-muted-foreground">No university-approved courses mapped yet. Use the sidebar editor to add one.</div>
           ) : (
             courses.map((course) => (
               <div
@@ -201,7 +201,7 @@ export function CourseMapper() {
                   </span>
                   <h3 className="mt-2 text-sm font-semibold text-[#17202a]">{course.title}</h3>
                   {course.url?.startsWith("pdf://") ? (
-                    <span className="mt-1 inline-flex items-center gap-1 text-xs text-[#626f86]">
+                    <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
                       <FileText className="size-3" />
                       PDF: {course.url.substring(6).replace(/^\d+-/, "")}
                     </span>
@@ -222,13 +222,13 @@ export function CourseMapper() {
                   {course.skills.map((rs: any) => (
                     <span
                       key={rs.id}
-                      className="rounded-md border border-[#e2e6ed] bg-white px-2 py-0.5 text-xs text-[#44546f]"
+                      className="rounded-md border border-[#e2e6ed] bg-white px-2 py-0.5 text-xs text-muted-foreground"
                     >
                       {rs.skill?.name || "Skill"}
                     </span>
                   ))}
                   {course.skills.length === 0 && (
-                    <span className="text-xs text-[#626f86]">No skills mapped yet</span>
+                    <span className="text-xs text-muted-foreground">No skills mapped yet</span>
                   )}
                 </div>
               </div>
@@ -243,7 +243,7 @@ export function CourseMapper() {
           Map New Course
         </h3>
         <form onSubmit={handleSubmit} className="grid gap-4">
-          <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+          <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Course Code
             <Input
               type="text"
@@ -255,7 +255,7 @@ export function CourseMapper() {
             />
           </label>
 
-          <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+          <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Course Title
             <Input
               type="text"
@@ -269,7 +269,7 @@ export function CourseMapper() {
 
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Syllabus Source
               </span>
               <div className="flex gap-2 bg-[#f7f8fa] p-0.5 rounded-md border border-[#dfe3ea]">
@@ -283,7 +283,7 @@ export function CourseMapper() {
                   className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition-all ${
                     inputMode === "url"
                       ? "bg-white text-[#0c66e4] shadow-sm"
-                      : "text-[#44546f] hover:text-[#17202a]"
+                      : "text-muted-foreground hover:text-[#17202a]"
                   }`}
                 >
                   URL Link
@@ -298,7 +298,7 @@ export function CourseMapper() {
                   className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition-all ${
                     inputMode === "pdf"
                       ? "bg-white text-[#0c66e4] shadow-sm"
-                      : "text-[#44546f] hover:text-[#17202a]"
+                      : "text-muted-foreground hover:text-[#17202a]"
                   }`}
                 >
                   Upload PDF
@@ -324,8 +324,8 @@ export function CourseMapper() {
                     className="absolute inset-0 cursor-pointer opacity-0"
                     disabled={parsingPdf}
                   />
-                  <Upload className="size-5 text-[#626f86] mb-1.5 group-hover:text-[#0c66e4] transition-colors" />
-                  <div className="space-y-1 text-xs text-[#626f86]">
+                  <Upload className="size-5 text-muted-foreground mb-1.5 group-hover:text-[#0c66e4] transition-colors" />
+                  <div className="space-y-1 text-xs text-muted-foreground">
                     <p className="font-semibold text-[#0c66e4]">
                       {parsingPdf ? "Parsing document..." : "Click to upload syllabus PDF"}
                     </p>
@@ -335,7 +335,7 @@ export function CourseMapper() {
 
                 {pdfFile && (
                   <div className="flex items-center justify-between rounded-md border border-[#e2e6ed] bg-[#f7f8fa] px-3 py-2 text-xs">
-                    <span className="font-medium text-[#44546f] truncate max-w-[220px]">
+                    <span className="font-medium text-muted-foreground truncate max-w-[220px]">
                       {pdfFile.name}
                     </span>
                     <button
@@ -356,7 +356,7 @@ export function CourseMapper() {
           </div>
 
           <div className="border-t border-[#edf0f5] pt-3 my-1">
-            <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+            <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               AI Syllabus Parser
               <textarea
                 placeholder="Paste syllabus text / description to auto-select technical skills..."
@@ -382,7 +382,7 @@ export function CourseMapper() {
           </div>
 
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Linked Skills
             </span>
             <div className="mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-[#cfd7e3] p-2 space-y-1 bg-[#f7f8fa]">
@@ -396,7 +396,7 @@ export function CourseMapper() {
                     className={`flex w-full items-center justify-between rounded px-2.5 py-1.5 text-left text-xs font-medium transition-colors ${
                       isSelected
                         ? "bg-[#e9f2ff] text-[#0c66e4]"
-                        : "hover:bg-[#eef1f6] text-[#44546f]"
+                        : "hover:bg-[#eef1f6] text-muted-foreground"
                     }`}
                   >
                     {skill.name}

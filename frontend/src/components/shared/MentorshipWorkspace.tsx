@@ -27,6 +27,7 @@ interface MentorshipWorkspaceProps {
   partnerName: string;
   partnerRole: "mentor" | "student";
   initialStatus: string;
+  initialMilestones?: string[];
   onRefresh: () => void;
 }
 
@@ -36,20 +37,10 @@ export function MentorshipWorkspace({
   partnerName,
   partnerRole,
   initialStatus,
+  initialMilestones = [],
   onRefresh
 }: MentorshipWorkspaceProps) {
   const { userId } = useAuthStore();
-  // Load milestone checked states from localStorage (since we don't have DB column)
-  const storageKey = `mentorship_${mentorshipId}_milestones`;
-  const [checkedMilestones, setCheckedMilestones] = useState<boolean[]>(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      return saved ? JSON.parse(saved) : [false, false, false];
-    } catch {
-      return [false, false, false];
-    }
-  });
-
   const [verifying, setVerifying] = useState(false);
   const [status, setStatus] = useState(initialStatus);
   const [messages, setMessages] = useState<MentorshipMessage[]>([]);
@@ -77,6 +68,13 @@ export function MentorshipWorkspace({
     }
   ];
 
+  const milestonesToChecked = (milestones: string[]) =>
+    milestonesList.map((milestone) => milestones.includes(milestone.title));
+
+  const [checkedMilestones, setCheckedMilestones] = useState<boolean[]>(() =>
+    milestonesToChecked(initialMilestones)
+  );
+
   const allDone = checkedMilestones.every((m) => m === true);
   const canUseChat = status !== "requested";
   const canSendMessage = status === "active";
@@ -84,6 +82,10 @@ export function MentorshipWorkspace({
   useEffect(() => {
     setStatus(initialStatus);
   }, [initialStatus]);
+
+  useEffect(() => {
+    setCheckedMilestones(milestonesToChecked(initialMilestones));
+  }, [initialMilestones, mentorshipId]);
 
   useEffect(() => {
     if (!canUseChat) return;
@@ -127,16 +129,16 @@ export function MentorshipWorkspace({
     const updated = [...checkedMilestones];
     updated[index] = !updated[index];
     setCheckedMilestones(updated);
-    localStorage.setItem(storageKey, JSON.stringify(updated));
 
-    // Optional api update log
     try {
       await updateMentorshipMilestones(
         mentorshipId,
         updated.map((val, idx) => (val ? milestonesList[idx].title : "")).filter(Boolean)
       );
+      onRefresh();
     } catch (err) {
       console.error("Failed to sync milestones:", err);
+      setCheckedMilestones(checkedMilestones);
     }
   };
 
@@ -182,7 +184,7 @@ export function MentorshipWorkspace({
           <h4 className="text-sm font-bold text-[#17202a]">
             {skillName} Mentorship Workspace
           </h4>
-          <p className="text-xs text-[#626f86] mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {partnerRole === "mentor" ? (
               <>Working with Student: <strong className="text-[#17202a]">{partnerName}</strong></>
             ) : (
@@ -212,11 +214,11 @@ export function MentorshipWorkspace({
               <MessageCircle className="size-4 text-[#0c66e4]" />
               <div>
                 <h5 className="text-xs font-bold text-[#17202a]">Mentorship Chat</h5>
-                <p className="text-[10px] text-[#626f86]">Messages with {partnerName}</p>
+                <p className="text-[10px] text-muted-foreground">Messages with {partnerName}</p>
               </div>
             </div>
             {!canSendMessage && (
-              <span className="rounded-full border border-[#dfe3ea] bg-white px-2 py-0.5 text-[10px] font-bold text-[#626f86]">
+              <span className="rounded-full border border-[#dfe3ea] bg-white px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
                 Read-only
               </span>
             )}
@@ -224,11 +226,11 @@ export function MentorshipWorkspace({
 
           <div className="flex max-h-56 min-h-28 flex-col gap-2 overflow-y-auto p-3">
             {chatLoading ? (
-              <div className="flex flex-1 items-center justify-center text-xs text-[#626f86]">
+              <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
                 Loading chat...
               </div>
             ) : messages.length === 0 ? (
-              <div className="flex flex-1 items-center justify-center rounded border border-dashed border-[#cfd7e3] bg-white px-3 py-6 text-center text-xs text-[#626f86]">
+              <div className="flex flex-1 items-center justify-center rounded border border-dashed border-[#cfd7e3] bg-white px-3 py-6 text-center text-xs text-muted-foreground">
                 No messages yet. Start the conversation about goals, meeting time, or next steps.
               </div>
             ) : (
@@ -249,7 +251,7 @@ export function MentorshipWorkspace({
                     >
                       {message.body}
                     </div>
-                    <span className="px-1 text-[10px] text-[#626f86]">
+                    <span className="px-1 text-[10px] text-muted-foreground">
                       {isMine ? "You" : message.sender.fullName} ·{" "}
                       {new Date(message.createdAt).toLocaleString([], {
                         month: "short",
@@ -323,13 +325,13 @@ export function MentorshipWorkspace({
                     Milestone {idx + 1}: {m.title}
                   </span>
                   {!isMentor && (
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-[#626f86] px-1 py-0.5 rounded bg-slate-50 border flex items-center gap-0.5">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground px-1 py-0.5 rounded bg-slate-50 border flex items-center gap-0.5">
                       <Lock className="size-2.5" />
                       Read-only
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-[#626f86] leading-relaxed">
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                   {m.desc}
                 </p>
               </div>
@@ -341,7 +343,7 @@ export function MentorshipWorkspace({
       {/* Recipient validation controls */}
       {partnerRole === "mentor" && status !== "completed" && (
         <div className="border-t border-[#edf0f5] pt-4 mt-1 flex flex-col gap-2.5">
-          <div className="flex items-start gap-2 text-xs text-[#626f86] bg-[#f7f8fa] border border-[#dfe3ea] p-3 rounded-lg">
+          <div className="flex items-start gap-2 text-xs text-muted-foreground bg-[#f7f8fa] border border-[#dfe3ea] p-3 rounded-lg">
             <HelpCircle className="size-4 text-[#0c66e4] shrink-0 mt-0.5" />
             <p>
               <strong>Mentor Verification:</strong> Check off milestones as the student demonstrates competence. When all 3 checkboxes are ticked, you can verify this skill, publishing it to their Neo4j public graph.

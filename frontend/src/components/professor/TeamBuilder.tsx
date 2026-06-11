@@ -411,7 +411,7 @@ export function TeamBuilder() {
             <Users className="size-5 text-[#0c66e4]" />
             AI Capstone Team Builder & Balancer
           </h2>
-          <p className="text-xs text-[#626f86] mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Distribute students into balanced project groups based on their technical profiles. Use drag-and-drop to adjust members manually.
           </p>
         </div>
@@ -476,7 +476,7 @@ export function TeamBuilder() {
         
         <div className="grid gap-4 md:grid-cols-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-[#626f86] uppercase tracking-wider">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Project Template
             </label>
             <select
@@ -494,7 +494,7 @@ export function TeamBuilder() {
           </div>
 
           <div className="md:col-span-2 flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-[#626f86] uppercase tracking-wider">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Target Skills / Technologies (Dynamically Balanced)
             </label>
             <div className="flex flex-wrap gap-1.5 items-center p-1.5 min-h-[36px] rounded-lg border border-[#cfd7e3] bg-white shadow-sm">
@@ -547,7 +547,7 @@ export function TeamBuilder() {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-center">
                 <RefreshCw className="size-6 text-[#0c66e4] animate-spin" />
-                <span className="text-xs text-[#626f86]">Loading student profiles & skills...</span>
+                <span className="text-xs text-muted-foreground">Loading student profiles & skills...</span>
               </div>
             ) : error ? (
               <p className="text-center text-xs text-red-500 py-6">{error}</p>
@@ -660,7 +660,7 @@ export function TeamBuilder() {
 
                 {/* Team Capability Balance Meter */}
                 {team.members.length > 0 && (
-                  <div className="border-t border-[#edf0f5] pt-4 space-y-2 text-[10px] font-semibold text-[#626f86]">
+                  <div className="border-t border-[#edf0f5] pt-4 space-y-2 text-[10px] font-semibold text-muted-foreground">
                     {Object.entries(stats).map(([skill, percentage]) => (
                       <div key={skill} className="flex items-center justify-between gap-2">
                         <span className="w-16 truncate">{skill}</span>

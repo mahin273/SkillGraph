@@ -36,7 +36,7 @@ export function EndorsementList({ studentId, canDelete = false, currentUserId }:
     setError(null);
 
     try {
-      const response = await api.get(`/api/v1/endorsements/${studentId}`);
+      const response = await api.get(`/endorsements/${studentId}`);
       setEndorsements(response.data.data);
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Failed to load endorsements");
@@ -52,7 +52,7 @@ export function EndorsementList({ studentId, canDelete = false, currentUserId }:
     }
 
     try {
-      await api.delete(`/api/v1/endorsements/${endorsementId}`);
+      await api.delete(`/endorsements/${endorsementId}`);
       setEndorsements(prev => prev.filter(e => e.id !== endorsementId));
     } catch (err: any) {
       alert(err.response?.data?.error?.message || "Failed to delete endorsement");

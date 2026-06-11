@@ -106,12 +106,12 @@ export function Matchmaker() {
     <section className="mx-auto grid w-full max-w-[1500px] gap-4 pb-20 lg:pb-4">
       <header className="flex flex-col gap-3 rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
             <Network className="size-3.5 text-[#0c66e4]" />
             University-aware matching
           </div>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#17202a]">Build a balanced team</h1>
-          <p className="mt-1 text-sm text-[#626f86]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Rank students by skill fit, evidence, endorsements, and academic proximity.
           </p>
         </div>
@@ -134,7 +134,7 @@ export function Matchmaker() {
       )}
 
       {!academicProfile?.universityId && (
-        <div className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 text-sm text-[#44546f] shadow-sm">
+        <div className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm">
           Same-university matching needs your academic profile.{" "}
           <Link to="/settings" className="font-medium text-[#0c66e4]">
             Add university
@@ -163,7 +163,7 @@ export function Matchmaker() {
           {loading && (
             <div className="rounded-lg border border-[#dfe3ea] bg-white p-8 text-center shadow-sm">
               <RefreshCw className="mx-auto size-5 animate-spin text-[#0c66e4]" />
-              <p className="mt-3 text-sm text-[#626f86]">Ranking candidates...</p>
+              <p className="mt-3 text-sm text-muted-foreground">Ranking candidates...</p>
             </div>
           )}
 
@@ -171,7 +171,7 @@ export function Matchmaker() {
             <div className="rounded-lg border border-[#dfe3ea] bg-white p-8 text-center shadow-sm">
               <Users className="mx-auto size-10 text-[#0c66e4]" />
               <h2 className="mt-4 text-lg font-semibold text-[#17202a]">No candidates loaded</h2>
-              <p className="mt-2 text-sm text-[#626f86]">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Add required skills and run matching. If results are empty, widen the scope or scan more student repositories.
               </p>
             </div>

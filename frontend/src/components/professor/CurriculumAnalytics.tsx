@@ -76,7 +76,7 @@ export function CurriculumAnalytics() {
         {/* Total Students Monitored */}
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-5 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Cohort Averages</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Cohort Averages</span>
             <div className="mt-2 space-y-2">
               {classStats.length === 0 ? (
                 <p className="text-sm text-gray-500">No student tracks recorded</p>
@@ -102,11 +102,11 @@ export function CurriculumAnalytics() {
         {/* Global Track Progress */}
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-5 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Overall Deficits</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Overall Deficits</span>
             <h3 className="mt-1 text-3xl font-bold text-[#ca3521]">
               {curriculumDeficits.length}
             </h3>
-            <p className="text-xs text-[#626f86] mt-1">Skills missing in critical industry roles</p>
+            <p className="text-xs text-muted-foreground mt-1">Skills missing in critical industry roles</p>
           </div>
           <div className="grid size-12 place-items-center rounded-lg bg-[#ffebe6] text-[#ca3521]">
             <ShieldAlert className="size-6" />
@@ -116,11 +116,11 @@ export function CurriculumAnalytics() {
         {/* Mapped Skills Count */}
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-5 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Top Missing Competency</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Top Missing Competency</span>
             <h3 className="mt-1 text-xl font-bold text-[#17202a]">
               {missingSkills[0]?.name || "N/A"}
             </h3>
-            <p className="text-xs text-[#626f86] mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Required by {missingSkills[0]?.count || 0} student learning paths
             </p>
           </div>
@@ -139,7 +139,7 @@ export function CurriculumAnalytics() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#17202a]">Curriculum Deficit Warning Panel</h2>
-              <p className="text-[11px] text-[#626f86]">Flags skills required by industry roles but showing low student proficiency.</p>
+              <p className="text-[11px] text-muted-foreground">Flags skills required by industry roles but showing low student proficiency.</p>
             </div>
           </div>
 
@@ -182,7 +182,7 @@ export function CurriculumAnalytics() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#17202a]">Most Needed Skills</h2>
-              <p className="text-[11px] text-[#626f86]">Required skills currently missing from student portfolios.</p>
+              <p className="text-[11px] text-muted-foreground">Required skills currently missing from student portfolios.</p>
             </div>
           </div>
 

@@ -96,27 +96,13 @@ export async function submitEndorsement(req: Request, res: Response) {
     await redis.publish("notifications:publish", JSON.stringify({
       type: "ENDORSEMENT_RECEIVED",
       userId: endorsedId,
-      data: {
+      payload: {
         skill: skill.name,
         fromUser: endorser?.fullName || "Unknown",
         fromUserId: req.user.id,
         endorsementId: endorsement.id
       }
     }));
-
-    // Also persist to system_notifications
-    await prisma.systemNotification.create({
-      data: {
-        userId: endorsedId,
-        type: "ENDORSEMENT_RECEIVED",
-        payload: {
-          skill: skill.name,
-          fromUser: endorser?.fullName || "Unknown",
-          fromUserId: req.user.id,
-          endorsementId: endorsement.id
-        }
-      }
-    });
   } catch (error) {
     console.error("Failed to publish endorsement notification:", error);
   }

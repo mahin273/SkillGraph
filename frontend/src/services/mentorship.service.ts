@@ -15,6 +15,7 @@ export interface AlumniProfile {
   existingMentorship?: {
     id: string;
     status: "requested" | "active" | "completed";
+    milestones?: string[];
   } | null;
 }
 

@@ -345,6 +345,12 @@ Table system_notifications {
   user users [not null]
 }
 
+Table platform_configs {
+  key String [pk]
+  value Json [not null]
+  updatedAt DateTime [not null]
+}
+
 Table audit_logs {
   id String [pk]
   userId String
@@ -404,6 +410,7 @@ Table alumni_mentorships {
   alumniId String [not null]
   skillId String [not null]
   status MentorshipStatus [not null, default: 'requested']
+  milestones Json
   startedAt DateTime
   endedAt DateTime
   createdAt DateTime [default: `now()`, not null]

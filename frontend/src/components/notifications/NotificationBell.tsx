@@ -48,7 +48,7 @@ export function NotificationBell({ onToggle }: NotificationBellProps) {
 
   return (
     <button
-      className="relative rounded-md p-2 text-[#44546f] hover:bg-[#eef1f6] hover:text-[#17202a]"
+      className="relative rounded-md p-2 text-muted-foreground hover:bg-[#eef1f6] hover:text-[#17202a]"
       aria-label="Notifications"
       onClick={onToggle}
     >

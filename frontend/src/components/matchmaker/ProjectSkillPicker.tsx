@@ -50,7 +50,7 @@ export function ProjectSkillPicker({
 
   return (
     <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">Project requirements</p>
+      <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Project requirements</p>
       <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-3">
           <label className="block text-sm font-medium text-[#17202a]">
@@ -67,7 +67,7 @@ export function ProjectSkillPicker({
             <label className="block text-sm font-medium text-[#17202a]">Required skills</label>
             <div className="mt-2 flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={skillInput}
                   onChange={(event) => onSkillInputChange(event.target.value)}
@@ -94,7 +94,7 @@ export function ProjectSkillPicker({
                     key={skill.name}
                     type="button"
                     onClick={() => onAddSkill(skill.name)}
-                    className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1 text-xs text-[#44546f] hover:border-[#0c66e4]"
+                    className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1 text-xs text-muted-foreground hover:border-[#0c66e4]"
                   >
                     {skill.name}
                   </button>
@@ -104,10 +104,10 @@ export function ProjectSkillPicker({
 
             <div className="mt-3 flex min-h-9 flex-wrap gap-2">
               {selectedSkills.length === 0 ? (
-                <p className="text-sm text-[#626f86]">Add at least one required skill to search.</p>
+                <p className="text-sm text-muted-foreground">Add at least one required skill to search.</p>
               ) : (
                 selectedSkills.map((skill) => (
-                  <span key={skill} className="inline-flex items-center gap-1 rounded-md bg-[#eef1f6] px-2.5 py-1 text-sm font-medium text-[#44546f]">
+                  <span key={skill} className="inline-flex items-center gap-1 rounded-md bg-[#eef1f6] px-2.5 py-1 text-sm font-medium text-muted-foreground">
                     {skill}
                     <button type="button" onClick={() => onRemoveSkill(skill)} aria-label={`Remove ${skill}`}>
                       <X className="size-3.5" />
@@ -142,7 +142,7 @@ export function ProjectSkillPicker({
                 />
                 <span>
                   <span className="block text-sm font-semibold text-[#17202a]">{option.label}</span>
-                  <span className="text-xs text-[#626f86]">{disabledReason ?? option.detail}</span>
+                  <span className="text-xs text-muted-foreground">{disabledReason ?? option.detail}</span>
                 </span>
               </label>
             );

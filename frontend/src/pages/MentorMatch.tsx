@@ -279,14 +279,14 @@ export function MentorMatch() {
       {/* Header */}
       <header className="flex flex-col justify-between gap-4 rounded-xl border border-[#dfe3ea] bg-white p-6 shadow-sm sm:flex-row sm:items-center">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#626f86]">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             <Sparkles className="size-4 text-[#0c66e4]" />
             {uniName} Alumni Connect
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#17202a]">
             Alumni Mentor Matchmaker
           </h1>
-          <p className="mt-1 text-sm text-[#626f86]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Connect with alumni working in your target career paths to bridge your skills gaps.
           </p>
         </div>
@@ -302,7 +302,7 @@ export function MentorMatch() {
             className={`rounded-md px-4 py-1.5 text-sm font-semibold transition-all ${
               activeTab === "find_mentor"
                 ? "bg-white text-[#0c66e4] shadow-xs"
-                : "text-[#626f86] hover:text-[#17202a]"
+                : "text-muted-foreground hover:text-[#17202a]"
             }`}
           >
             Find a Mentor
@@ -316,7 +316,7 @@ export function MentorMatch() {
             className={`rounded-md px-4 py-1.5 text-sm font-semibold transition-all ${
               activeTab === "mentor_hub"
                 ? "bg-white text-[#0c66e4] shadow-xs"
-                : "text-[#626f86] hover:text-[#17202a]"
+                : "text-muted-foreground hover:text-[#17202a]"
             }`}
           >
             Alumnus Hub
@@ -344,7 +344,7 @@ export function MentorMatch() {
           {/* Target Role Selector & Search */}
           <div className="flex flex-col gap-4 rounded-xl border border-[#dfe3ea] bg-white p-5 shadow-sm sm:flex-row sm:items-center justify-between">
             <div className="flex flex-col gap-1.5 sm:w-80">
-              <label className="text-xs font-bold text-[#626f86] uppercase tracking-wider">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                 Select Your Target Role Gaps
               </label>
               <select
@@ -362,7 +362,7 @@ export function MentorMatch() {
             </div>
 
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search mentors by name, company, or skills..."
@@ -375,13 +375,13 @@ export function MentorMatch() {
 
           {/* Mentors List */}
           {mentorsLoading ? (
-            <div className="py-12 text-center text-[#626f86]">Searching for matching mentors...</div>
+            <div className="py-12 text-center text-muted-foreground">Searching for matching mentors...</div>
           ) : filteredMentors.length === 0 ? (
             <Card className="border-[#dfe3ea] bg-white py-12 text-center shadow-sm">
               <CardContent className="flex flex-col items-center justify-center">
                 <HeartHandshake className="h-16 w-16 text-[#cbd5e0]" />
                 <h3 className="mt-4 text-lg font-semibold text-[#17202a]">No Matching Mentors</h3>
-                <p className="mt-2 text-sm text-[#626f86] max-w-md">
+                <p className="mt-2 text-sm text-muted-foreground max-w-md">
                   We couldn't find any alumni matching your target role requirements. Try changing your target role or registration skills.
                 </p>
               </CardContent>
@@ -405,7 +405,7 @@ export function MentorMatch() {
                               Class of {mentor.graduationYear || "N/A"}
                             </span>
                             {mentor.yearsExperience !== null && (
-                              <span className="text-xs font-medium text-[#626f86] bg-[#f7f8fa] border border-[#dfe3ea] rounded px-1.5 py-0.5">
+                              <span className="text-xs font-medium text-muted-foreground bg-[#f7f8fa] border border-[#dfe3ea] rounded px-1.5 py-0.5">
                                 {mentor.yearsExperience} yrs exp
                               </span>
                             )}
@@ -414,7 +414,7 @@ export function MentorMatch() {
                             {mentor.name}
                           </CardTitle>
                           <CardDescription className="mt-1 flex items-center gap-1.5 text-sm font-medium text-[#17202a]">
-                            <Briefcase className="size-3.5 text-[#626f86]" />
+                            <Briefcase className="size-3.5 text-muted-foreground" />
                             {mentor.currentRole || "Software Engineer"} at {mentor.currentCompany || "Technology Firm"}
                           </CardDescription>
                         </div>
@@ -455,7 +455,7 @@ export function MentorMatch() {
 
                       {/* Mentoring Skills */}
                       <div>
-                        <h4 className="text-[11px] font-bold text-[#626f86] uppercase tracking-wider mb-2">
+                        <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                           All Offered Mentoring Skills
                         </h4>
                         <div className="flex flex-wrap gap-1.5 font-medium">
@@ -463,7 +463,7 @@ export function MentorMatch() {
                             const isMatch = mentor.matchingSkills.includes(skill);
                             if (isMatch) return null; // Avoid duplicate display
                             return (
-                              <Badge key={index} variant="outline" className="text-[#626f86] border-[#cfd7e3] text-[11px] bg-white py-0.5">
+                              <Badge key={index} variant="outline" className="text-muted-foreground border-[#cfd7e3] text-[11px] bg-white py-0.5">
                                 {skill}
                               </Badge>
                             );
@@ -475,22 +475,22 @@ export function MentorMatch() {
                       {hasActive && (
                         <div className="flex flex-col gap-3">
                           <div className="rounded-lg bg-[#f7f8fa] border border-[#dfe3ea] p-3 flex flex-col gap-1.5 text-xs text-[#17202a]">
-                            <div className="font-bold text-[#626f86] uppercase tracking-wider text-[10px] mb-1">Mentor Contact Details</div>
+                            <div className="font-bold text-muted-foreground uppercase tracking-wider text-[10px] mb-1">Mentor Contact Details</div>
                             {mentor.email && (
                               <a href={`mailto:${mentor.email}`} className="flex items-center gap-1.5 text-[#0c66e4] hover:underline font-semibold">
-                                <Mail className="size-3.5 text-[#626f86]" />
+                                <Mail className="size-3.5 text-muted-foreground" />
                                 {mentor.email}
                               </a>
                             )}
                             {mentor.githubHandle && (
                               <a href={`https://github.com/${mentor.githubHandle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#0c66e4] hover:underline font-semibold">
-                                <Github className="size-3.5 text-[#626f86]" />
+                                <Github className="size-3.5 text-muted-foreground" />
                                 github.com/{mentor.githubHandle}
                               </a>
                             )}
                             {mentor.linkedinUrl && (
                               <a href={mentor.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#0c66e4] hover:underline font-semibold">
-                                <Linkedin className="size-3.5 text-[#626f86]" />
+                                <Linkedin className="size-3.5 text-muted-foreground" />
                                 LinkedIn Profile
                               </a>
                             )}
@@ -502,6 +502,7 @@ export function MentorMatch() {
                             partnerName={mentor.name}
                             partnerRole="student"
                             initialStatus={mentor.existingMentorship!.status}
+                            initialMilestones={(mentor.existingMentorship as any).milestones || []}
                             onRefresh={() => loadMentors(selectedRoleId)}
                           />
                         </div>
@@ -562,7 +563,7 @@ export function MentorMatch() {
                                   setRequestingAlumniId(null);
                                   setSelectedSkillForRequest("");
                                 }}
-                                className="text-[#626f86] p-1"
+                                className="text-muted-foreground p-1"
                               >
                                 <X className="size-4" />
                               </Button>
@@ -647,7 +648,7 @@ export function MentorMatch() {
                 <div className="flex items-center gap-2 mb-2 p-3 bg-[#f7f8fa] border border-[#dfe3ea] rounded-lg justify-between">
                   <div>
                     <div className="font-bold text-sm text-[#17202a]">Willing to mentor students</div>
-                    <div className="text-xs text-[#626f86]">Toggle to display your profile in matches.</div>
+                    <div className="text-xs text-muted-foreground">Toggle to display your profile in matches.</div>
                   </div>
                   <input
                     type="checkbox"
@@ -659,7 +660,7 @@ export function MentorMatch() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Current Company</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Current Company</label>
                     <Input
                       type="text"
                       placeholder="e.g. Google, TigerIT"
@@ -671,7 +672,7 @@ export function MentorMatch() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Current Role</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Current Role</label>
                     <Input
                       type="text"
                       placeholder="e.g. Senior Software Engineer"
@@ -685,7 +686,7 @@ export function MentorMatch() {
 
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Years of Experience</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Years of Experience</label>
                     <Input
                       type="number"
                       min={0}
@@ -698,7 +699,7 @@ export function MentorMatch() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">Graduation Year</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">Graduation Year</label>
                     <Input
                       type="number"
                       min={2000}
@@ -711,7 +712,7 @@ export function MentorMatch() {
                   </div>
 
                   <div className="flex flex-col gap-1.5 sm:col-span-1">
-                    <label className="text-xs font-bold text-[#626f86] uppercase">LinkedIn URL</label>
+                    <label className="text-xs font-bold text-muted-foreground uppercase">LinkedIn URL</label>
                     <Input
                       type="url"
                       placeholder="https://linkedin.com/in/..."
@@ -723,7 +724,7 @@ export function MentorMatch() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#626f86] uppercase">Alumni ID Card Photo</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Alumni ID Card Photo</label>
                   <div className="flex items-center gap-4 rounded-lg border border-[#cfd7e3] bg-white p-3">
                     <input
                       type="file"
@@ -737,14 +738,14 @@ export function MentorMatch() {
                       </div>
                     )}
                   </div>
-                  <p className="text-[10px] text-[#626f86]">
+                  <p className="text-[10px] text-muted-foreground">
                     Upload a picture of your alumni association card, university ID card, or certificate.
                   </p>
                 </div>
 
                 {/* Mentoring Skills Tags Multi-Select */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#626f86] uppercase">Skills You Can Mentor</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Skills You Can Mentor</label>
                   
                   {/* Selected tags */}
                   {mentoringSkills.length > 0 && (
@@ -785,7 +786,7 @@ export function MentorMatch() {
                             className="flex w-full items-center justify-between px-3 py-2 text-sm text-left hover:bg-[#f7f8fa] transition-colors"
                           >
                             <span>{suggestion.name}</span>
-                            <span className="text-xs text-[#626f86] font-medium">{suggestion.category}</span>
+                            <span className="text-xs text-muted-foreground font-medium">{suggestion.category}</span>
                           </button>
                         ))}
                       </div>
@@ -819,11 +820,11 @@ export function MentorMatch() {
 
               <CardContent className="p-5 flex flex-col gap-4 max-h-[500px] overflow-y-auto">
                 {!myProfile ? (
-                  <p className="text-sm text-[#626f86] italic text-center py-6">
+                  <p className="text-sm text-muted-foreground italic text-center py-6">
                     Register as alumnus to start receiving mentorship requests.
                   </p>
                 ) : !myProfile.mentorships || myProfile.mentorships.length === 0 ? (
-                  <p className="text-sm text-[#626f86] italic text-center py-6">
+                  <p className="text-sm text-muted-foreground italic text-center py-6">
                     No mentorship requests received yet.
                   </p>
                 ) : (
@@ -839,7 +840,7 @@ export function MentorMatch() {
                             <div className="font-bold text-[#17202a] text-sm">
                               {studentUser?.fullName || "Student"}
                             </div>
-                            <div className="text-xs text-[#626f86] flex items-center gap-1 mt-0.5">
+                            <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                               <span>Skill:</span>
                               <Badge className="bg-[#e9f2ff] text-[#0c66e4] border border-[#0c66e4]/10 hover:bg-[#e9f2ff] text-[10px] py-0">
                                 {req.skill?.name || "Skill"}
@@ -863,7 +864,7 @@ export function MentorMatch() {
                         {isActive && studentUser && (
                           <div className="flex flex-col gap-2">
                             <div className="rounded border border-[#dfe3ea] bg-white p-2 text-xs flex flex-col gap-1">
-                              <div className="font-semibold text-[#626f86] uppercase text-[9px]">Student Contact</div>
+                              <div className="font-semibold text-muted-foreground uppercase text-[9px]">Student Contact</div>
                               {studentUser.email && (
                                 <a href={`mailto:${studentUser.email}`} className="flex items-center gap-1 text-[#0c66e4] hover:underline font-semibold">
                                   <Mail className="size-3" />
@@ -884,6 +885,7 @@ export function MentorMatch() {
                               partnerName={studentUser.fullName}
                               partnerRole="mentor"
                               initialStatus={req.status}
+                              initialMilestones={(req as any).milestones || []}
                               onRefresh={refreshOwnProfile}
                             />
                           </div>

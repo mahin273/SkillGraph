@@ -1,4 +1,4 @@
-import { globalConfig } from "../controllers/admin.controller.js";
+import { globalConfig } from "../config/platform.js";
 import { fail } from "../utils/apiResponse.js";
 import { Request, Response, NextFunction } from "express";
 

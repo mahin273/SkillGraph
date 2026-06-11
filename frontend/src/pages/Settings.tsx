@@ -186,7 +186,7 @@ export function Settings() {
   return (
     <section className="mx-auto grid w-full max-w-[1000px] gap-4 pb-20 lg:pb-4">
       <header className="rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">Account</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Account</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#17202a]">Settings</h1>
       </header>
 
@@ -199,19 +199,19 @@ export function Settings() {
         </CardHeader>
         <CardContent className="grid gap-3 p-4 text-sm">
           <div className="flex items-center justify-between rounded-lg bg-[#f7f8fa] p-3">
-            <span className="text-[#626f86]">Name</span>
+            <span className="text-muted-foreground">Name</span>
             <span className="font-medium text-[#17202a]">{user?.fullName ?? "Loading..."}</span>
           </div>
           <div className="flex items-center justify-between rounded-lg bg-[#f7f8fa] p-3">
-            <span className="text-[#626f86]">Email</span>
+            <span className="text-muted-foreground">Email</span>
             <span className="font-medium text-[#17202a]">{user?.email ?? "Not added"}</span>
           </div>
           <div className="flex items-center justify-between rounded-lg bg-[#f7f8fa] p-3">
-            <span className="text-[#626f86]">Public page</span>
+            <span className="text-muted-foreground">Public page</span>
             <span className="font-medium text-[#17202a]">{user?.publicHandle ? `/galaxy/${user.publicHandle}` : "Not ready"}</span>
           </div>
           <div className="flex items-center justify-between rounded-lg bg-[#f7f8fa] p-3">
-            <span className="text-[#626f86]">User role</span>
+            <span className="text-muted-foreground">User role</span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e9f2ff] px-3 py-1 text-xs font-semibold text-[#0c66e4] capitalize">
               {user?.role === "admin" || user?.role === "superadmin"
                 ? "System Administrator"
@@ -237,7 +237,7 @@ export function Settings() {
               {isProfessor || isAlumni ? (
                 <div className="grid gap-2 text-sm font-medium text-[#17202a]">
                   University
-                  <div className="h-9 flex items-center rounded-lg border border-[#cfd7e3] bg-[#f4f5f7] px-3 text-sm text-[#44546f] font-semibold">
+                  <div className="h-9 flex items-center rounded-lg border border-[#cfd7e3] bg-[#f4f5f7] px-3 text-sm text-muted-foreground font-semibold">
                     {universityNameStr || "Not Configured"}
                   </div>
                 </div>
@@ -376,7 +376,7 @@ export function Settings() {
             )}
 
             {academicStatus && (
-              <p className="rounded-lg bg-[#f7f8fa] px-3 py-2 text-sm text-[#44546f]">{academicStatus}</p>
+              <p className="rounded-lg bg-[#f7f8fa] px-3 py-2 text-sm text-muted-foreground">{academicStatus}</p>
             )}
 
             {/* Save Button (Hide for Professors and Alumni) */}
@@ -408,7 +408,7 @@ export function Settings() {
           <div className="flex flex-col gap-3 rounded-lg border border-[#edf0f5] p-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-[#17202a]">Email confirmation</p>
-              <p className="text-sm text-[#626f86]">{user?.emailVerified ? "Verified" : "Not verified"}</p>
+              <p className="text-sm text-muted-foreground">{user?.emailVerified ? "Verified" : "Not verified"}</p>
             </div>
             <span className={user?.emailVerified ? "text-sm font-medium text-[#1f845a]" : "text-sm font-medium text-[#974f0c]"}>
               {user?.emailVerified ? "Confirmed" : "Pending"}
@@ -421,7 +421,7 @@ export function Settings() {
                 <Github className="size-4" />
                 GitHub
               </p>
-              <p className="text-sm text-[#626f86]">
+              <p className="text-sm text-muted-foreground">
                 {user?.githubConnected ? `Connected as ${user.githubHandle}` : "Connect later to scan repositories."}
               </p>
             </div>
@@ -439,7 +439,7 @@ export function Settings() {
           <div className="flex flex-col gap-3 rounded-lg border border-[#edf0f5] p-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-[#17202a]">Google</p>
-              <p className="text-sm text-[#626f86]">{user?.googleConnected ? "Connected" : "Use Google as a sign-in method."}</p>
+              <p className="text-sm text-muted-foreground">{user?.googleConnected ? "Connected" : "Use Google as a sign-in method."}</p>
             </div>
             <div className="w-full sm:w-56">
               {user?.googleConnected ? (

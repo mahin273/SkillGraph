@@ -67,7 +67,7 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
         )}
         <button
           onClick={onClose}
-          className="rounded px-1.5 py-1 text-xs text-[#626f86] hover:bg-[#eef1f6] hover:text-[#17202a]"
+          className="rounded px-1.5 py-1 text-xs text-muted-foreground hover:bg-[#eef1f6] hover:text-[#17202a]"
         >
           Close
         </button>

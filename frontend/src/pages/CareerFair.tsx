@@ -116,7 +116,7 @@ export function CareerFair() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <Building2 className="mx-auto h-12 w-12 animate-pulse text-[#626f86]" />
+          <Building2 className="mx-auto h-12 w-12 animate-pulse text-muted-foreground" />
           <p className="mt-4 text-sm font-semibold text-[#17202a]">Analyzing career opportunities...</p>
         </div>
       </div>
@@ -128,21 +128,21 @@ export function CareerFair() {
       {/* Header */}
       <header className="flex flex-col justify-between gap-4 rounded-xl border border-[#dfe3ea] bg-white p-6 shadow-sm sm:flex-row sm:items-center">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#626f86]">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             <Sparkles className="size-4 text-[#0c66e4]" />
             Career GPS Matcher
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#17202a]">
             University Career Fairs
           </h1>
-          <p className="mt-1 text-sm text-[#626f86]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Align your technical skill evidence with real company needs and get matched instantly.
           </p>
         </div>
 
         {fairs.length > 0 && (
           <div className="flex flex-col gap-1 sm:w-72">
-            <label className="text-xs font-bold text-[#626f86] uppercase tracking-wider">Select Active Event</label>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Active Event</label>
             <select
               value={selectedFairId}
               onChange={(e) => setSelectedFairId(e.target.value)}
@@ -163,7 +163,7 @@ export function CareerFair() {
           <CardContent className="flex flex-col items-center justify-center">
             <Building2 className="h-16 w-16 text-[#cbd5e0]" />
             <h3 className="mt-4 text-lg font-semibold text-[#17202a]">No Career Fairs Scheduled</h3>
-            <p className="mt-2 text-sm text-[#626f86] max-w-md">
+            <p className="mt-2 text-sm text-muted-foreground max-w-md">
               There are currently no career fairs active or scheduled for your university. Please check back later.
             </p>
           </CardContent>
@@ -185,7 +185,7 @@ export function CareerFair() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-[#17202a]">{selectedFair.name}</h2>
-                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-[#626f86]">
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3.5 w-3.5" />
                       {new Date(selectedFair.eventDate).toLocaleDateString(undefined, {
@@ -208,7 +208,7 @@ export function CareerFair() {
               {/* Stats badges */}
               <div className="flex flex-wrap gap-2">
                 <div className="rounded-lg bg-[#f7f8fa] border border-[#dfe3ea] px-3 py-1.5 text-center">
-                  <div className="text-xs text-[#626f86] font-medium">Total Companies</div>
+                  <div className="text-xs text-muted-foreground font-medium">Total Companies</div>
                   <div className="text-lg font-bold text-[#17202a]">{stats.total}</div>
                 </div>
                 <div className="rounded-lg bg-[#e7f8ef] border border-[#b8f5d0] px-3 py-1.5 text-center">
@@ -233,7 +233,7 @@ export function CareerFair() {
           {/* Search and Filters */}
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search by company name, role, or skill..."
@@ -281,10 +281,10 @@ export function CareerFair() {
 
           {/* Companies Booth List */}
           {loading ? (
-            <div className="py-12 text-center text-[#626f86]">Calculating matches...</div>
+            <div className="py-12 text-center text-muted-foreground">Calculating matches...</div>
           ) : filteredMatches.length === 0 ? (
             <div className="rounded-xl border border-[#dfe3ea] bg-white py-12 text-center shadow-sm">
-              <p className="text-sm text-[#626f86]">No companies match your current filters.</p>
+              <p className="text-sm text-muted-foreground">No companies match your current filters.</p>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
@@ -303,7 +303,7 @@ export function CareerFair() {
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-[#626f86] bg-[#f7f8fa] border border-[#dfe3ea] rounded px-1.5 py-0.5">
+                            <span className="text-xs font-bold text-muted-foreground bg-[#f7f8fa] border border-[#dfe3ea] rounded px-1.5 py-0.5">
                               Booth {booth.boothNumber || "N/A"}
                             </span>
                             <span className={`text-[11px] font-semibold border rounded px-1.5 py-0.5 ${matchBadgeColor}`}>
@@ -326,7 +326,7 @@ export function CareerFair() {
                           }`}>
                             {booth.matchPercentage}%
                           </span>
-                          <span className="text-[10px] text-[#626f86] font-semibold uppercase">Match</span>
+                          <span className="text-[10px] text-muted-foreground font-semibold uppercase">Match</span>
                         </div>
                       </div>
 
@@ -335,7 +335,7 @@ export function CareerFair() {
                         <div className="mt-3.5 flex flex-wrap gap-1.5">
                           {booth.hiringRoles.map((role, idx) => (
                             <Badge key={idx} variant="outline" className="border-[#dfe3ea] text-xs font-medium bg-[#f7f8fa] text-[#17202a]">
-                              <Briefcase className="mr-1 h-3 w-3 text-[#626f86]" />
+                              <Briefcase className="mr-1 h-3 w-3 text-muted-foreground" />
                               {role}
                             </Badge>
                           ))}
@@ -346,7 +346,7 @@ export function CareerFair() {
                     <CardContent className="p-0">
                       {isExpanded && (
                         <div className="bg-[#f7f8fa] p-5 border-b border-[#edf0f5]">
-                          <h4 className="text-xs font-bold text-[#626f86] uppercase tracking-wider mb-3">Skills Profile Comparison</h4>
+                          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Skills Profile Comparison</h4>
                           
                           <div className="grid gap-4 sm:grid-cols-2">
                             {/* Matched Skills */}
@@ -356,7 +356,7 @@ export function CareerFair() {
                                 <span>Evidenced Skills ({booth.matchedSkills.length})</span>
                               </div>
                               {booth.matchedSkills.length === 0 ? (
-                                <p className="text-xs text-[#626f86] italic">No skill match evidence yet.</p>
+                                <p className="text-xs text-muted-foreground italic">No skill match evidence yet.</p>
                               ) : (
                                 <div className="flex flex-wrap gap-1.5">
                                   {booth.matchedSkills.map((s, idx) => (
@@ -381,7 +381,7 @@ export function CareerFair() {
                                   {booth.gapSkills.map((s, idx) => {
                                     const orig = booth.requiredSkills.find((rs) => rs.name === s);
                                     return (
-                                      <Badge key={idx} variant="outline" className="text-[#626f86] border-[#cfd7e3] text-[11px] bg-white py-0.5">
+                                      <Badge key={idx} variant="outline" className="text-muted-foreground border-[#cfd7e3] text-[11px] bg-white py-0.5">
                                         {s} {orig ? `(Weight: ${orig.criticality})` : ""}
                                       </Badge>
                                     );
@@ -392,7 +392,7 @@ export function CareerFair() {
                           </div>
 
                           {booth.gapSkills.length > 0 && (
-                            <div className="mt-4 border-t border-[#edf0f5] pt-3 flex items-start gap-2 text-xs text-[#626f86]">
+                            <div className="mt-4 border-t border-[#edf0f5] pt-3 flex items-start gap-2 text-xs text-muted-foreground">
                               <HelpCircle className="h-4 w-4 text-[#0c66e4] shrink-0 mt-0.5" />
                               <p>
                                 <strong>Match Tip:</strong> Strengthen gaps like <em>{booth.gapSkills.slice(0, 2).join(", ")}</em> through repository commits or university projects to raise your match percentage before visiting this booth.
@@ -404,7 +404,7 @@ export function CareerFair() {
 
                       <button
                         onClick={() => toggleExpand(booth.id)}
-                        className="flex w-full items-center justify-center gap-1 px-4 py-3 text-xs font-bold text-[#626f86] hover:bg-[#f7f8fa] hover:text-[#17202a] transition-colors"
+                        className="flex w-full items-center justify-center gap-1 px-4 py-3 text-xs font-bold text-muted-foreground hover:bg-[#f7f8fa] hover:text-[#17202a] transition-colors"
                       >
                         {isExpanded ? (
                           <>

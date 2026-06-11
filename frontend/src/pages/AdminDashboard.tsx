@@ -73,7 +73,7 @@ export function AdminDashboard() {
       {/* Page Header */}
       <header className="rounded-lg border border-[#dfe3ea] bg-white px-5 py-4 shadow-sm flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#626f86]">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             {isAdmin ? "Administrator Workspace" : "Academic Advisor Workspace"}
           </p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#17202a]">
@@ -93,7 +93,7 @@ export function AdminDashboard() {
                 className={`flex items-center gap-1.5 rounded-md px-3.5 py-2 text-xs font-semibold transition-all ${
                   isSelected
                     ? "bg-white text-[#0c66e4] shadow-sm"
-                    : "text-[#44546f] hover:text-[#17202a]"
+                    : "text-muted-foreground hover:text-[#17202a]"
                 }`}
               >
                 <Icon className="size-3.5" />
@@ -108,13 +108,13 @@ export function AdminDashboard() {
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {isPlatformAdmin ? "Platform Users" : "University Users"}
             </p>
             <h3 className="mt-1 text-2xl font-bold text-[#17202a]">
               {kpiStats ? kpiStats.totalUsers : <span className="animate-pulse text-slate-400">...</span>}
             </h3>
-            <p className="mt-1 text-[10px] text-[#626f86]">
+            <p className="mt-1 text-[10px] text-muted-foreground">
               {isPlatformAdmin ? "Total registered accounts" : "Registered university accounts"}
             </p>
           </div>
@@ -125,11 +125,11 @@ export function AdminDashboard() {
 
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">GitHub Connection Rate</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">GitHub Connection Rate</p>
             <h3 className="mt-1 text-2xl font-bold text-[#17202a]">
               {kpiStats ? `${kpiStats.connectionRate}%` : <span className="animate-pulse text-slate-400">...</span>}
             </h3>
-            <p className="mt-1 text-[10px] text-[#626f86]">
+            <p className="mt-1 text-[10px] text-muted-foreground">
               {kpiStats ? `${kpiStats.githubConnections} connections active` : "calculating..."}
             </p>
           </div>
@@ -140,11 +140,11 @@ export function AdminDashboard() {
 
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">GPS Curated Roles</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">GPS Curated Roles</p>
             <h3 className="mt-1 text-2xl font-bold text-[#17202a]">
               {kpiStats ? kpiStats.totalRoles : <span className="animate-pulse text-slate-400">...</span>}
             </h3>
-            <p className="mt-1 text-[10px] text-[#626f86]">Predefined industry expectations</p>
+            <p className="mt-1 text-[10px] text-muted-foreground">Predefined industry expectations</p>
           </div>
           <div className="grid size-10 place-items-center rounded-lg bg-[#fff4e5] text-[#974f0c]">
             <BookOpen className="size-5" />
@@ -153,11 +153,11 @@ export function AdminDashboard() {
 
         <div className="rounded-lg border border-[#dfe3ea] bg-white p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#626f86] uppercase tracking-wider">Alumni verification queue</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Alumni verification queue</p>
             <h3 className="mt-1 text-2xl font-bold text-[#17202a]">
               {kpiStats ? kpiStats.pendingAlumni : <span className="animate-pulse text-slate-400">...</span>}
             </h3>
-            <p className="mt-1 text-[10px] text-[#626f86]">Awaiting review</p>
+            <p className="mt-1 text-[10px] text-muted-foreground">Awaiting review</p>
           </div>
           <div className="grid size-10 place-items-center rounded-lg bg-[#fdd0ec] text-[#d0248e]">
             <Sparkles className="size-5" />

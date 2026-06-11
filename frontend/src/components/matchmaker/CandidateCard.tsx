@@ -36,7 +36,7 @@ export function CandidateCard({ candidate, onInvite, inviting, invited }: Candid
           </div>
 
           <h3 className="mt-3 text-lg font-semibold text-[#17202a]">{candidate.name}</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[#626f86]">
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <GraduationCap className="size-4" />
               {candidate.university}
@@ -47,17 +47,17 @@ export function CandidateCard({ candidate, onInvite, inviting, invited }: Candid
 
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-3">
-              <p className="text-xs font-medium text-[#626f86]">Match score</p>
+              <p className="text-xs font-medium text-muted-foreground">Match score</p>
               <p className="mt-1 text-2xl font-semibold text-[#17202a]">{candidate.matchScore}%</p>
             </div>
             <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-3">
-              <p className="text-xs font-medium text-[#626f86]">Evidence</p>
+              <p className="text-xs font-medium text-muted-foreground">Evidence</p>
               <p className="mt-1 text-sm font-semibold text-[#17202a]">
                 {candidate.evidence.repoSignalCount} repos, {candidate.evidence.endorsementCount} endorsements
               </p>
             </div>
             <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-3">
-              <p className="text-xs font-medium text-[#626f86]">Confidence</p>
+              <p className="text-xs font-medium text-muted-foreground">Confidence</p>
               <p className="mt-1 text-sm font-semibold text-[#17202a]">
                 {Math.round(candidate.evidence.avgConfidence * 100)}%
               </p>
@@ -72,7 +72,7 @@ export function CandidateCard({ candidate, onInvite, inviting, invited }: Candid
               </div>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {candidate.matchedSkills.map((skill) => (
-                  <span key={skill.name} className="rounded-md bg-[#eef1f6] px-2 py-1 text-xs font-medium text-[#44546f]">
+                  <span key={skill.name} className="rounded-md bg-[#eef1f6] px-2 py-1 text-xs font-medium text-muted-foreground">
                     {skill.name}
                   </span>
                 ))}
@@ -85,7 +85,7 @@ export function CandidateCard({ candidate, onInvite, inviting, invited }: Candid
               </div>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {candidate.missingSkills.length === 0 ? (
-                  <span className="text-sm text-[#626f86]">Covers every required skill.</span>
+                  <span className="text-sm text-muted-foreground">Covers every required skill.</span>
                 ) : (
                   candidate.missingSkills.map((skill) => (
                     <span key={skill} className="rounded-md bg-[#fff4e5] px-2 py-1 text-xs font-medium text-[#974f0c]">
@@ -102,7 +102,7 @@ export function CandidateCard({ candidate, onInvite, inviting, invited }: Candid
               <ShieldCheck className="size-4 text-[#0c66e4]" />
               Why this match
             </div>
-            <ul className="mt-2 space-y-1 text-sm text-[#44546f]">
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               {candidate.reasons.map((reason) => (
                 <li key={reason}>{reason}</li>
               ))}

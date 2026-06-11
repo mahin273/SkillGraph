@@ -408,6 +408,14 @@ model SystemNotification {
   @@map("system_notifications")
 }
 
+model PlatformConfig {
+  key       String   @id @db.VarChar(100)
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("platform_configs")
+}
+
 model AuditLog {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String?  @map("user_id") @db.Uuid
@@ -476,6 +484,7 @@ model AlumniMentorship {
   alumniId  String           @map("alumni_id") @db.Uuid
   skillId   String           @map("skill_id") @db.Uuid
   status    MentorshipStatus @default(requested)
+  milestones Json?           @map("milestones")
   startedAt DateTime?        @map("started_at") @db.Timestamptz(6)
   endedAt   DateTime?        @map("ended_at") @db.Timestamptz(6)
   createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)

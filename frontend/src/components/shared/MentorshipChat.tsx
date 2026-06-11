@@ -84,11 +84,11 @@ export function MentorshipChat({ mentorshipId, partnerName, status }: Mentorship
           <MessageCircle className="size-4 text-[#0c66e4]" />
           <div>
             <h5 className="text-xs font-bold text-[#17202a]">Mentorship Chat</h5>
-            <p className="text-[10px] text-[#626f86]">Messages with {partnerName}</p>
+            <p className="text-[10px] text-muted-foreground">Messages with {partnerName}</p>
           </div>
         </div>
         {!canSend && (
-          <span className="rounded-full border border-[#dfe3ea] bg-white px-2 py-0.5 text-[10px] font-bold text-[#626f86]">
+          <span className="rounded-full border border-[#dfe3ea] bg-white px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
             Read-only
           </span>
         )}
@@ -96,11 +96,11 @@ export function MentorshipChat({ mentorshipId, partnerName, status }: Mentorship
 
       <div className="flex max-h-56 min-h-28 flex-col gap-2 overflow-y-auto p-3">
         {loading ? (
-          <div className="flex flex-1 items-center justify-center text-xs text-[#626f86]">
+          <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
             Loading chat...
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center rounded border border-dashed border-[#cfd7e3] bg-white px-3 py-6 text-center text-xs text-[#626f86]">
+          <div className="flex flex-1 items-center justify-center rounded border border-dashed border-[#cfd7e3] bg-white px-3 py-6 text-center text-xs text-muted-foreground">
             No messages yet. Start with goals, meeting time, or next steps.
           </div>
         ) : (
@@ -118,7 +118,7 @@ export function MentorshipChat({ mentorshipId, partnerName, status }: Mentorship
                 >
                   {message.body}
                 </div>
-                <span className="px-1 text-[10px] text-[#626f86]">
+                <span className="px-1 text-[10px] text-muted-foreground">
                   {isMine ? "You" : message.sender.fullName} ·{" "}
                   {new Date(message.createdAt).toLocaleString([], {
                     month: "short",

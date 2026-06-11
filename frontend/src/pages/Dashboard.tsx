@@ -502,29 +502,29 @@ export function Dashboard() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-[1720px] flex-col gap-4 pb-20 lg:pb-4">
-      <header className="flex flex-col gap-3 rounded-lg border border-[#dfe3ea] bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">
-            <Sparkles className="size-3.5 text-[#0c66e4]" />
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            <Sparkles className="size-3.5 text-primary" />
             Skill workspace
           </div>
-          <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight text-[#17202a]">
+          <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight text-foreground">
             {fullName ? `${fullName}'s skills` : "Your skills"}
           </h1>
           {publicHandle && (
-            <p className="mt-1 text-sm text-[#626f86]">Public galaxy: /galaxy/{publicHandle}</p>
+            <p className="mt-1 text-sm text-muted-foreground">Public galaxy: /galaxy/{publicHandle}</p>
           )}
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <div className="relative w-full sm:w-72">
-            <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+            <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search skills"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="h-9 border-[#cfd7e3] bg-[#f7f8fa] pl-8"
+              className="h-9 border-input bg-background pl-8"
             />
           </div>
 
@@ -535,9 +535,9 @@ export function Dashboard() {
             }}
             variant="outline"
             size="lg"
-            className="gap-2 border-[#cfd7e3] text-[#17202a] hover:bg-[#f7f8fa]"
+            className="gap-2 border-border text-foreground hover:bg-accent"
           >
-            <Sparkles className="size-4 text-[#0c66e4]" />
+            <Sparkles className="size-4 text-primary" />
             AI Resume Exporter
           </Button>
 
@@ -545,7 +545,7 @@ export function Dashboard() {
             onClick={handleIngest}
             disabled={scanDisabled}
             size="lg"
-            className="gap-2 bg-[#0c66e4] text-white hover:bg-[#0055cc]"
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {ingesting ? (
               <RefreshCw className="size-4 animate-spin" />
@@ -572,14 +572,14 @@ export function Dashboard() {
       )}
 
       {decayedSkills.length > 0 && (
-        <div className="flex flex-col gap-3 rounded-lg border border-[#ffe1cc] bg-[#fffcf5] p-4 shadow-sm">
+        <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-500/10 p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-5 text-[#d97706]" />
+            <AlertTriangle className="mt-0.5 size-5 text-amber-600" />
             <div>
-              <h2 className="text-sm font-semibold text-[#b45309]">
+              <h2 className="text-sm font-semibold text-amber-800">
                 Decayed Skills Detected
               </h2>
-              <p className="mt-1 text-sm text-[#d97706]">
+              <p className="mt-1 text-sm text-amber-700">
                 You have {decayedSkills.length} skills that haven't registered commit activity in the past 12 months. Their proficiency has decayed by 15%, and they are marked as dormant.
               </p>
             </div>
@@ -588,12 +588,12 @@ export function Dashboard() {
             {decayedSkills.map((ds) => (
               <div
                 key={ds.id}
-                className="flex items-center gap-2 rounded-md border border-[#ffe1cc] bg-white px-3 py-1.5 shadow-sm text-xs font-medium text-[#17202a]"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 shadow-sm text-xs font-medium text-foreground"
               >
                 <span>{ds.skillName} ({(ds.currentWeight * 100).toFixed(0)}%)</span>
                 <button
                   onClick={() => handleReactivate(ds.skillName)}
-                  className="rounded bg-[#ffebe6] px-1.5 py-0.5 text-[10px] font-semibold text-[#ae2a19] hover:bg-[#ffd2cc] transition-colors"
+                  className="rounded bg-destructive/10 px-1.5 py-0.5 text-[10px] font-semibold text-destructive hover:bg-destructive/20 transition-colors"
                 >
                   Reactivate
                 </button>
@@ -604,35 +604,35 @@ export function Dashboard() {
       )}
 
       <section className="grid gap-3 md:grid-cols-3">
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-3 shadow-sm">
+        <Card className="rounded-xl border-border bg-card py-3 shadow-sm">
           <CardContent className="flex items-center justify-between px-4">
             <div>
-              <p className="text-xs font-medium text-[#626f86]">Skills mapped</p>
-              <p className="mt-1 text-2xl font-semibold text-[#17202a]">{nodes.length}</p>
+              <p className="text-xs font-medium text-muted-foreground">Skills mapped</p>
+              <p className="mt-1 text-2xl font-semibold text-foreground">{nodes.length}</p>
             </div>
-            <div className="grid size-9 place-items-center rounded-lg bg-[#e9f2ff] text-[#0c66e4]">
+            <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
               <GitBranch className="size-4" />
             </div>
           </CardContent>
         </Card>
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-3 shadow-sm">
+        <Card className="rounded-xl border-border bg-card py-3 shadow-sm">
           <CardContent className="flex items-center justify-between px-4">
             <div>
-              <p className="text-xs font-medium text-[#626f86]">Active skills</p>
-              <p className="mt-1 text-2xl font-semibold text-[#17202a]">{activeSkills}</p>
+              <p className="text-xs font-medium text-muted-foreground">Active skills</p>
+              <p className="mt-1 text-2xl font-semibold text-foreground">{activeSkills}</p>
             </div>
-            <div className="grid size-9 place-items-center rounded-lg bg-[#e7f8ef] text-[#1f845a]">
+            <div className="grid size-9 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600">
               <Sparkles className="size-4" />
             </div>
           </CardContent>
         </Card>
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-3 shadow-sm">
+        <Card className="rounded-xl border-border bg-card py-3 shadow-sm">
           <CardContent className="flex items-center justify-between px-4">
             <div>
-              <p className="text-xs font-medium text-[#626f86]">Endorsed</p>
-              <p className="mt-1 text-2xl font-semibold text-[#17202a]">{endorsedSkills}</p>
+              <p className="text-xs font-medium text-muted-foreground">Endorsed</p>
+              <p className="mt-1 text-2xl font-semibold text-foreground">{endorsedSkills}</p>
             </div>
-            <div className="grid size-9 place-items-center rounded-lg bg-[#fff4e5] text-[#974f0c]">
+            <div className="grid size-9 place-items-center rounded-lg bg-amber-500/10 text-amber-600">
               <ShieldCheck className="size-4" />
             </div>
           </CardContent>
@@ -640,38 +640,38 @@ export function Dashboard() {
       </section>
 
       <section className="grid gap-4">
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#17202a]">
-              <Target className="size-4 text-[#0c66e4]" />
+        <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Target className="size-4 text-primary" />
               Next actions
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 p-4 md:grid-cols-2">
             {actionItems.length === 0 ? (
-              <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-4">
+              <div className="rounded-xl border border-border bg-muted/30 p-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-[#1f845a]" />
-                  <p className="text-sm font-semibold text-[#17202a]">No urgent action</p>
+                  <CheckCircle2 className="size-4 text-emerald-600" />
+                  <p className="text-sm font-semibold text-foreground">No urgent action</p>
                 </div>
-                <p className="mt-2 text-sm text-[#626f86]">Your graph has enough evidence for now. Keep building and scan after meaningful work.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Your graph has enough evidence for now. Keep building and scan after meaningful work.</p>
               </div>
             ) : (
               actionItems.map((action) => (
-                <div key={action.title} className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-3">
+                <div key={action.title} className="rounded-xl border border-border bg-muted/40 p-3 hover:bg-muted/60 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <span className={
                         action.priority === "high"
-                          ? "rounded-md bg-[#ffebe6] px-2 py-1 text-xs font-medium text-[#ae2a19]"
+                          ? "rounded-md bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive"
                           : action.priority === "medium"
-                          ? "rounded-md bg-[#fff4e5] px-2 py-1 text-xs font-medium text-[#974f0c]"
-                          : "rounded-md bg-[#e9f2ff] px-2 py-1 text-xs font-medium text-[#0c66e4]"
+                          ? "rounded-md bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-600"
+                          : "rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
                       }>
                         {action.priority}
                       </span>
-                      <h3 className="mt-3 text-sm font-semibold text-[#17202a]">{action.title}</h3>
-                      <p className="mt-1 text-sm leading-5 text-[#626f86]">{action.detail}</p>
+                      <h3 className="mt-3 text-sm font-semibold text-foreground">{action.title}</h3>
+                      <p className="mt-1 text-sm leading-5 text-muted-foreground">{action.detail}</p>
                     </div>
                   </div>
                   <Button
@@ -695,86 +695,86 @@ export function Dashboard() {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#17202a]">
-              <Activity className="size-4 text-[#1f845a]" />
+        <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Activity className="size-4 text-emerald-600" />
               Skill health
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-3xl font-semibold text-[#17202a]">{healthScore}%</p>
-                <p className="mt-1 text-sm text-[#626f86]">active, current, and confident</p>
+                <p className="text-3xl font-semibold text-foreground">{healthScore}%</p>
+                <p className="mt-1 text-sm text-muted-foreground">active, current, and confident</p>
               </div>
               {healthScore < 60 ? (
-                <AlertTriangle className="size-8 text-[#974f0c]" />
+                <AlertTriangle className="size-8 text-amber-600" />
               ) : (
-                <CheckCircle2 className="size-8 text-[#1f845a]" />
+                <CheckCircle2 className="size-8 text-emerald-600" />
               )}
             </div>
             <div className="mt-4 grid grid-cols-3 gap-2">
-              <div className="rounded-lg bg-[#f7f8fa] p-2">
-                <p className="text-xs text-[#626f86]">Active</p>
-                <p className="text-lg font-semibold text-[#17202a]">{activeSkills}</p>
+              <div className="rounded-xl bg-muted/45 p-2">
+                <p className="text-xs text-muted-foreground">Active</p>
+                <p className="text-lg font-semibold text-foreground">{activeSkills}</p>
               </div>
-              <div className="rounded-lg bg-[#f7f8fa] p-2">
-                <p className="text-xs text-[#626f86]">Weak</p>
-                <p className="text-lg font-semibold text-[#17202a]">{weakSkills}</p>
+              <div className="rounded-xl bg-muted/45 p-2">
+                <p className="text-xs text-muted-foreground">Weak</p>
+                <p className="text-lg font-semibold text-foreground">{weakSkills}</p>
               </div>
-              <div className="rounded-lg bg-[#f7f8fa] p-2">
-                <p className="text-xs text-[#626f86]">Dormant</p>
-                <p className="text-lg font-semibold text-[#17202a]">{dormantSkills}</p>
+              <div className="rounded-xl bg-muted/45 p-2">
+                <p className="text-xs text-muted-foreground">Dormant</p>
+                <p className="text-lg font-semibold text-foreground">{dormantSkills}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#17202a]">
-              <BarChart3 className="size-4 text-[#0c66e4]" />
+        <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <BarChart3 className="size-4 text-primary" />
               Evidence quality
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-3xl font-semibold text-[#17202a]">{evidenceScore}%</p>
-                <p className="mt-1 text-sm text-[#626f86]">weighted repo, endorsement, confidence proof</p>
+                <p className="text-3xl font-semibold text-foreground">{evidenceScore}%</p>
+                <p className="mt-1 text-sm text-muted-foreground">weighted repo, endorsement, confidence proof</p>
               </div>
-              <ShieldCheck className="size-8 text-[#0c66e4]" />
+              <ShieldCheck className="size-8 text-primary" />
             </div>
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#626f86]">Repo-backed skills</span>
-                <span className="font-semibold text-[#17202a]">{projectEvidenceSkills}</span>
+                <span className="text-muted-foreground">Repo-backed skills</span>
+                <span className="font-semibold text-foreground">{projectEvidenceSkills}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#626f86]">Peer-endorsed skills</span>
-                <span className="font-semibold text-[#17202a]">{endorsedSkills}</span>
+                <span className="text-muted-foreground">Peer-endorsed skills</span>
+                <span className="font-semibold text-foreground">{endorsedSkills}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#626f86]">No evidence</span>
-                <span className="font-semibold text-[#17202a]">{noEvidenceSkills}</span>
+                <span className="text-muted-foreground">No evidence</span>
+                <span className="font-semibold text-foreground">{noEvidenceSkills}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#17202a]">
-              <History className="size-4 text-[#974f0c]" />
+        <Card className="rounded-xl border-border bg-card py-0 shadow-sm">
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <History className="size-4 text-amber-600" />
               Recent skill changes
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
-            <div className="rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] p-3">
+            <div className="rounded-xl border border-border bg-muted/45 p-3">
               <div className="flex items-center gap-2">
-                <Clock className="size-4 text-[#626f86]" />
-                <p className="text-sm font-semibold text-[#17202a]">
+                <Clock className="size-4 text-muted-foreground" />
+                <p className="text-sm font-semibold text-foreground">
                   {ingestionStatus?.status === "completed"
                     ? "Latest scan completed"
                     : ingestionStatus?.status === "processing" || ingestionStatus?.status === "queued"
@@ -783,22 +783,22 @@ export function Dashboard() {
                 </p>
               </div>
               {(ingestionStatus?.repositoryCount || ingestionStatus?.skillsFound) && (
-                <p className="mt-2 text-sm text-[#626f86]">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {ingestionStatus.repositoryCount ?? 0} repos checked, {ingestionStatus.skillsFound ?? 0} skills found.
                 </p>
               )}
             </div>
             <div className="mt-3 space-y-2">
               {recentSkillEvidence.length === 0 ? (
-                <p className="text-sm text-[#626f86]">Scan GitHub to see recently evidenced skills.</p>
+                <p className="text-sm text-muted-foreground">Scan GitHub to see recently evidenced skills.</p>
               ) : (
                 recentSkillEvidence.map((skill) => (
-                  <div key={skill.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#dfe3ea] px-3 py-2">
+                  <div key={skill.id} className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-2">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-[#17202a]">{skill.name}</p>
-                      <p className="text-xs text-[#626f86]">{skill.sourceRepos?.length ?? 0} repo signals</p>
+                      <p className="truncate text-sm font-medium text-foreground">{skill.name}</p>
+                      <p className="text-xs text-muted-foreground">{skill.sourceRepos?.length ?? 0} repo signals</p>
                     </div>
-                    <span className="text-xs font-semibold text-[#0c66e4]">{Math.round(getConfidence(skill) * 100)}%</span>
+                    <span className="text-xs font-semibold text-primary">{Math.round(getConfidence(skill) * 100)}%</span>
                   </div>
                 ))
               )}
@@ -808,9 +808,9 @@ export function Dashboard() {
       </section>
 
       <section className="grid flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="min-h-[640px] rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
-          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-            <CardTitle className="text-sm font-semibold text-[#17202a]">Skill galaxy</CardTitle>
+        <Card className="min-h-[640px] rounded-xl border-border bg-card py-0 shadow-sm">
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="text-sm font-semibold text-foreground">Skill galaxy</CardTitle>
           </CardHeader>
           <CardContent className="p-3">
             <SkillGalaxy
@@ -821,9 +821,9 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)]">
-          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
-            <CardTitle className="text-sm font-semibold text-[#17202a]">Inspector</CardTitle>
+        <Card className="rounded-xl border-border bg-card py-0 shadow-sm xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)]">
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="text-sm font-semibold text-foreground">Inspector</CardTitle>
           </CardHeader>
           <CardContent className="min-h-[420px] overflow-auto p-4">
             <SkillDetailPanel node={selectedNode} />
@@ -832,18 +832,18 @@ export function Dashboard() {
       </section>
 
       {showResumeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="flex h-full max-h-[85vh] w-full max-w-4xl flex-col rounded-xl border border-[#dfe3ea] bg-white shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="flex h-full max-h-[85vh] w-full max-w-4xl flex-col rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
             {/* Modal Header & Tabs */}
-            <div className="border-b border-[#edf0f5] bg-white">
+            <div className="border-b border-border bg-card">
               <div className="flex items-center justify-between px-6 pt-4 pb-2">
                 <div>
-                  <h3 className="text-lg font-bold text-[#17202a]">AI Resume Assistant</h3>
-                  <p className="text-xs text-[#626f86]">Export your resume or test it against an ATS screener.</p>
+                  <h3 className="text-lg font-bold text-foreground">AI Resume Assistant</h3>
+                  <p className="text-xs text-muted-foreground">Export your resume or test it against an ATS screener.</p>
                 </div>
                 <button
                   onClick={() => setShowResumeModal(false)}
-                  className="rounded-lg p-1 text-[#626f86] hover:bg-[#edf0f5] hover:text-[#17202a]"
+                  className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
                 >
                   <span className="sr-only">Close</span>
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -852,13 +852,13 @@ export function Dashboard() {
                 </button>
               </div>
               
-              <div className="flex gap-4 px-6 border-t border-[#edf0f5]/80">
+              <div className="flex gap-4 px-6 border-t border-border/80">
                 <button
                   onClick={() => setResumeModalTab("export")}
                   className={`border-b-2 py-3 text-sm font-semibold transition-colors ${
                     resumeModalTab === "export"
-                      ? "border-[#0c66e4] text-[#0c66e4]"
-                      : "border-transparent text-[#626f86] hover:text-[#17202a]"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   AI Resume Exporter
@@ -867,8 +867,8 @@ export function Dashboard() {
                   onClick={() => setResumeModalTab("ats")}
                   className={`border-b-2 py-3 text-sm font-semibold transition-colors ${
                     resumeModalTab === "ats"
-                      ? "border-[#0c66e4] text-[#0c66e4]"
-                      : "border-transparent text-[#626f86] hover:text-[#17202a]"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   ATS Upload & Analyzer
@@ -882,11 +882,11 @@ export function Dashboard() {
                 {/* Left Side: Controls */}
                 <div className="flex w-full flex-col gap-4 md:w-80">
                   <div>
-                    <label className="text-xs font-semibold uppercase tracking-wider text-[#626f86]">Select Target Role</label>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Select Target Role</label>
                     <select
                       value={selectedRoleId}
                       onChange={(e) => setSelectedRoleId(e.target.value)}
-                      className="mt-1.5 w-full rounded-lg border border-[#cfd7e3] bg-white px-3 py-2 text-sm text-[#17202a] shadow-sm outline-none focus:border-[#0c66e4]"
+                      className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus:border-primary"
                     >
                       <option value="">General (No target role optimization)</option>
                       {roles.map((r) => (
@@ -897,7 +897,7 @@ export function Dashboard() {
                     </select>
                   </div>
 
-                  <div className="rounded-lg border border-[#e9f2ff] bg-[#f3f8ff] p-4 text-xs text-[#0c66e4]">
+                  <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 text-xs text-primary">
                     <p className="font-semibold">How it works:</p>
                     <ul className="mt-2 list-disc space-y-1.5 pl-4">
                       <li>Fetches your technical skills, active confidence weights, and project portfolio.</li>
@@ -907,11 +907,11 @@ export function Dashboard() {
                     </ul>
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-[#edf0f5]">
+                  <div className="mt-auto pt-4 border-t border-border">
                     <Button
                       onClick={handleExportPdf}
                       disabled={downloading}
-                      className="w-full gap-2 bg-[#0c66e4] text-white hover:bg-[#0055cc]"
+                      className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       {downloading ? (
                         <>
@@ -929,20 +929,20 @@ export function Dashboard() {
                 </div>
 
                 {/* Right Side: Live HTML Preview */}
-                <div className="flex flex-1 flex-col rounded-lg border border-[#dfe3ea] bg-[#f7f8fa] overflow-hidden">
-                  <div className="bg-white px-4 py-2 border-b border-[#edf0f5] text-xs font-medium text-[#626f86] flex justify-between items-center">
+                <div className="flex flex-1 flex-col rounded-xl border border-border bg-muted/45 overflow-hidden">
+                  <div className="bg-card px-4 py-2 border-b border-border text-xs font-medium text-muted-foreground flex justify-between items-center">
                     <span>Live Document Preview (A4)</span>
                     <button
                       onClick={() => setPreviewVersion((v) => v + 1)}
-                      className="hover:text-[#0c66e4]"
+                      className="hover:text-primary"
                       title="Refresh Preview"
                     >
                       <RefreshCw className="h-3 w-3" />
                     </button>
                   </div>
                   {loadingPreview ? (
-                    <div className="flex flex-1 flex-col items-center justify-center bg-white gap-2 text-[#626f86] text-xs">
-                      <RefreshCw className="h-4 w-4 animate-spin text-[#0c66e4]" />
+                    <div className="flex flex-1 flex-col items-center justify-center bg-card gap-2 text-muted-foreground text-xs">
+                      <RefreshCw className="h-4 w-4 animate-spin text-primary" />
                       <span>Loading live preview...</span>
                     </div>
                   ) : (
@@ -960,7 +960,7 @@ export function Dashboard() {
                   {/* Left side: Upload & Score Results */}
                   <div className="flex flex-col gap-4 overflow-y-auto pr-2">
                     <div className="flex flex-col gap-2">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-[#626f86]">1. Select Target Role</label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">1. Select Target Role</label>
                       <select
                         value={selectedRoleId}
                         onChange={(e) => {
@@ -969,7 +969,7 @@ export function Dashboard() {
                             void runResumeAnalysis(extractedText, e.target.value);
                           }
                         }}
-                        className="w-full rounded-lg border border-[#cfd7e3] bg-white px-3 py-2 text-sm text-[#17202a] shadow-sm outline-none focus:border-[#0c66e4]"
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus:border-primary"
                       >
                         <option value="">-- Choose Target Role --</option>
                         {roles.map((r) => (
@@ -981,8 +981,8 @@ export function Dashboard() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-[#626f86]">2. Upload Current Resume (PDF)</label>
-                      <div className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#cfd7e3] bg-[#f7f8fa] p-6 text-center transition-all hover:bg-white hover:border-[#0c66e4]">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">2. Upload Current Resume (PDF)</label>
+                      <div className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/45 p-6 text-center transition-all hover:bg-card hover:border-primary">
                         <input
                           type="file"
                           accept=".pdf"
@@ -992,22 +992,22 @@ export function Dashboard() {
                         />
                         {parsingPdf ? (
                           <div className="flex flex-col items-center gap-2">
-                            <RefreshCw className="size-8 animate-spin text-[#0c66e4]" />
-                            <p className="text-sm font-semibold text-[#17202a]">Parsing resume PDF contents...</p>
+                            <RefreshCw className="size-8 animate-spin text-primary" />
+                            <p className="text-sm font-semibold text-foreground">Parsing resume PDF contents...</p>
                           </div>
                         ) : pdfFile ? (
                           <div className="flex flex-col items-center gap-2">
-                            <CheckCircle2 className="size-8 text-[#1f845a]" />
-                            <p className="text-sm font-semibold text-[#17202a]">{pdfFile.name}</p>
-                            <p className="text-xs text-[#626f86]">{(pdfFile.size / 1024).toFixed(1)} KB • Click or drag to replace</p>
+                            <CheckCircle2 className="size-8 text-emerald-600" />
+                            <p className="text-sm font-semibold text-foreground">{pdfFile.name}</p>
+                            <p className="text-xs text-muted-foreground">{(pdfFile.size / 1024).toFixed(1)} KB • Click or drag to replace</p>
                           </div>
                         ) : (
                           <div className="flex flex-col items-center gap-2">
-                            <svg className="size-8 text-[#626f86]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="size-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
-                            <p className="text-sm font-semibold text-[#17202a]">Upload resume PDF</p>
-                            <p className="text-xs text-[#626f86]">Drag & drop or browse files</p>
+                            <p className="text-sm font-semibold text-foreground">Upload resume PDF</p>
+                            <p className="text-xs text-muted-foreground">Drag & drop or browse files</p>
                           </div>
                         )}
                       </div>
@@ -1015,34 +1015,34 @@ export function Dashboard() {
 
                     {analyzingResume && (
                       <div className="flex items-center justify-center gap-2 py-8">
-                        <RefreshCw className="size-5 animate-spin text-[#0c66e4]" />
-                        <span className="text-sm font-medium text-[#17202a]">Analyzing resume keywords...</span>
+                        <RefreshCw className="size-5 animate-spin text-primary" />
+                        <span className="text-sm font-medium text-foreground">Analyzing resume keywords...</span>
                       </div>
                     )}
 
                     {analysisResult && (
-                      <div className="flex flex-col gap-4 rounded-xl border border-[#dfe3ea] bg-white p-4 shadow-sm">
-                        <div className="flex items-center justify-between border-b border-[#edf0f5] pb-3">
+                      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-sm">
+                        <div className="flex items-center justify-between border-b border-border pb-3">
                           <div>
-                            <h4 className="text-sm font-bold text-[#17202a]">Analysis Results</h4>
-                            <p className="text-xs text-[#626f86]">Matched against <strong className="text-[#17202a]">{analysisResult.roleTitle}</strong></p>
+                            <h4 className="text-sm font-bold text-foreground">Analysis Results</h4>
+                            <p className="text-xs text-muted-foreground">Matched against <strong className="text-foreground">{analysisResult.roleTitle}</strong></p>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="text-right">
-                              <span className="text-[10px] font-semibold text-[#626f86]">ATS Match Score</span>
-                              <div className="text-xl font-black text-[#0c66e4]">{analysisResult.atsScore}%</div>
+                              <span className="text-[10px] font-semibold text-muted-foreground">ATS Match Score</span>
+                              <div className="text-xl font-black text-primary">{analysisResult.atsScore}%</div>
                             </div>
                             <div className="relative h-10 w-10 flex-shrink-0">
                               <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
                                 <path
-                                  className="text-[#edf0f5]"
+                                  className="text-muted/30"
                                   strokeWidth="4"
                                   stroke="currentColor"
                                   fill="none"
                                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                                 />
                                 <path
-                                  className="text-[#0c66e4]"
+                                  className="text-primary"
                                   strokeDasharray={`${analysisResult.atsScore}, 100`}
                                   strokeWidth="4"
                                   strokeLinecap="round"
@@ -1056,13 +1056,13 @@ export function Dashboard() {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                          <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#626f86]">Matched Keywords ({analysisResult.matchedSkills.length})</h5>
+                          <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Matched Keywords ({analysisResult.matchedSkills.length})</h5>
                           {analysisResult.matchedSkills.length === 0 ? (
-                            <p className="text-xs text-[#626f86] italic">No keywords matched yet.</p>
+                            <p className="text-xs text-muted-foreground italic">No keywords matched yet.</p>
                           ) : (
                             <div className="flex flex-wrap gap-1">
                               {analysisResult.matchedSkills.map((s) => (
-                                <span key={s} className="rounded bg-[#e7f8ef] px-2 py-0.5 text-xs font-medium text-[#1f845a]">
+                                <span key={s} className="rounded bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600">
                                   ✓ {s}
                                 </span>
                               ))}
@@ -1071,9 +1071,9 @@ export function Dashboard() {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                          <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#626f86]">Missing Gap Keywords ({analysisResult.gapSkills.length})</h5>
+                          <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Missing Gap Keywords ({analysisResult.gapSkills.length})</h5>
                           {analysisResult.gapSkills.length === 0 ? (
-                            <p className="text-xs text-[#1f845a] font-semibold">Perfect! No gaps identified.</p>
+                            <p className="text-xs text-emerald-600 font-semibold">Perfect! No gaps identified.</p>
                           ) : (
                             <div className="flex flex-wrap gap-1">
                               {analysisResult.gapSkills.map((s) => (
@@ -1082,8 +1082,8 @@ export function Dashboard() {
                                   onClick={() => handleFetchResources(s)}
                                   className={`rounded px-2 py-0.5 text-xs font-medium transition-all ${
                                     selectedGapSkill === s
-                                      ? "bg-[#ae2a19] text-white"
-                                      : "bg-[#ffebe6] text-[#ae2a19] hover:bg-[#ffd2cc]"
+                                      ? "bg-destructive text-destructive-foreground"
+                                      : "bg-destructive/10 text-destructive hover:bg-destructive/20"
                                   }`}
                                 >
                                   + {s}
@@ -1097,25 +1097,25 @@ export function Dashboard() {
                   </div>
 
                   {/* Right side: Learning Recommendations */}
-                  <div className="rounded-xl border border-[#dfe3ea] bg-[#f7f8fa] p-4 flex flex-col overflow-hidden max-h-[380px]">
-                    <h4 className="text-xs font-bold text-[#17202a] flex items-center gap-1.5 border-b border-[#dfe3ea] pb-2">
-                      <Sparkles className="size-3.5 text-[#0c66e4]" />
+                  <div className="rounded-xl border border-border bg-card p-4 flex flex-col overflow-hidden max-h-[380px]">
+                    <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b border-border pb-2">
+                      <Sparkles className="size-3.5 text-primary" />
                       Recapture Recommendations
                     </h4>
                     <div className="flex-1 overflow-y-auto mt-2">
                       {selectedGapSkill ? (
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-semibold text-[#626f86]">Resources for:</span>
-                            <span className="rounded bg-[#ffebe6] px-1.5 py-0.5 text-[10px] font-bold text-[#ae2a19]">{selectedGapSkill}</span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">Resources for:</span>
+                            <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-[10px] font-bold text-destructive">{selectedGapSkill}</span>
                           </div>
                           {loadingResources ? (
-                            <div className="flex flex-col items-center justify-center gap-1.5 py-8 text-[#626f86]">
-                              <RefreshCw className="size-3.5 animate-spin text-[#0c66e4]" />
+                            <div className="flex flex-col items-center justify-center gap-1.5 py-8 text-muted-foreground">
+                              <RefreshCw className="size-3.5 animate-spin text-primary" />
                               <span className="text-[10px]">Loading suggestions...</span>
                             </div>
                           ) : gapSkillResources.length === 0 ? (
-                            <div className="text-center py-8 text-[10px] text-[#626f86] italic bg-white rounded-lg border border-[#dfe3ea]">
+                            <div className="text-center py-8 text-[10px] text-muted-foreground italic bg-card rounded-lg border border-border">
                               No direct online resources configured.
                             </div>
                           ) : (
@@ -1126,17 +1126,17 @@ export function Dashboard() {
                                   href={res.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="block p-2 rounded-lg border border-[#dfe3ea] bg-white hover:border-[#0c66e4] transition-colors"
+                                  className="block p-2 rounded-lg border border-border bg-card hover:border-primary transition-colors"
                                 >
                                   <div className="flex items-start justify-between gap-1">
-                                    <span className="text-xs font-bold text-[#17202a] line-clamp-1">{res.title}</span>
+                                    <span className="text-xs font-bold text-foreground line-clamp-1">{res.title}</span>
                                     {res.isUniversityApproved && (
-                                      <span className="rounded bg-[#e9f2ff] px-1 py-0.5 text-[8px] font-bold text-[#0c66e4] flex-shrink-0">
+                                      <span className="rounded bg-primary/10 px-1 py-0.5 text-[8px] font-bold text-primary flex-shrink-0">
                                         Approved
                                       </span>
                                     )}
                                   </div>
-                                  <div className="mt-1 flex items-center justify-between text-[8px] text-[#626f86]">
+                                  <div className="mt-1 flex items-center justify-between text-[8px] text-muted-foreground">
                                     <span>{res.provider || "Self-Study"}</span>
                                     {res.rating && <span>★ {res.rating.toFixed(1)}</span>}
                                   </div>
@@ -1146,8 +1146,8 @@ export function Dashboard() {
                           )}
                         </div>
                       ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center p-4 text-[#626f86]">
-                          <Target className="size-6 text-[#dfe3ea] mb-1.5" />
+                        <div className="h-full flex flex-col items-center justify-center text-center p-4 text-muted-foreground">
+                          <Target className="size-6 text-muted/40 mb-1.5" />
                           <p className="text-[10px] leading-relaxed">Select a missing gap keyword to view course recommendations.</p>
                         </div>
                       )}

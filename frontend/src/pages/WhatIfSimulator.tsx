@@ -291,7 +291,7 @@ export function WhatIfSimulator() {
             <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-[#17202a]">What-If Path Simulator</h1>
           </div>
         </div>
-        <p className="mt-2 text-sm text-[#44546f] max-w-2xl leading-relaxed">
+        <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">
           Explore how future coursework, certifications, or self-study electives will impact your career readiness roadmap. Add hypothetical skills to see estimated weeks saved in real-time.
         </p>
       </header>
@@ -319,7 +319,7 @@ export function WhatIfSimulator() {
                     <Button
                       variant="ghost"
                       onClick={handleClearAll}
-                      className="h-8 px-2.5 text-xs text-[#626f86] hover:text-red-600 hover:bg-red-50"
+                      className="h-8 px-2.5 text-xs text-muted-foreground hover:text-red-600 hover:bg-red-50"
                     >
                       Clear ({hypotheticalSkills.length})
                     </Button>
@@ -608,7 +608,7 @@ export function WhatIfSimulator() {
                       <Layers className="size-4 text-blue-600" />
                       Simulated Remaining Roadmap
                     </h3>
-                    <span className="text-xs font-medium text-[#626f86] px-2 py-0.5 rounded bg-slate-100">
+                    <span className="text-xs font-medium text-muted-foreground px-2 py-0.5 rounded bg-slate-100">
                       {simulationResult.simulated.roadmap.length} skills left to learn
                     </span>
                   </div>
@@ -703,7 +703,7 @@ export function WhatIfSimulator() {
         <div className="flex flex-col items-center justify-center rounded-xl border border-[#dfe3ea] bg-white p-12 text-center shadow-sm min-h-80">
           <GraduationCap className="size-12 text-blue-500 opacity-60" />
           <h3 className="mt-4 text-base font-bold text-[#17202a]">No Role Selected</h3>
-          <p className="mt-1 text-sm text-[#626f86] max-w-sm">
+          <p className="mt-1 text-sm text-muted-foreground max-w-sm">
             Select a target role from the dropdown above to calculate your current path gap and start the simulation.
           </p>
         </div>
@@ -719,11 +719,11 @@ export function WhatIfSimulator() {
                   <TrendingUp className="size-5 text-blue-600" />
                   Simulation Comparison Dashboard
                 </h3>
-                <p className="text-xs text-[#626f86]">Side-by-side analysis of your simulated academic career pathways.</p>
+                <p className="text-xs text-muted-foreground">Side-by-side analysis of your simulated academic career pathways.</p>
               </div>
               <button
                 onClick={() => setShowComparisonModal(false)}
-                className="rounded-lg p-1 text-[#626f86] hover:bg-[#edf0f5] hover:text-[#17202a]"
+                className="rounded-lg p-1 text-muted-foreground hover:bg-[#edf0f5] hover:text-[#17202a]"
               >
                 <span className="sr-only">Close</span>
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -822,7 +822,7 @@ export function WhatIfSimulator() {
                         return (
                           <td key={id} className="border border-[#dfe3ea] p-3">
                             {skills.length === 0 ? (
-                              <span className="text-xs text-[#626f86] italic">None</span>
+                              <span className="text-xs text-muted-foreground italic">None</span>
                             ) : (
                               <div className="flex flex-wrap gap-1">
                                 {skills.map((s, idx) => (

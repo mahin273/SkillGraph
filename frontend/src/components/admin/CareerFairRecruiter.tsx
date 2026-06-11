@@ -138,7 +138,7 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
       {/* Recruiter Configuration bar */}
       <div className="grid gap-4 md:grid-cols-[280px_1fr] items-end bg-[#f7f8fa] p-5 rounded-xl border border-[#dfe3ea]">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-[#626f86] uppercase tracking-wider">Representing Company</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Representing Company</label>
           <select
             value={selectedBoothId}
             onChange={(e) => setSelectedBoothId(e.target.value)}
@@ -155,7 +155,7 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
 
         {selectedBooth && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-[#626f86] uppercase">Target Skills:</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase">Target Skills:</span>
             {selectedBooth.requiredSkills.map((skill: any, idx) => (
               <Badge key={idx} variant="outline" className="bg-white border-[#cfd7e3] text-[#17202a]">
                 {typeof skill === "string" ? skill : skill.name}
@@ -175,7 +175,7 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
       {/* Recruiter Controls and Search */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search talents by name or matching skill..."
@@ -186,7 +186,7 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-[#626f86] uppercase tracking-wider">Min Match Score:</span>
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Min Match Score:</span>
           <div className="flex gap-1">
             {[0, 40, 70].map((score) => (
               <Button
@@ -204,13 +204,13 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
 
       {/* Talents Table/List */}
       {loading && talents.length === 0 ? (
-        <div className="py-12 text-center text-[#626f86] flex flex-col items-center gap-2">
+        <div className="py-12 text-center text-muted-foreground flex flex-col items-center gap-2">
           <Users className="size-8 animate-pulse text-[#0c66e4]" />
           <span className="text-sm font-semibold">Searching university database for matching candidates...</span>
         </div>
       ) : filteredTalents.length === 0 ? (
         <div className="rounded-xl border border-[#dfe3ea] bg-white py-12 text-center shadow-sm">
-          <p className="text-sm text-[#626f86]">No student profiles match the filter requirements.</p>
+          <p className="text-sm text-muted-foreground">No student profiles match the filter requirements.</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -225,14 +225,14 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
                       <h4 className="text-base font-bold text-[#17202a] truncate">
                         {talent.fullName}
                       </h4>
-                      <p className="text-xs text-[#626f86] mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         University Student • {talent.skills.length} active skills
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <span className="text-[10px] font-semibold text-[#626f86] uppercase">Match</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground uppercase">Match</span>
                         <div className={`text-xl font-black ${
                           talent.matchPercentage >= 70
                             ? "text-[#1f845a]"
@@ -247,9 +247,9 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
                 
                 <CardContent className="p-5 flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-bold text-[#626f86] uppercase tracking-wider">Matched Skills ({talent.matchedSkills.length})</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Matched Skills ({talent.matchedSkills.length})</span>
                     {talent.matchedSkills.length === 0 ? (
-                      <span className="text-xs text-[#626f86] italic">No matched skills.</span>
+                      <span className="text-xs text-muted-foreground italic">No matched skills.</span>
                     ) : (
                       <div className="flex flex-wrap gap-1">
                         {talent.matchedSkills.map((s, idx) => (
@@ -263,10 +263,10 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
 
                   {talent.gapSkills.length > 0 && (
                     <div className="flex flex-col gap-2">
-                      <span className="text-[10px] font-bold text-[#626f86] uppercase tracking-wider">Skill Gaps ({talent.gapSkills.length})</span>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Skill Gaps ({talent.gapSkills.length})</span>
                       <div className="flex flex-wrap gap-1">
                         {talent.gapSkills.map((s, idx) => (
-                          <Badge key={idx} variant="outline" className="border-[#dfe3ea] text-[#626f86] text-[10px] py-0.5">
+                          <Badge key={idx} variant="outline" className="border-[#dfe3ea] text-muted-foreground text-[10px] py-0.5">
                             {s}
                           </Badge>
                         ))}
@@ -320,12 +320,12 @@ export function CareerFairRecruiter({ fairId }: CareerFairRecruiterProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-xl border border-[#dfe3ea] bg-white p-6 shadow-2xl">
             <h3 className="text-lg font-bold text-[#17202a]">Send Interview Invitation</h3>
-            <p className="text-xs text-[#626f86] mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Invite <strong className="text-[#17202a]">{selectedTalent.fullName}</strong> to visit {selectedBooth?.companyName}.
             </p>
 
             <div className="mt-4 flex flex-col gap-2">
-              <label className="text-xs font-bold text-[#626f86] uppercase tracking-wider">Invitation Message</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Invitation Message</label>
               <textarea
                 value={inviteMessage}
                 onChange={(e) => setInviteMessage(e.target.value)}

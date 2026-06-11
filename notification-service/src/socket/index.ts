@@ -6,7 +6,8 @@ import { prisma } from "@skillgraph/database";
 type NotificationEvent = {
   userId: string;
   type: string;
-  payload: Record<string, unknown>;
+  payload?: Record<string, unknown>;
+  data?: Record<string, unknown>;
 };
 
 export function registerSocketHandlers(io: Server) {
@@ -54,11 +55,12 @@ async function initializeRedisPubSub(io: Server) {
     await subscriberClient.subscribe("notifications:publish", async (message) => {
       try {
         const event: NotificationEvent = JSON.parse(message);
+        const payload = event.payload ?? event.data ?? {};
 
         // Fan out event to the correct user's room
         io.to(`user:${event.userId}`).emit("notification", {
           type: event.type,
-          payload: event.payload,
+          payload,
           timestamp: new Date().toISOString()
         });
 
@@ -67,7 +69,7 @@ async function initializeRedisPubSub(io: Server) {
           data: {
             userId: event.userId,
             type: event.type,
-            payload: event.payload as any,
+            payload: payload as any,
             isRead: false
           }
         });

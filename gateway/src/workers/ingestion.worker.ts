@@ -244,7 +244,7 @@ async function processIngestionJob(userId: string, jobId: string) {
       JSON.stringify({
         type: "INGESTION_COMPLETE",
         userId,
-        data: {
+        payload: {
           skillsFound: nlpEnvelope.data.extracted_skills.length,
           repositoryCount: storedRepositories.length
         }

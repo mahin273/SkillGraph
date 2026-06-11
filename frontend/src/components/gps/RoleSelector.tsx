@@ -63,7 +63,7 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
         {selectedRole ? (
           <>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#626f86]">
+              <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
                 Role profile
               </p>
               <span className="text-xs font-medium text-[#0c66e4]">
@@ -77,20 +77,20 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
               {selectedRole.requiredSkills.slice(0, 5).map((skill) => (
                 <span
                   key={skill.name}
-                  className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1 text-xs text-[#44546f]"
+                  className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1 text-xs text-muted-foreground"
                 >
                   {skill.name}
                 </span>
               ))}
               {selectedRole.requiredSkills.length > 5 && (
-                <span className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1 text-xs text-[#626f86]">
+                <span className="rounded-md border border-[#dfe3ea] bg-white px-2 py-1 text-xs text-muted-foreground">
                   +{selectedRole.requiredSkills.length - 5} more
                 </span>
               )}
             </div>
           </>
         ) : (
-          <p className="text-sm text-[#626f86]">
+          <p className="text-sm text-muted-foreground">
             Pick a role to calculate your current gap and learning sequence.
           </p>
         )}

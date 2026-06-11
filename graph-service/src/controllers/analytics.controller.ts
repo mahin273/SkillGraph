@@ -2,6 +2,14 @@ import { Request, Response } from "express";
 import { prisma } from "@skillgraph/database";
 import { runRead } from "../neo4j/driver.js";
 
+interface IndustryGapRecord {
+  roleTitle: string;
+  roleId: string;
+  skillName: string;
+  industryRequired: number;
+  studentAverage: number;
+}
+
 export async function getSkillHeatmap(req: Request, res: Response) {
   try {
     const universityId = req.query.universityId as string | undefined;
@@ -38,23 +46,64 @@ export async function getIndustryGap(req: Request, res: Response) {
     const cypher = `
       MATCH (r:Role)-[req:REQUIRES]->(sk:Skill)
       OPTIONAL MATCH ${studentMatch}-[knows:KNOWS]->(sk)
-      WHERE coalesce(knows.confidence, 0) >= 0.5 AND coalesce(knows.dormant, false) = false
+      WITH r, req, sk,
+           [k IN collect(knows) WHERE k IS NOT NULL AND coalesce(k.confidence, 0) >= 0.5 AND coalesce(k.dormant, false) = false] AS activeKnows
       RETURN r.title AS roleTitle, 
-             r.id AS roleId,
+             coalesce(r.id, r.title) AS roleId,
              sk.name AS skillName, 
              toFloat(req.criticality) AS industryRequired, 
-             toFloat(coalesce(avg(knows.proficiency), 0)) AS studentAverage
+             CASE
+               WHEN size(activeKnows) = 0 THEN 0.0
+               ELSE reduce(total = 0.0, k IN activeKnows | total + toFloat(coalesce(k.proficiency, 0))) / size(activeKnows)
+             END AS studentAverage
       ORDER BY roleTitle ASC, industryRequired DESC
     `;
-    const records = await runRead<{
-      roleTitle: string;
-      roleId: string;
-      skillName: string;
-      industryRequired: number;
-      studentAverage: number;
-    }>(cypher, universityId ? { universityId } : {});
+    const records = await runRead<IndustryGapRecord>(cypher, universityId ? { universityId } : {});
 
-    res.json({ success: true, data: records });
+    if (records.length > 0) {
+      res.json({ success: true, data: records });
+      return;
+    }
+
+    const skillAveragesCypher = `
+      MATCH ${studentMatch}-[knows:KNOWS]->(sk:Skill)
+      WHERE coalesce(knows.confidence, 0) >= 0.5 AND coalesce(knows.dormant, false) = false
+      RETURN toLower(sk.name) AS skillName,
+             toFloat(coalesce(avg(coalesce(knows.proficiency, 0)), 0)) AS studentAverage
+    `;
+    const skillAverages = await runRead<{ skillName: string; studentAverage: number }>(
+      skillAveragesCypher,
+      universityId ? { universityId } : {}
+    );
+    const averageBySkill = new Map(skillAverages.map((item) => [item.skillName, item.studentAverage]));
+
+    const roles = await prisma.industryRole.findMany({
+      include: {
+        requirements: {
+          include: {
+            skill: true
+          }
+        }
+      },
+      orderBy: {
+        title: "asc"
+      }
+    });
+
+    const fallbackData: IndustryGapRecord[] = roles.flatMap((role) =>
+      role.requirements
+        .slice()
+        .sort((a, b) => b.criticality - a.criticality || a.skill.name.localeCompare(b.skill.name))
+        .map((requirement) => ({
+          roleTitle: role.title,
+          roleId: role.id,
+          skillName: requirement.skill.name,
+          industryRequired: requirement.criticality,
+          studentAverage: averageBySkill.get(requirement.skill.name.toLowerCase()) ?? 0
+        }))
+    );
+
+    res.json({ success: true, data: fallbackData });
   } catch (error) {
     console.error("[getIndustryGap] Error:", error);
     res.status(500).json({ success: false, error: { message: "Internal server error" } });

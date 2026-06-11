@@ -82,11 +82,11 @@ export function AuditLogViewer() {
           </div>
           <div>
             <h2 className="text-base font-semibold text-[#17202a]">Security & System Audit Logs</h2>
-            <p className="text-xs text-[#626f86]">Monitor system actions, entity modifications, and logins.</p>
+            <p className="text-xs text-muted-foreground">Monitor system actions, entity modifications, and logins.</p>
           </div>
         </div>
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#626f86]" />
+          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search action or user"
@@ -140,7 +140,7 @@ export function AuditLogViewer() {
 
       <div className="space-y-3">
         {filteredLogs.length === 0 ? (
-          <div className="text-center py-6 text-xs text-[#626f86]">No matching audit logs found.</div>
+          <div className="text-center py-6 text-xs text-muted-foreground">No matching audit logs found.</div>
         ) : (
           filteredLogs.map((log) => (
             <div
@@ -153,18 +153,18 @@ export function AuditLogViewer() {
                   {log.action}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-[#17202a]">
-                  <User className="size-3.5 text-[#626f86]" />
+                  <User className="size-3.5 text-muted-foreground" />
                   <span className="font-medium">{log.user?.fullName || "System/Anonymous"}</span>
-                  <span className="text-[#626f86]">({log.user?.email || "internal"})</span>
+                  <span className="text-muted-foreground">({log.user?.email || "internal"})</span>
                 </div>
                 {log.entity && (
-                  <div className="rounded bg-[#edf0f5] px-1.5 py-0.5 text-[10px] font-medium text-[#44546f]">
+                  <div className="rounded bg-[#edf0f5] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                     Entity: {log.entity}
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-[#626f86]">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                 {log.ipAddress && (
                   <span className="flex items-center gap-1">
                     <Globe className="size-3.5" />

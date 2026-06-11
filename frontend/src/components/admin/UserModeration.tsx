@@ -159,7 +159,7 @@ export function UserModeration() {
         </div>
         <div>
           <h2 className="text-base font-semibold text-[#17202a]">User Directory & Moderation</h2>
-          <p className="text-xs text-[#626f86]">Manage platform roles, verify faculty & alumni, and issue invites.</p>
+          <p className="text-xs text-muted-foreground">Manage platform roles, verify faculty & alumni, and issue invites.</p>
         </div>
       </div>
 
@@ -170,7 +170,7 @@ export function UserModeration() {
           Invite Academic Staff or Alumni
         </h3>
         <form onSubmit={handleCreateInvitation} className="grid gap-4 md:grid-cols-4 items-end">
-          <label className="grid gap-1 text-xs font-semibold text-[#626f86]">
+          <label className="grid gap-1 text-xs font-semibold text-muted-foreground">
             Email Address
             <input
               type="email"
@@ -181,7 +181,7 @@ export function UserModeration() {
               className="mt-1 h-9 rounded-md border border-[#cfd7e3] bg-white px-3 text-xs outline-none focus:border-[#0c66e4] focus:ring-1 focus:ring-[#0c66e4]"
             />
           </label>
-          <label className="grid gap-1 text-xs font-semibold text-[#626f86]">
+          <label className="grid gap-1 text-xs font-semibold text-muted-foreground">
             Role Type
             <select
               value={inviteRole}
@@ -193,7 +193,7 @@ export function UserModeration() {
             </select>
           </label>
           {isSuperAdmin ? (
-            <label className="grid gap-1 text-xs font-semibold text-[#626f86]">
+            <label className="grid gap-1 text-xs font-semibold text-muted-foreground">
               Target University
               <select
                 value={inviteUnivId}
@@ -208,9 +208,9 @@ export function UserModeration() {
               </select>
             </label>
           ) : (
-            <div className="grid gap-1 text-xs font-semibold text-[#626f86]">
+            <div className="grid gap-1 text-xs font-semibold text-muted-foreground">
               University Scope
-              <div className="mt-1 h-9 rounded-md border border-dashed border-[#cfd7e3] bg-[#f4f5f7] px-3 flex items-center text-[#44546f] font-normal select-none">
+              <div className="mt-1 h-9 rounded-md border border-dashed border-[#cfd7e3] bg-[#f4f5f7] px-3 flex items-center text-muted-foreground font-normal select-none">
                 {academicProfile?.universityName || "Your University"}
               </div>
             </div>
@@ -257,14 +257,14 @@ export function UserModeration() {
       {/* Filters bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 mb-4 border-b border-[#edf0f5]">
         <div className="flex items-center gap-2">
-          <Filter className="size-4 text-[#626f86]" />
-          <span className="text-xs font-semibold text-[#626f86]">Filter Directory:</span>
+          <Filter className="size-4 text-muted-foreground" />
+          <span className="text-xs font-semibold text-muted-foreground">Filter Directory:</span>
           <button
             onClick={() => { setFilterPending(false); setCurrentPage(1); }}
             className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
               !filterPending
                 ? "bg-[#0c66e4] text-white"
-                : "bg-[#f4f5f7] text-[#44546f] hover:bg-[#edf0f5]"
+                : "bg-[#f4f5f7] text-muted-foreground hover:bg-[#edf0f5]"
             }`}
           >
             All Users
@@ -274,7 +274,7 @@ export function UserModeration() {
             className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
               filterPending
                 ? "bg-[#0c66e4] text-white"
-                : "bg-[#f4f5f7] text-[#44546f] hover:bg-[#edf0f5]"
+                : "bg-[#f4f5f7] text-muted-foreground hover:bg-[#edf0f5]"
             }`}
           >
             Pending Approvals
@@ -285,7 +285,7 @@ export function UserModeration() {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-[#17202a]">
           <thead>
-            <tr className="border-b border-[#cfd7e3] text-xs font-semibold uppercase tracking-wider text-[#626f86]">
+            <tr className="border-b border-[#cfd7e3] text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <th className="pb-3 pr-4">Name</th>
               <th className="pb-3 px-4">Email</th>
               <th className="pb-3 px-4">Role</th>
@@ -305,10 +305,10 @@ export function UserModeration() {
               users.map((user) => (
                 <tr key={user.id} className="hover:bg-[#f7f8fa]">
                   <td className="py-3.5 pr-4 font-medium flex items-center gap-2">
-                    <User className="size-4 text-[#626f86]" />
+                    <User className="size-4 text-muted-foreground" />
                     {user.fullName}
                   </td>
-                  <td className="py-3.5 px-4 text-[#626f86]">{user.email || "No email"}</td>
+                  <td className="py-3.5 px-4 text-muted-foreground">{user.email || "No email"}</td>
                   <td className="py-3.5 px-4">
                     <select
                       value={user.role}
@@ -321,7 +321,7 @@ export function UserModeration() {
                       <option value="admin">Admin</option>
                     </select>
                   </td>
-                  <td className="py-3.5 px-4 text-xs text-[#626f86]">
+                  <td className="py-3.5 px-4 text-xs text-muted-foreground">
                     {user.studentProfile?.university?.shortName
                       ? `${user.studentProfile.university.shortName} (${user.studentProfile.department?.code || "CSE"})`
                       : user.alumniProfile?.university?.shortName
@@ -367,7 +367,7 @@ export function UserModeration() {
                           </>
                         ) : (
                           <>
-                            <ToggleLeft className="size-4 text-[#626f86]" />
+                            <ToggleLeft className="size-4 text-muted-foreground" />
                             Activate
                           </>
                         )}
@@ -394,7 +394,7 @@ export function UserModeration() {
 
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-[#edf0f5] pt-4 mt-6">
-          <div className="text-xs text-[#626f86]">
+          <div className="text-xs text-muted-foreground">
             Showing <span className="font-semibold text-[#17202a]">{(currentPage - 1) * pagination.limit + 1}</span> to{" "}
             <span className="font-semibold text-[#17202a]">
               {Math.min(currentPage * pagination.limit, pagination.total)}
