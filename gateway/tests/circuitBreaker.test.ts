@@ -1,7 +1,23 @@
-import { describe, expect, test, jest } from "@jest/globals";
+import { describe, expect, test, jest, beforeEach, afterEach } from "@jest/globals";
 import { CircuitBreaker, CircuitState } from "../src/utils/circuitBreaker.js";
 
 describe("CircuitBreaker Utility", () => {
+  let consoleErrorSpy: any;
+  let consoleWarnSpy: any;
+  let consoleLogSpy: any;
+
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
+    consoleLogSpy.mockRestore();
+  });
+
   const serviceName = "TestService";
   const fallback = "fallback-value";
 

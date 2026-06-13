@@ -265,10 +265,11 @@ export function Resources() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  style={{ color: "#17202a", backgroundColor: "white" }}
+                  className="w-full h-9 rounded-md border border-input px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   {resourceTypes.map((type) => (
-                    <option key={type} value={type}>
+                    <option key={type} value={type} style={{ color: "#17202a", backgroundColor: "white" }}>
                       {type}
                     </option>
                   ))}

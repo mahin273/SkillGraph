@@ -66,7 +66,7 @@ export function AppLayout() {
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
                 {role === "student"
-                  ? "Your student account requires verification. Please ensure your academic email matches your university's allowed domains in settings."
+                  ? "Your student account requires verification. Please ensure your email is a personal address (e.g. Gmail) or matches your university's allowed domains in settings."
                   : "Your academic registration is pending review by your university administrator. You will receive an email confirmation once your account has been approved and activated."}
               </p>
               <div className="flex flex-col gap-3">

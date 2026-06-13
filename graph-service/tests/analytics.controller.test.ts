@@ -1,4 +1,4 @@
-import { describe, expect, test, jest, beforeEach } from "@jest/globals";
+import { describe, expect, test, jest, beforeEach, afterEach } from "@jest/globals";
 import { Request, Response } from "express";
 
 // Mock the dependencies
@@ -24,6 +24,7 @@ describe("Analytics Controller", () => {
   let mockResponse: Partial<Response>;
   let jsonMock: any;
   let statusMock: any;
+  let consoleErrorSpy: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -34,6 +35,11 @@ describe("Analytics Controller", () => {
       json: jsonMock,
       status: statusMock
     };
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   describe("getSkillHeatmap", () => {

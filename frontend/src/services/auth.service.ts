@@ -6,6 +6,8 @@ export type AcademicProfile = {
   departmentId?: string | null;
   departmentName?: string | null;
   graduationYear?: number | null;
+  portfolioUrl?: string | null;
+  linkedinUrl?: string | null;
 };
 
 export type AcademicOptions = {
@@ -56,6 +58,8 @@ export async function updateAcademicProfile(input: {
   universityId: string;
   departmentId?: string | null;
   graduationYear?: number | null;
+  portfolioUrl?: string | null;
+  linkedinUrl?: string | null;
 }): Promise<AcademicProfile> {
   const response = await api.patch("/auth/academic-profile", input);
   return response.data.data;

@@ -40,16 +40,23 @@ async function processMessage(message: GraphUpdateMessage): Promise<void> {
     return;
   }
 
-  // Fetch student's universityId from Postgres
+  // Fetch student's universityId and publicHandle from Postgres
   let universityId: string | null = null;
+  let publicHandle: string | null = null;
   try {
     const user = await prisma.user.findUnique({
       where: { id: student_id },
-      select: { universityId: true }
+      select: {
+        universityId: true,
+        studentProfile: {
+          select: { publicHandle: true }
+        }
+      }
     });
     universityId = user?.universityId ?? null;
+    publicHandle = user?.studentProfile?.publicHandle ?? null;
   } catch (err) {
-    console.error(`[graphUpdate.consumer] Failed to query universityId for student ${student_id}:`, err);
+    console.error(`[graphUpdate.consumer] Failed to query universityId and handle for student ${student_id}:`, err);
   }
 
   // Upsert Student node
@@ -57,9 +64,10 @@ async function processMessage(message: GraphUpdateMessage): Promise<void> {
     `
     MERGE (s:Student {id: $studentId})
     SET s.universityId = $universityId,
+        s.handle = coalesce($publicHandle, s.handle),
         s.updatedAt = timestamp()
     `,
-    { studentId: student_id, universityId }
+    { studentId: student_id, universityId, publicHandle }
   );
 
   // Upsert each Skill node and KNOWS edge

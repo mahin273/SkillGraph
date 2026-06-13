@@ -118,3 +118,8 @@ export async function sendMentorshipMessage(mentorshipId: string, body: string):
   return response.data.data;
 }
 
+export async function getMentorshipConnections(): Promise<any[]> {
+  const response = await api.get("/mentors/connections");
+  return response.data.data;
+}
+

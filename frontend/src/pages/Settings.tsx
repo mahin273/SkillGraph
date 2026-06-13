@@ -1,7 +1,8 @@
-import { GraduationCap, Github, LogOut, Mail, Plus, Save, UserRound } from "lucide-react";
+import { GraduationCap, Github, LogOut, Mail, Plus, Save, UserRound, Trash2, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GitHubConnectButton } from "../components/auth/GitHubConnectButton";
 import { GoogleConnectButton } from "../components/auth/GoogleConnectButton";
+import { getResumeDetails, saveResumeDetails } from "../services/resume.service";
 import {
   createDepartment,
   createUniversity,
@@ -36,6 +37,8 @@ export function Settings() {
   const [universityId, setUniversityId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [graduationYear, setGraduationYear] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [newUniversityName, setNewUniversityName] = useState("");
   const [newDepartmentName, setNewDepartmentName] = useState("");
   const [addingUniversity, setAddingUniversity] = useState(false);
@@ -43,6 +46,102 @@ export function Settings() {
   const [academicStatus, setAcademicStatus] = useState<string | null>(null);
   const [savingAcademicProfile, setSavingAcademicProfile] = useState(false);
   const { setUser, clearUser } = useAuthStore();
+
+  // Resume / CV Details states
+  const [resumePhone, setResumePhone] = useState("");
+  const [relevantCoursework, setRelevantCoursework] = useState("");
+  const [workExperiences, setWorkExperiences] = useState<any[]>([]);
+  const [publications, setPublications] = useState<any[]>([]);
+  const [loadingResumeDetails, setLoadingResumeDetails] = useState(false);
+  const [savingResumeDetails, setSavingResumeDetails] = useState(false);
+  const [resumeDetailsStatus, setResumeDetailsStatus] = useState<string | null>(null);
+
+  // New Work Experience Form states
+  const [newCompany, setNewCompany] = useState("");
+  const [newRole, setNewRole] = useState("");
+  const [newStart, setNewStart] = useState("");
+  const [newEnd, setNewEnd] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+
+  // New Publication Form states
+  const [newPubTitle, setNewPubTitle] = useState("");
+  const [newPubAt, setNewPubAt] = useState("");
+  const [newPubUrl, setNewPubUrl] = useState("");
+
+  const addWorkExperience = () => {
+    if (!newCompany.trim() || !newRole.trim()) return;
+    setWorkExperiences([
+      ...workExperiences,
+      {
+        company: newCompany.trim(),
+        role: newRole.trim(),
+        startDate: newStart.trim() || "2025",
+        endDate: newEnd.trim() || "2026",
+        description: newDesc.trim()
+      }
+    ]);
+    setNewCompany("");
+    setNewRole("");
+    setNewStart("");
+    setNewEnd("");
+    setNewDesc("");
+  };
+
+  const removeWorkExperience = (index: number) => {
+    setWorkExperiences(workExperiences.filter((_, i) => i !== index));
+  };
+
+  const addPublication = () => {
+    if (!newPubTitle.trim()) return;
+    setPublications([
+      ...publications,
+      {
+        title: newPubTitle.trim(),
+        publishedAt: newPubAt.trim() || null,
+        url: newPubUrl.trim() || null
+      }
+    ]);
+    setNewPubTitle("");
+    setNewPubAt("");
+    setNewPubUrl("");
+  };
+
+  const removePublication = (index: number) => {
+    setPublications(publications.filter((_, i) => i !== index));
+  };
+
+  const handleSaveResumeDetails = async () => {
+    setSavingResumeDetails(true);
+    setResumeDetailsStatus(null);
+    try {
+      await saveResumeDetails({
+        phoneNumber: resumePhone,
+        relevantCoursework,
+        workExperiences,
+        publications
+      });
+      setResumeDetailsStatus("Resume details saved successfully! Refresh your resume preview to see changes.");
+    } catch (error) {
+      setResumeDetailsStatus(error instanceof Error ? error.message : "Failed to save resume details.");
+    } finally {
+      setSavingResumeDetails(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.role === "student") {
+      setLoadingResumeDetails(true);
+      void getResumeDetails()
+        .then((details) => {
+          setResumePhone(details.phoneNumber || "");
+          setRelevantCoursework(details.relevantCoursework || "");
+          setWorkExperiences(details.workExperiences || []);
+          setPublications(details.publications || []);
+        })
+        .catch((err) => console.error("Failed to load resume details:", err))
+        .finally(() => setLoadingResumeDetails(false));
+    }
+  }, [user]);
 
   const isStudent = user?.role === "student";
   const isProfessor = user?.role === "professor";
@@ -72,6 +171,8 @@ export function Settings() {
     setUniversityId(academicProfile?.universityId ?? "");
     setDepartmentId(academicProfile?.departmentId ?? "");
     setGraduationYear(academicProfile?.graduationYear ? String(academicProfile.graduationYear) : "");
+    setPortfolioUrl(academicProfile?.portfolioUrl ?? "");
+    setLinkedinUrl(academicProfile?.linkedinUrl ?? "");
   }, [user]);
 
   const selectedUniversity = academicOptions.universities.find((university) => university.id === universityId);
@@ -162,7 +263,9 @@ export function Settings() {
       const updatedAcademicProfile = await updateAcademicProfile({
         universityId,
         departmentId: departmentId || null,
-        graduationYear: graduationYear ? Number(graduationYear) : null
+        graduationYear: graduationYear ? Number(graduationYear) : null,
+        portfolioUrl: portfolioUrl || null,
+        linkedinUrl: linkedinUrl || null
       });
       const nextUser = user ? { ...user, academicProfile: updatedAcademicProfile } : user;
       if (nextUser) {
@@ -375,6 +478,39 @@ export function Settings() {
               </label>
             )}
 
+            {/* Portfolio and LinkedIn Fields (Students only) */}
+            {isStudent && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="grid gap-2 text-sm font-medium text-[#17202a]">
+                  Portfolio / Website URL
+                  <input
+                    type="url"
+                    value={portfolioUrl}
+                    onChange={(event) => {
+                      setPortfolioUrl(event.target.value);
+                      setAcademicStatus(null);
+                    }}
+                    placeholder="https://myportfolio.com"
+                    className="h-9 rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm font-medium text-[#17202a]">
+                  LinkedIn Profile URL
+                  <input
+                    type="url"
+                    value={linkedinUrl}
+                    onChange={(event) => {
+                      setLinkedinUrl(event.target.value);
+                      setAcademicStatus(null);
+                    }}
+                    placeholder="https://linkedin.com/in/username"
+                    className="h-9 rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20"
+                  />
+                </label>
+              </div>
+            )}
+
             {academicStatus && (
               <p className="rounded-lg bg-[#f7f8fa] px-3 py-2 text-sm text-muted-foreground">{academicStatus}</p>
             )}
@@ -392,6 +528,221 @@ export function Settings() {
                   {savingAcademicProfile ? "Saving..." : "Save academic profile"}
                 </Button>
               </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {isStudent && (
+        <Card className="rounded-lg border-[#dfe3ea] bg-white py-0 shadow-sm">
+          <CardHeader className="border-b border-[#edf0f5] px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+              <FileText className="size-4 text-[#0c66e4]" />
+              Resume / CV Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 p-4">
+            {loadingResumeDetails ? (
+              <p className="text-sm text-muted-foreground">Loading resume details...</p>
+            ) : (
+              <>
+                <label className="grid gap-2 text-sm font-medium text-[#17202a]">
+                  Contact Phone Number
+                  <input
+                    type="text"
+                    value={resumePhone}
+                    onChange={(e) => setResumePhone(e.target.value)}
+                    placeholder="+8801873306762"
+                    className="h-9 rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm font-medium text-[#17202a]">
+                  Relevant Coursework
+                  <textarea
+                    value={relevantCoursework}
+                    onChange={(e) => setRelevantCoursework(e.target.value)}
+                    placeholder="Object Oriented Programming, Databases Management System, Discrete Maths, Data Structures and Algorithms, Computer Networks"
+                    rows={2}
+                    className="rounded-lg border border-[#cfd7e3] bg-[#f7f8fa] p-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2 focus:ring-[#0c66e4]/20"
+                  />
+                </label>
+
+                {/* Work Experiences Section */}
+                <div className="grid gap-2">
+                  <h3 className="text-sm font-bold text-[#17202a]">Work Experience</h3>
+                  
+                  {workExperiences.length > 0 && (
+                    <div className="grid gap-2 mb-2">
+                      {workExperiences.map((exp, index) => (
+                        <div key={index} className="flex items-start justify-between rounded-lg border border-[#edf0f5] p-3 text-sm">
+                          <div>
+                            <p className="font-semibold text-foreground">{exp.company}</p>
+                            <p className="text-xs text-muted-foreground">{exp.role} | {exp.startDate} - {exp.endDate}</p>
+                            {exp.description && (
+                              <p className="mt-1 text-xs text-muted-foreground whitespace-pre-line">{exp.description}</p>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => removeWorkExperience(index)}
+                            className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="grid gap-2 rounded-lg border border-[#edf0f5] bg-[#f7f8fa] p-3 text-sm">
+                    <p className="font-semibold text-muted-foreground">Add Work Experience</p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <input
+                        type="text"
+                        value={newCompany}
+                        onChange={(e) => setNewCompany(e.target.value)}
+                        placeholder="Company/Org Name (e.g. IEEE Computer Society)"
+                        className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                      />
+                      <input
+                        type="text"
+                        value={newRole}
+                        onChange={(e) => setNewRole(e.target.value)}
+                        placeholder="Role/Title (e.g. Secretary)"
+                        className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                      />
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <input
+                        type="text"
+                        value={newStart}
+                        onChange={(e) => setNewStart(e.target.value)}
+                        placeholder="Start Date (e.g. 2025)"
+                        className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                      />
+                      <input
+                        type="text"
+                        value={newEnd}
+                        onChange={(e) => setNewEnd(e.target.value)}
+                        placeholder="End Date (e.g. 2026)"
+                        className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                      />
+                    </div>
+                    <textarea
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
+                      placeholder="Bullet-point details (one per line)"
+                      rows={3}
+                      className="rounded-lg border border-[#cfd7e3] bg-white p-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                    />
+                    <div>
+                      <Button
+                        type="button"
+                        onClick={addWorkExperience}
+                        disabled={!newCompany.trim() || !newRole.trim()}
+                        className="bg-[#0c66e4] text-white hover:bg-[#0055cc]"
+                      >
+                        Add Experience
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Research & Publications Section */}
+                <div className="grid gap-2">
+                  <h3 className="text-sm font-bold text-[#17202a]">Research & Publications</h3>
+
+                  {publications.length > 0 && (
+                    <div className="grid gap-2 mb-2">
+                      {publications.map((pub, index) => (
+                        <div key={index} className="flex items-start justify-between rounded-lg border border-[#edf0f5] p-3 text-sm">
+                          <div>
+                            <p className="font-semibold text-foreground">{pub.title}</p>
+                            <p className="text-xs text-muted-foreground">{pub.publishedAt}</p>
+                            {pub.url && (
+                              <a
+                                href={pub.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-xs text-[#0c66e4] hover:underline"
+                              >
+                                {pub.url}
+                              </a>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => removePublication(index)}
+                            className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="grid gap-2 rounded-lg border border-[#edf0f5] bg-[#f7f8fa] p-3 text-sm">
+                    <p className="font-semibold text-muted-foreground">Add Publication</p>
+                    <input
+                      type="text"
+                      value={newPubTitle}
+                      onChange={(e) => setNewPubTitle(e.target.value)}
+                      placeholder="Publication Title (e.g. Hajj Pilgrim Registration System)"
+                      className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                    />
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <input
+                        type="text"
+                        value={newPubAt}
+                        onChange={(e) => setNewPubAt(e.target.value)}
+                        placeholder="Info (e.g. SPICSCON2025, 2025)"
+                        className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                      />
+                      <input
+                        type="url"
+                        value={newPubUrl}
+                        onChange={(e) => setNewPubUrl(e.target.value)}
+                        placeholder="Link/URL"
+                        className="h-9 rounded-lg border border-[#cfd7e3] bg-white px-3 text-sm outline-none focus:border-[#0c66e4] focus:ring-2"
+                      />
+                    </div>
+                    <div>
+                      <Button
+                        type="button"
+                        onClick={addPublication}
+                        disabled={!newPubTitle.trim()}
+                        className="bg-[#0c66e4] text-white hover:bg-[#0055cc]"
+                      >
+                        Add Publication
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {resumeDetailsStatus && (
+                  <p className="rounded-lg bg-[#f7f8fa] px-3 py-2 text-sm text-muted-foreground">
+                    {resumeDetailsStatus}
+                  </p>
+                )}
+
+                <div>
+                  <Button
+                    type="button"
+                    onClick={handleSaveResumeDetails}
+                    disabled={savingResumeDetails}
+                    className="gap-2 bg-[#0c66e4] text-white hover:bg-[#0055cc]"
+                  >
+                    <Save className="size-4" />
+                    {savingResumeDetails ? "Saving..." : "Save Resume Details"}
+                  </Button>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

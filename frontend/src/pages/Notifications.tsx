@@ -112,6 +112,18 @@ function getNotificationTitle(type: string): string {
       return "Skills Updated";
     case "GPS_PATH_UPDATED":
       return "Career Path Updated";
+    case "MENTORSHIP_REQUESTED":
+      return "Mentorship Request";
+    case "MENTORSHIP_ACCEPTED":
+      return "Mentorship Accepted";
+    case "MENTORSHIP_MESSAGE":
+      return "New Message";
+    case "MENTORSHIP_COMPLETED":
+      return "Mentorship Completed";
+    case "CAREER_FAIR_INVITE":
+      return "Career Fair Invite";
+    case "SKILL_DECAY":
+      return "Skill Decay Warning";
     default:
       return "Notification";
   }
@@ -119,18 +131,34 @@ function getNotificationTitle(type: string): string {
 
 function getNotificationMessage(notification: Notification): string {
   const { type, payload } = notification;
+  if (!payload) return "You have a new notification";
+  const p = payload as any;
   
   switch (type) {
     case "ENDORSEMENT_RECEIVED":
-      return `${payload.fromUser} endorsed your ${payload.skill} skill`;
+      return `${p.fromUser || "Someone"} endorsed your ${p.skill || "skill"} skill`;
+    case "TEAM_INVITE_RECEIVED":
+      return `${p.fromUser || "Someone"} invited you to join team for project ${p.projectName || ""}`;
     case "TEAM_INVITE_ACCEPTED":
-      return `${payload.byUser} accepted your invitation to ${payload.projectName}`;
+      return `${p.byUser || "Someone"} accepted your invitation to ${p.projectName || ""}`;
     case "TEAM_INVITE_DECLINED":
-      return `${payload.byUser} declined your invitation`;
+      return `${p.byUser || "Someone"} declined your invitation`;
     case "INGESTION_COMPLETE":
-      return `Found ${payload.skillsFound} skills from your repositories`;
+      return `Found ${p.skillsFound || 0} skills from your repositories`;
     case "GPS_PATH_UPDATED":
-      return `Your career path is now ${payload.newCompletion}% complete`;
+      return `Your career path is now ${p.newCompletion || 0}% complete`;
+    case "MENTORSHIP_REQUESTED":
+      return `${p.studentName || "A student"} requested mentorship for ${p.skillName || "a skill"}`;
+    case "MENTORSHIP_ACCEPTED":
+      return `${p.mentorName || "A mentor"} accepted your mentorship request for ${p.skillName || "a skill"}`;
+    case "MENTORSHIP_MESSAGE":
+      return `${p.senderName || "Your partner"} (${p.skillName || ""}): ${p.preview || ""}`;
+    case "MENTORSHIP_COMPLETED":
+      return `${p.mentorName || "Your mentor"} completed your mentorship for ${p.skillName || ""}`;
+    case "CAREER_FAIR_INVITE":
+      return `${p.companyName || "A company"} invited you to their booth (${p.boothNumber || ""}) for ${p.fairName || ""}`;
+    case "SKILL_DECAY":
+      return p.warningText || `Your skill "${p.skillName || ""}" has decayed due to inactivity.`;
     default:
       return "You have a new notification";
   }

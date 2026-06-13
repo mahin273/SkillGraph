@@ -41,6 +41,11 @@ export async function getRecommendedMentors(req: Request, res: Response) {
       return;
     }
 
+    if (!student.universityId) {
+      ok(res, []);
+      return;
+    }
+
     // 1. Resolve student's target skills to learn (gaps)
     let targetSkillNames: string[] = [];
 
@@ -98,7 +103,8 @@ export async function getRecommendedMentors(req: Request, res: Response) {
         willingToMentor: true,
         verified: true,
         // Don't recommend yourself if you are also registered as an alumnus
-        userId: { not: req.user.id }
+        userId: { not: req.user.id },
+        universityId: student.universityId
       },
       include: {
         user: true,
@@ -171,6 +177,20 @@ export async function requestMentorship(req: Request, res: Response) {
 
     if (!student) {
       fail(res, "STUDENT_NOT_FOUND", "Student profile not found", 404);
+      return;
+    }
+
+    const mentor = await prisma.alumniProfile.findUnique({
+      where: { id: alumniId }
+    });
+
+    if (!mentor) {
+      fail(res, "MENTOR_NOT_FOUND", "Mentor profile not found", 404);
+      return;
+    }
+
+    if (!student.universityId || !mentor.universityId || student.universityId !== mentor.universityId) {
+      fail(res, "FORBIDDEN", "University isolation prevents requesting mentorship from other universities", 403);
       return;
     }
 
@@ -768,6 +788,76 @@ export async function verifyMentorship(req: Request, res: Response) {
   } catch (error: any) {
     console.error("Failed to verify mentorship:", error);
     fail(res, "INTERNAL_ERROR", error.message || "Failed to verify mentorship", 500);
+  }
+}
+
+// Fetch all active or pending mentorship connections for student or alumnus
+export async function getMyMentorships(req: Request, res: Response) {
+  if (!req.user) {
+    fail(res, "UNAUTHORIZED", "Missing authenticated user", 401);
+    return;
+  }
+
+  try {
+    const mentorships = await prisma.alumniMentorship.findMany({
+      where: {
+        OR: [
+          { student: { userId: req.user.id } },
+          { alumni: { userId: req.user.id } }
+        ],
+        status: { in: ["active", "completed", "requested"] }
+      },
+      include: {
+        student: {
+          include: {
+            user: {
+              select: { 
+                id: true, 
+                fullName: true, 
+                avatarUrl: true, 
+                email: true,
+                githubHandle: true,
+                repositories: {
+                  select: {
+                    id: true,
+                    repoName: true,
+                    fullName: true
+                  }
+                },
+                endorsementsGot: {
+                  include: {
+                    skill: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        alumni: {
+          include: {
+            user: {
+              select: { id: true, fullName: true, avatarUrl: true, email: true }
+            }
+          }
+        },
+        skill: true,
+        messages: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          include: {
+            sender: {
+              select: { id: true, fullName: true }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: "desc" }
+    });
+
+    ok(res, mentorships);
+  } catch (error: any) {
+    console.error("Failed to get user mentorships:", error);
+    fail(res, "INTERNAL_ERROR", error.message || "Failed to retrieve mentorships", 500);
   }
 }
 

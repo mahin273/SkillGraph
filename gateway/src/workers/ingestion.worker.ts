@@ -204,7 +204,10 @@ async function processIngestionJob(userId: string, jobId: string) {
     const nlpEnvelope = (await nlpResponse.json()) as { data: { extracted_skills: unknown[] } };
 
     // Call Graph service
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { studentProfile: true }
+    });
     const graphRepositories = storedRepositories.map(({ id, name, fullName, description, language }) => ({
       id,
       name,
@@ -218,6 +221,7 @@ async function processIngestionJob(userId: string, jobId: string) {
       body: JSON.stringify({
         studentId: userId,
         githubHandle: user?.githubHandle,
+        publicHandle: user?.studentProfile?.publicHandle,
         repositories: graphRepositories,
         skills: nlpEnvelope.data.extracted_skills
       })

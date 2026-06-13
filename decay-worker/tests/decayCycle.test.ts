@@ -1,4 +1,4 @@
-import { describe, expect, test, jest, beforeEach } from "@jest/globals";
+import { describe, expect, test, jest, beforeEach, afterEach } from "@jest/globals";
 
 // Mock dependencies
 jest.unstable_mockModule("../src/config/neo4j.js", () => ({
@@ -29,8 +29,15 @@ const { prisma } = await import("@skillgraph/database");
 const { runDecayCycle } = await import("../src/jobs/decayCycle.job.js");
 
 describe("Decay Cycle Job", () => {
+  let consoleLogSpy: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore();
   });
 
   test("should skip decay if no student profile is found", async () => {

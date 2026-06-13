@@ -1,4 +1,4 @@
-import { describe, expect, test, jest, beforeEach } from "@jest/globals";
+import { describe, expect, test, jest, beforeEach, afterEach } from "@jest/globals";
 import type { Server, Socket } from "socket.io";
 
 // Mock dependencies
@@ -33,9 +33,11 @@ const { registerSocketHandlers } = await import("../src/socket/index.js");
 
 describe("Socket Connection and Notification Handlers", () => {
   let mockIo: any;
+  let consoleLogSpy: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
     mockIo = {
       use: jest.fn().mockImplementation((fn: any) => {
@@ -48,6 +50,10 @@ describe("Socket Connection and Notification Handlers", () => {
         emit: jest.fn()
       })
     };
+  });
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore();
   });
 
   test("should authenticate socket connection using JWT middleware", async () => {

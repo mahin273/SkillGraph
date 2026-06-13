@@ -886,12 +886,13 @@ export function Dashboard() {
                     <select
                       value={selectedRoleId}
                       onChange={(e) => setSelectedRoleId(e.target.value)}
-                      className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus:border-primary"
+                      style={{ color: "#17202a", backgroundColor: "white" }}
+                      className="mt-1.5 w-full rounded-lg border border-input px-3 py-2 text-sm shadow-sm outline-none focus:border-primary"
                     >
-                      <option value="">General (No target role optimization)</option>
+                      <option value="" style={{ color: "#17202a", backgroundColor: "white" }}>General (No target role optimization)</option>
                       {roles.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.title}
+                        <option key={r.id} value={r.id} style={{ color: "#17202a", backgroundColor: "white" }}>
+                          {r.name}
                         </option>
                       ))}
                     </select>
@@ -969,12 +970,13 @@ export function Dashboard() {
                             void runResumeAnalysis(extractedText, e.target.value);
                           }
                         }}
-                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus:border-primary"
+                        style={{ color: "#17202a", backgroundColor: "white" }}
+                        className="w-full rounded-lg border border-input px-3 py-2 text-sm shadow-sm outline-none focus:border-primary"
                       >
-                        <option value="">-- Choose Target Role --</option>
+                        <option value="" style={{ color: "#17202a", backgroundColor: "white" }}>-- Choose Target Role --</option>
                         {roles.map((r) => (
-                          <option key={r.id} value={r.id}>
-                            {r.title}
+                          <option key={r.id} value={r.id} style={{ color: "#17202a", backgroundColor: "white" }}>
+                            {r.name}
                           </option>
                         ))}
                       </select>

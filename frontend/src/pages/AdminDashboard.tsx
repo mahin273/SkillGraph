@@ -46,13 +46,13 @@ export function AdminDashboard() {
     { id: "users", label: "User Moderation", icon: Users },
     ...(isPlatformAdmin ? [{ id: "universities", label: "University Management", icon: Building }] : []),
     { id: "audits", label: "Security Audit Logs", icon: ShieldAlert },
+    { id: "roles", label: "Career Predefined Roles", icon: BookOpen },
     ...(isPlatformAdmin ? [
       { id: "threats", label: "Threats & Service Status", icon: Activity },
       { id: "jobs", label: "Ingestion Jobs Queue", icon: Database },
       { id: "github", label: "GitHub Connections", icon: Github },
       { id: "taxonomy", label: "Skill Taxonomy", icon: Award },
-      { id: "config", label: "Global Settings Config", icon: SettingsIcon },
-      { id: "roles", label: "Career Predefined Roles", icon: BookOpen }
+      { id: "config", label: "Global Settings Config", icon: SettingsIcon }
     ] : []),
     { id: "approvals", label: "Alumni Verification Queue", icon: Sparkles }
   ];
@@ -60,6 +60,7 @@ export function AdminDashboard() {
   const professorTabs = [
     { id: "analytics", label: "Intelligence Analytics", icon: BarChart3 },
     { id: "curriculum", label: "Curriculum Analytics", icon: Layers },
+    { id: "roles", label: "Career Predefined Roles", icon: BookOpen },
     { id: "students", label: "Students Directory", icon: Users },
     { id: "teambuilder", label: "AI Team Builder", icon: Sparkles },
     { id: "courses", label: "Course Skill-Mapping", icon: BookOpen },
@@ -186,7 +187,7 @@ export function AdminDashboard() {
         {isAdmin && activeTab === "github" && isPlatformAdmin && <GithubConnectionDashboard />}
         {isAdmin && activeTab === "taxonomy" && isPlatformAdmin && <SkillTaxonomyManager />}
         {isAdmin && activeTab === "approvals" && <AlumniVerificationQueue />}
-        {isAdmin && activeTab === "roles" && isPlatformAdmin && <AdminRoleEditor />}
+        {activeTab === "roles" && (isAdmin || role === "professor") && <AdminRoleEditor />}
         {isAdmin && activeTab === "config" && isPlatformAdmin && <SystemConfigEditor />}
 
         {/* Professor Tab content */}

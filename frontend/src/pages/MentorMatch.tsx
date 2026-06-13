@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HeartHandshake,
   Search,
@@ -17,7 +18,8 @@ import {
   ChevronRight,
   UserCheck,
   Sparkles,
-  Plus
+  Plus,
+  MessageCircle
 } from "lucide-react";
 import {
   getRecommendedMentors,
@@ -27,7 +29,6 @@ import {
   getMyAlumniProfile,
   type AlumniProfile
 } from "../services/mentorship.service";
-import { MentorshipWorkspace } from "../components/shared/MentorshipWorkspace";
 import { getAllSkills } from "../services/matchmaker.service";
 import { getRoles } from "../services/careerGps.service";
 import { Button } from "../components/ui/button";
@@ -37,6 +38,7 @@ import { Badge } from "../components/ui/badge";
 import { useAuthStore } from "../store/auth.store";
 
 export function MentorMatch() {
+  const navigate = useNavigate();
   const { userId, fullName, academicProfile, role } = useAuthStore();
   const uniName = academicProfile?.universityName || "University";
   const isAlumni = role === "alumni";
@@ -496,15 +498,15 @@ export function MentorMatch() {
                             )}
                           </div>
                           
-                          <MentorshipWorkspace
-                            mentorshipId={mentor.existingMentorship!.id}
-                            skillName={(mentor.existingMentorship as any).skill?.name || "Skill"}
-                            partnerName={mentor.name}
-                            partnerRole="student"
-                            initialStatus={mentor.existingMentorship!.status}
-                            initialMilestones={(mentor.existingMentorship as any).milestones || []}
-                            onRefresh={() => loadMentors(selectedRoleId)}
-                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigate(`/messages?id=${mentor.existingMentorship!.id}`)}
+                            className="border-[#cfd7e3] bg-white text-[#0c66e4] hover:bg-[#e9f2ff] text-xs flex items-center justify-center gap-1.5 w-full mt-2"
+                          >
+                            <MessageCircle className="size-3.5" />
+                            Open Chat
+                          </Button>
                         </div>
                       )}
                     </CardContent>
@@ -879,15 +881,15 @@ export function MentorMatch() {
                               )}
                             </div>
                             
-                            <MentorshipWorkspace
-                              mentorshipId={req.id}
-                              skillName={req.skill?.name || "Skill"}
-                              partnerName={studentUser.fullName}
-                              partnerRole="mentor"
-                              initialStatus={req.status}
-                              initialMilestones={(req as any).milestones || []}
-                              onRefresh={refreshOwnProfile}
-                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => navigate(`/messages?id=${req.id}`)}
+                              className="border-[#cfd7e3] bg-white text-[#0c66e4] hover:bg-[#e9f2ff] text-xs flex items-center justify-center gap-1.5 w-full mt-2"
+                            >
+                              <MessageCircle className="size-3.5" />
+                              Open Chat
+                            </Button>
                           </div>
                         )}
 

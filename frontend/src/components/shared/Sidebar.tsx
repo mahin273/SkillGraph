@@ -9,6 +9,7 @@ import {
   Library,
   LifeBuoy,
   LogOut,
+  MessageSquare,
   Network,
   Settings,
   Sparkles,
@@ -24,6 +25,7 @@ const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/career-gps", label: "Career GPS", icon: Compass },
   { to: "/matchmaker", label: "Matchmaker", icon: Users },
+  { to: "/messages", label: "Messages", icon: MessageSquare },
   { to: "/resources", label: "Resources", icon: Library },
   { to: "/simulator", label: "Simulator", icon: GitFork },
   { to: "/career-fair", label: "Career Fair", icon: BriefcaseBusiness },
@@ -36,6 +38,7 @@ const hotkeys: Record<string, string> = {
   "/dashboard": "D",
   "/career-gps": "G",
   "/matchmaker": "M",
+  "/messages": "C",
   "/resources": "R",
   "/simulator": "S",
   "/career-fair": "F",
@@ -74,7 +77,7 @@ export function Sidebar() {
         return ["/admin", "/settings"].includes(link.to);
       }
       if (role === "alumni") {
-        return ["/dashboard", "/career-fair", "/settings"].includes(link.to);
+        return ["/dashboard", "/career-fair", "/settings", "/messages"].includes(link.to);
       }
       if (role === "professor") {
         return ["/admin", "/settings"].includes(link.to);

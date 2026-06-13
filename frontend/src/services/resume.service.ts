@@ -46,3 +46,30 @@ export async function analyzeResume(text: string, roleId: string): Promise<{
   return response.data.data;
 }
 
+export type ResumeDetails = {
+  phoneNumber: string;
+  relevantCoursework?: string;
+  workExperiences: Array<{
+    company: string;
+    role: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }>;
+  publications: Array<{
+    title: string;
+    publishedAt: string;
+    url: string;
+  }>;
+};
+
+export async function getResumeDetails(): Promise<ResumeDetails> {
+  const response = await api.get<{ success: boolean; data: ResumeDetails }>("/resume/details");
+  return response.data.data;
+}
+
+export async function saveResumeDetails(details: ResumeDetails): Promise<ResumeDetails> {
+  const response = await api.post<{ success: boolean; data: ResumeDetails }>("/resume/details", details);
+  return response.data.data;
+}
+

@@ -9,6 +9,7 @@ export const graphRouter = Router();
 const updateSchema = z.object({
   studentId: z.string(),
   githubHandle: z.string().optional(),
+  publicHandle: z.string().optional(),
   repositories: z.array(z.object({
     id: z.string(),
     name: z.string(),
@@ -51,7 +52,7 @@ graphRouter.post("/update", async (req, res, next) => {
     await runWrite(
       `
       MERGE (student:Student {id: $studentId})
-      SET student.handle = coalesce($githubHandle, student.handle),
+      SET student.handle = coalesce($publicHandle, $githubHandle, student.handle),
           student.updatedAt = datetime()
       WITH student
       UNWIND $repositories AS repo
@@ -534,9 +535,10 @@ graphRouter.post("/sync", async (req, res, next) => {
       SET s.name = $name,
           s.university = $university,
           s.universityId = $universityId,
+          s.handle = coalesce($handle, s.handle),
           s.updatedAt = timestamp()
       `,
-      { studentId, name: user.fullName, university: universityName, universityId }
+      { studentId, name: user.fullName, university: universityName, universityId, handle: user.studentProfile?.publicHandle ?? null }
     );
 
     // Fetch all skills the student has endorsements for and sync them

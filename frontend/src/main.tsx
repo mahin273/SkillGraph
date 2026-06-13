@@ -17,6 +17,7 @@ import { Resources } from "./pages/Resources";
 import { Settings } from "./pages/Settings";
 import { WhatIfSimulator } from "./pages/WhatIfSimulator";
 import { Onboarding } from "./pages/Onboarding";
+import { Messages } from "./pages/Messages";
 import "./styles.css";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/career-fair" element={<CareerFair />} />
             <Route path="/mentors" element={<MentorMatch />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/messages" element={<Messages />} />
           </Route>
         </Routes>
       </BrowserRouter>

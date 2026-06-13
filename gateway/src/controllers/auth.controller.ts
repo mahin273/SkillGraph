@@ -659,7 +659,9 @@ export async function getCurrentUser(req: Request, res: Response) {
       universityName: user.studentProfile.university?.name ?? null,
       departmentId: user.studentProfile.departmentId,
       departmentName: user.studentProfile.department?.name ?? null,
-      graduationYear: user.studentProfile.graduationYear
+      graduationYear: user.studentProfile.graduationYear,
+      portfolioUrl: user.studentProfile.portfolioUrl,
+      linkedinUrl: user.studentProfile.linkedinUrl
     };
   } else if (user.role === "alumni" && user.alumniProfile) {
     academicProfilePayload = {
@@ -823,7 +825,9 @@ export async function updateAcademicProfile(req: Request, res: Response) {
   const payload = z.object({
     universityId: z.string().uuid(),
     departmentId: z.string().uuid().nullable().optional(),
-    graduationYear: z.number().int().min(2000).max(2100).nullable().optional()
+    graduationYear: z.number().int().min(2000).max(2100).nullable().optional(),
+    portfolioUrl: z.string().trim().nullable().optional(),
+    linkedinUrl: z.string().trim().nullable().optional()
   }).parse(req.body);
 
   const university = await prisma.university.findUnique({
@@ -875,8 +879,31 @@ export async function updateAcademicProfile(req: Request, res: Response) {
     isVerified = false; // Always requires admin approval
   } else if (req.user.role === "student") {
     if (university.allowedDomains && university.allowedDomains.length > 0) {
-      const emailDomain = user.email?.split("@")[1] || "";
-      isVerified = university.allowedDomains.some(d => emailDomain.toLowerCase().endsWith(d.toLowerCase()));
+      const emailDomain = (user.email?.split("@")[1] || "").toLowerCase();
+      const isAllowedDomain = university.allowedDomains.some(d => emailDomain.endsWith(d.toLowerCase()));
+      // Common personal email domains to allow flexible registration
+      const personalDomains = [
+        "gmail.com",
+        "googlemail.com",
+        "yahoo.com",
+        "ymail.com",
+        "outlook.com",
+        "hotmail.com",
+        "live.com",
+        "msn.com",
+        "icloud.com",
+        "me.com",
+        "mac.com",
+        "proton.me",
+        "protonmail.com",
+        "aol.com",
+        "mail.com",
+        "gmx.com",
+        "zoho.com",
+        "yandex.com"
+      ];
+      const isPersonalDomain = personalDomains.includes(emailDomain);
+      isVerified = isAllowedDomain || isPersonalDomain;
     }
   } else if (req.user.role === "alumni") {
     isVerified = false; // Always requires admin approval
@@ -901,7 +928,9 @@ export async function updateAcademicProfile(req: Request, res: Response) {
       data: {
         universityId: payload.universityId,
         departmentId: payload.departmentId ?? null,
-        graduationYear: payload.graduationYear ?? null
+        graduationYear: payload.graduationYear ?? null,
+        portfolioUrl: payload.portfolioUrl ?? null,
+        linkedinUrl: payload.linkedinUrl ?? null
       },
       include: {
         university: true,
@@ -914,7 +943,9 @@ export async function updateAcademicProfile(req: Request, res: Response) {
       universityName: updatedProfile.university?.name ?? null,
       departmentId: updatedProfile.departmentId,
       departmentName: updatedProfile.department?.name ?? null,
-      graduationYear: updatedProfile.graduationYear
+      graduationYear: updatedProfile.graduationYear,
+      portfolioUrl: updatedProfile.portfolioUrl,
+      linkedinUrl: updatedProfile.linkedinUrl
     });
     return;
   }

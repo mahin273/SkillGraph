@@ -48,6 +48,8 @@ Table student_profiles {
   bio String
   linkedinUrl String
   portfolioUrl String
+  phoneNumber String
+  relevantCoursework String
   publicHandle String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
   user users [not null]
@@ -61,6 +63,8 @@ Table student_profiles {
   decayAudits skill_decay_audits [not null]
   simulatedPaths simulated_paths [not null]
   resourceCompletions student_resource_completions [not null]
+  workExperiences work_experiences [not null]
+  publications research_publications [not null]
 }
 
 Table universities {
@@ -484,6 +488,28 @@ Table academic_invitations {
   university universities [not null]
 }
 
+Table work_experiences {
+  id String [pk]
+  studentProfileId String [not null]
+  company String [not null]
+  role String [not null]
+  startDate String [not null]
+  endDate String [not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  student student_profiles [not null]
+}
+
+Table research_publications {
+  id String [pk]
+  studentProfileId String [not null]
+  title String [not null]
+  publishedAt String
+  url String
+  createdAt DateTime [default: `now()`, not null]
+  student student_profiles [not null]
+}
+
 Enum UserRole {
   student
   professor
@@ -605,3 +631,7 @@ Ref: simulated_paths.studentId > student_profiles.id
 Ref: simulated_paths.targetRoleId > industry_roles.id
 
 Ref: academic_invitations.universityId > universities.id
+
+Ref: work_experiences.studentProfileId > student_profiles.id [delete: Cascade]
+
+Ref: research_publications.studentProfileId > student_profiles.id [delete: Cascade]

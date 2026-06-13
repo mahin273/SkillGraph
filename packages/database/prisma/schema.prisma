@@ -80,6 +80,8 @@ model StudentProfile {
   bio               String?
   linkedinUrl       String?               @map("linkedin_url")
   portfolioUrl      String?               @map("portfolio_url")
+  phoneNumber       String?               @map("phone_number") @db.VarChar(50)
+  relevantCoursework String?              @map("relevant_coursework")
   publicHandle      String                @unique @map("public_handle") @db.VarChar(100)
   createdAt         DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -93,6 +95,8 @@ model StudentProfile {
   decayAudits       SkillDecayAudit[]
   simulatedPaths    SimulatedPath[]
   resourceCompletions StudentResourceCompletion[]
+  workExperiences   WorkExperience[]
+  publications      ResearchPublication[]
 
   @@map("student_profiles")
 }
@@ -567,4 +571,30 @@ model AcademicInvitation {
   university   University       @relation(fields: [universityId], references: [id])
 
   @@map("academic_invitations")
+}
+
+model WorkExperience {
+  id               String         @id @default(uuid()) @db.Uuid
+  studentProfileId String         @map("student_profile_id") @db.Uuid
+  company          String         @db.VarChar(200)
+  role             String         @db.VarChar(200)
+  startDate        String         @map("start_date") @db.VarChar(50)
+  endDate          String         @map("end_date") @db.VarChar(50)
+  description      String?
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("work_experiences")
+}
+
+model ResearchPublication {
+  id               String         @id @default(uuid()) @db.Uuid
+  studentProfileId String         @map("student_profile_id") @db.Uuid
+  title            String         @db.VarChar(300)
+  publishedAt      String?        @map("published_at") @db.VarChar(200)
+  url              String?
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("research_publications")
 }

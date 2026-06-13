@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HeartHandshake,
   CheckCircle2,
@@ -36,11 +37,11 @@ import { useAuthStore } from "../store/auth.store";
 import { SkillHeatmap } from "../components/admin/SkillHeatmap";
 import { IndustryGapChart } from "../components/admin/IndustryGapChart";
 import { TrendLineChart } from "../components/admin/TrendLineChart";
-import { MentorshipChat } from "../components/shared/MentorshipChat";
 
 export function AlumniDashboard() {
   const { fullName, academicProfile } = useAuthStore();
   const uniName = academicProfile?.universityName || "University";
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<"overview" | "analytics" | "profile">("overview");
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,6 @@ export function AlumniDashboard() {
   const [skillSearchInput, setSkillSearchInput] = useState("");
   const [allSkills, setAllSkills] = useState<any[]>([]);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [openChatId, setOpenChatId] = useState<string | null>(null);
 
   // Load Alumnus Profile
   const loadProfile = async () => {
@@ -412,16 +412,6 @@ export function AlumniDashboard() {
                               )}
                             </div>
                           )}
-
-                          {(isActive || isCompleted) && studentUser && openChatId === req.id && (
-                            <div className="mt-4">
-                              <MentorshipChat
-                                mentorshipId={req.id}
-                                partnerName={studentUser.fullName || "Student"}
-                                status={req.status}
-                              />
-                            </div>
-                          )}
                         </div>
 
                         {/* Actions buttons */}
@@ -452,11 +442,11 @@ export function AlumniDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => setOpenChatId(openChatId === req.id ? null : req.id)}
+                                onClick={() => navigate(`/messages?id=${req.id}`)}
                                 className="border-[#cfd7e3] bg-white text-[#0c66e4] hover:bg-[#e9f2ff] text-xs flex items-center justify-center gap-1.5"
                               >
                                 <MessageCircle className="size-3.5" />
-                                Chat
+                                View Chat
                               </Button>
                               <Button
                                 size="sm"
@@ -483,11 +473,11 @@ export function AlumniDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => setOpenChatId(openChatId === req.id ? null : req.id)}
+                                onClick={() => navigate(`/messages?id=${req.id}`)}
                                 className="border-[#cfd7e3] bg-white text-[#0c66e4] hover:bg-[#e9f2ff] text-xs flex items-center justify-center gap-1.5"
                               >
                                 <MessageCircle className="size-3.5" />
-                                {openChatId === req.id ? "Hide Chat" : "View Chat"}
+                                View Chat
                               </Button>
                               <span className="text-xs text-muted-foreground italic text-center w-full flex items-center justify-center gap-1.5 py-1">
                                 <CheckCircle2 className="size-4 text-emerald-600" />
