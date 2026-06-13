@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { GalaxyData, GalaxyNode } from "../../services/graph.service";
 import { OnboardingEmptyState } from "./OnboardingEmptyState";
 import { SkillTooltip } from "./SkillTooltip";
-import { ForceGraph3D } from "react-force-graph";
+import ForceGraph3D from "react-force-graph-3d";
 import * as THREE from "three";
 
 type SkillGalaxyProps = {
