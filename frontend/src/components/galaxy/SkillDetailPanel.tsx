@@ -127,6 +127,33 @@ export function SkillDetailPanel({
         .filter(Boolean) as GalaxyNode[]
     : [];
 
+  // Compute actual updatedAt date
+  // For a Skill node: it is the max updatedAt date of all projects using it, falling back to node.updatedAt.
+  // For a Project node: it is just node.updatedAt.
+  let computedUpdatedAt = node.updatedAt;
+  if (isSkill) {
+    const projectsUsingThisSkill = links
+      .filter((l) => getNodeId(l.target) === node.id && l.type === "BUILT_WITH")
+      .map((l) => {
+        const sourceId = getNodeId(l.source);
+        return nodes.find((n) => n.id === sourceId);
+      })
+      .filter(Boolean);
+
+    if (projectsUsingThisSkill.length > 0) {
+      const dates = projectsUsingThisSkill
+        .map((p) => p?.updatedAt)
+        .filter(Boolean)
+        .map((d) => parseNeo4jDate(d))
+        .filter((d): d is Date => d !== null);
+
+      if (dates.length > 0) {
+        const maxDate = new Date(Math.max(...dates.map((d) => d.getTime())));
+        computedUpdatedAt = maxDate.toISOString();
+      }
+    }
+  }
+
   return (
     <div className="space-y-5">
       {/* ─── Header ─── */}
@@ -300,14 +327,14 @@ export function SkillDetailPanel({
           )}
 
           {/* ─── NEW: Last Updated ─── */}
-          {node.updatedAt && (
+          {computedUpdatedAt && (
             <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" />
                 Last updated
               </span>
               <span className="text-foreground">
-                {formatDate(node.updatedAt)}
+                {formatDate(computedUpdatedAt)}
               </span>
             </div>
           )}
@@ -380,14 +407,14 @@ export function SkillDetailPanel({
           )}
 
           {/* ─── NEW: Last Updated ─── */}
-          {node.updatedAt && (
+          {computedUpdatedAt && (
             <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" />
                 Last updated
               </span>
               <span className="text-foreground">
-                {formatDate(node.updatedAt)}
+                {formatDate(computedUpdatedAt)}
               </span>
             </div>
           )}

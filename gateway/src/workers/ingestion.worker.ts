@@ -12,6 +12,7 @@ type GithubRepositoryPayload = {
   stargazers_count: number;
   fork: boolean;
   default_branch: string;
+  pushed_at?: string;
 };
 
 type GithubCommitPayload = {
@@ -181,6 +182,7 @@ async function processIngestionJob(userId: string, jobId: string) {
         description: stored.description,
         language: stored.language,
         readme,
+        pushedAt: repo.pushed_at || new Date().toISOString(),
         commits: (commits ?? []).map((commit) => commit.commit.message)
       });
     }
@@ -208,12 +210,13 @@ async function processIngestionJob(userId: string, jobId: string) {
       where: { id: userId },
       include: { studentProfile: true }
     });
-    const graphRepositories = storedRepositories.map(({ id, name, fullName, description, language }) => ({
+    const graphRepositories = storedRepositories.map(({ id, name, fullName, description, language, pushedAt }) => ({
       id,
       name,
       fullName,
       description,
-      language
+      language,
+      updatedAt: pushedAt
     }));
     const graphResponse = await fetch(`${env.GRAPH_SERVICE_URL}/graph/update`, {
       method: "POST",

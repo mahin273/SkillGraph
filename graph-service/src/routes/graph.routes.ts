@@ -16,7 +16,8 @@ const updateSchema = z.object({
     name: z.string(),
     fullName: z.string(),
     description: z.string().nullable().optional(),
-    language: z.string().nullable().optional()
+    language: z.string().nullable().optional(),
+    updatedAt: z.string().optional()
   })).default([]),
   skills: z.array(z.object({
     skill_name: z.string(),
@@ -118,7 +119,7 @@ graphRouter.post("/update", async (req, res, next) => {
           project.fullName = repo.fullName,
           project.description = repo.description,
           project.language = repo.language,
-          project.updatedAt = datetime()
+          project.updatedAt = case when repo.updatedAt is not null and repo.updatedAt <> "" then datetime(repo.updatedAt) else datetime() end
       MERGE (student)-[:WORKED_ON]->(project)
       WITH student
       UNWIND $skills AS extracted
