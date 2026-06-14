@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import neo4j from "neo4j-driver";
 import { findCandidatesQuery } from "../neo4j/queries/matchmaker.queries.js";
 import { runRead, runWrite } from "../neo4j/driver.js";
 import { prisma } from "@skillgraph/database";
@@ -24,22 +25,78 @@ const updateSchema = z.object({
   })).default([])
 });
 
+function convertNeo4jValue(val: unknown): unknown {
+  if (val === null || val === undefined) {
+    return val;
+  }
+
+  // Handle Neo4j Integer
+  if (neo4j.isInt(val)) {
+    return (val as any).toNumber();
+  }
+
+  // Handle Neo4j temporal types (DateTime, Date, Time, LocalTime, LocalDateTime, Duration)
+  if (typeof val === "object") {
+    const constructorName = val.constructor?.name;
+    if (
+      constructorName &&
+      ["DateTime", "Date", "LocalDateTime", "LocalTime", "Time", "Duration"].includes(constructorName) &&
+      typeof (val as any).toString === "function"
+    ) {
+      return (val as any).toString();
+    }
+
+    // Duck typing check for any object with year, month, day and custom toString
+    if (
+      "year" in val &&
+      "month" in val &&
+      "day" in val &&
+      typeof (val as any).toString === "function"
+    ) {
+      const str = (val as any).toString();
+      if (str !== "[object Object]") {
+        return str;
+      }
+    }
+
+    // If it's an array, recursively convert
+    if (Array.isArray(val)) {
+      return val.map(convertNeo4jValue);
+    }
+  }
+
+  return val;
+}
+
+function convertProperties(properties: Record<string, unknown>): Record<string, unknown> {
+  const converted: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(properties)) {
+    converted[key] = convertNeo4jValue(value);
+  }
+  return converted;
+}
+
 function toGalaxy(records: Array<{ node: { properties: Record<string, unknown> }; rel?: { type: string; properties: Record<string, unknown> }; target?: { properties: Record<string, unknown> } }>) {
   const nodes = new Map<string, Record<string, unknown>>();
   const links: Array<Record<string, unknown>> = [];
 
   for (const record of records) {
-    const source = record.node.properties;
+    const source = convertProperties(record.node.properties);
     const sourceLabels = "labels" in record.node ? (record.node as unknown as { labels?: string[] }).labels : [];
     const sourceId = String(source.id ?? source.name);
     nodes.set(sourceId, { id: sourceId, labels: sourceLabels, ...source });
 
     if (record.target && record.rel) {
-      const target = record.target.properties;
+      const target = convertProperties(record.target.properties);
       const targetLabels = "labels" in record.target ? (record.target as unknown as { labels?: string[] }).labels : [];
       const targetId = String(target.id ?? target.name);
       nodes.set(targetId, { id: targetId, labels: targetLabels, ...target });
-      links.push({ source: sourceId, target: targetId, type: record.rel.type, ...record.rel.properties });
+      links.push({
+        source: sourceId,
+        target: targetId,
+        type: record.rel.type,
+        ...convertProperties(record.rel.properties)
+      });
     }
   }
 

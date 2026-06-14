@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import type { GalaxyData, GalaxyNode } from "../../services/graph.service";
 import { OnboardingEmptyState } from "./OnboardingEmptyState";
 import { SkillTooltip } from "./SkillTooltip";
@@ -24,40 +24,59 @@ const CATEGORY_COLORS: Record<string, string> = {
   Uncategorized: "#71717a", // zinc-500
 };
 
+const GRAPH_HEIGHT = 560;
+
 export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false, onSelect, searchFilter = "" }: SkillGalaxyProps) {
   const fgRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [hovered, setHovered] = useState<GalaxyNode | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 760, height: 560 });
+  const [containerWidth, setContainerWidth] = useState(1);
 
-  // Handle responsive sizing
-  useEffect(() => {
-    if (containerRef.current) {
-      setDimensions({
-        width: containerRef.current.clientWidth || 760,
-        height: 560,
-      });
+  // Measure container width — use layout effect for synchronous measurement before paint
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth;
+        if (w > 0) setContainerWidth(w);
+      }
+    };
 
-      const handleResize = () => {
-        if (containerRef.current) {
-          setDimensions({
-            width: containerRef.current.clientWidth,
-            height: 560,
-          });
-        }
-      };
+    measure();
 
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }
+    // Backup measurement after layout settles
+    const t1 = setTimeout(measure, 50);
+    const t2 = setTimeout(measure, 200);
+
+    const handleResize = () => measure();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
+
+  // When containerWidth changes, manually resize the Three.js renderer
+  // as a fallback in case ForceGraph3D doesn't respond to prop changes
+  useEffect(() => {
+    if (containerWidth > 1 && fgRef.current) {
+      try {
+        const renderer = fgRef.current.renderer?.();
+        if (renderer) {
+          renderer.setSize(containerWidth, GRAPH_HEIGHT);
+        }
+      } catch {
+        // renderer() may not be available yet
+      }
+    }
+  }, [containerWidth]);
 
   const getCategoryColor = (category?: string): string => {
     return CATEGORY_COLORS[category ?? "Uncategorized"] ?? CATEGORY_COLORS.Uncategorized;
   };
 
   // Custom 3D Object Drawer for Nodes
-  const drawNode = (node: any) => {
+  const drawNode = useCallback((node: any) => {
     const group = new THREE.Group();
 
     // 1. Determine size based on node type
@@ -139,7 +158,7 @@ export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false,
     }
 
     return group;
-  };
+  }, [searchFilter]);
 
   const handleNodeClick = (node: any) => {
     if (!fgRef.current) return;
@@ -172,23 +191,29 @@ export function SkillGalaxy({ data = { nodes: [], links: [] }, readOnly = false,
   }
 
   return (
-    <div ref={containerRef} className="relative min-h-[560px] overflow-hidden rounded-xl border border-border bg-[#09090b]">
-      <ForceGraph3D
-        ref={fgRef}
-        width={dimensions.width}
-        height={560}
-        graphData={data}
-        backgroundColor="#09090b"
-        nodeThreeObject={drawNode}
-        linkWidth={(link: any) => (link.type === "KNOWS" ? 1.5 : 0.8)}
-        linkColor={() => "rgba(255, 255, 255, 0.12)"}
-        linkDirectionalParticles={2}
-        linkDirectionalParticleWidth={2}
-        linkDirectionalParticleSpeed={0.006}
-        onNodeHover={(node) => setHovered(node as GalaxyNode | null)}
-        onNodeClick={handleNodeClick}
-        enableNodeDrag={!readOnly}
-      />
+    <div
+      ref={containerRef}
+      className="relative overflow-hidden rounded-xl border border-border bg-[#09090b]"
+      style={{ width: "100%", height: GRAPH_HEIGHT }}
+    >
+      {containerWidth > 1 && (
+        <ForceGraph3D
+          ref={fgRef}
+          width={containerWidth}
+          height={GRAPH_HEIGHT}
+          graphData={data}
+          backgroundColor="#09090b"
+          nodeThreeObject={drawNode}
+          linkWidth={(link: any) => (link.type === "KNOWS" ? 1.5 : 0.8)}
+          linkColor={() => "rgba(255, 255, 255, 0.12)"}
+          linkDirectionalParticles={2}
+          linkDirectionalParticleWidth={2}
+          linkDirectionalParticleSpeed={0.006}
+          onNodeHover={(node) => setHovered(node as GalaxyNode | null)}
+          onNodeClick={handleNodeClick}
+          enableNodeDrag={!readOnly}
+        />
+      )}
       <SkillTooltip node={hovered} />
     </div>
   );

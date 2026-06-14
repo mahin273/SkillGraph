@@ -808,11 +808,11 @@ export function Dashboard() {
       </section>
 
       <section className="grid flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="min-h-[640px] rounded-xl border-border bg-card py-0 shadow-sm">
+        <Card className="min-w-0 min-h-[640px] overflow-hidden rounded-xl border-border bg-card py-0 shadow-sm">
           <CardHeader className="border-b border-border px-4 py-3">
             <CardTitle className="text-sm font-semibold text-foreground">Skill galaxy</CardTitle>
           </CardHeader>
-          <CardContent className="p-3">
+          <CardContent className="!p-0">
             <SkillGalaxy
               data={{ nodes, links }}
               onSelect={setSelectedNode}
@@ -826,7 +826,12 @@ export function Dashboard() {
             <CardTitle className="text-sm font-semibold text-foreground">Inspector</CardTitle>
           </CardHeader>
           <CardContent className="min-h-[420px] overflow-auto p-4">
-            <SkillDetailPanel node={selectedNode} />
+            <SkillDetailPanel
+              node={selectedNode}
+              links={links}
+              nodes={nodes}
+              decayedSkills={decayedSkills}
+            />
           </CardContent>
         </Card>
       </section>

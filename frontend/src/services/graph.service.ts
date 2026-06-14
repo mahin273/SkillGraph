@@ -15,15 +15,21 @@ export interface GalaxyNode {
   dormant?: boolean;
   endorsed?: boolean;
   sourceRepos?: string[];
+  updatedAt?: string;
+}
+
+export interface GalaxyLink {
+  source: string | { id: string };
+  target: string | { id: string };
+  type?: string;
+  confidence?: number;
+  sourceRepos?: string[];
+  updatedAt?: string;
 }
 
 export interface GalaxyData {
   nodes: GalaxyNode[];
-  links: Array<{
-    source: string | { id: string };
-    target: string | { id: string };
-    type?: string;
-  }>;
+  links: GalaxyLink[];
 }
 
 export async function getStudentSkills(studentId: string) {
