@@ -1,0 +1,173 @@
+services:
+  # 1. API Gateway (Exposed Web Service)
+  - type: web
+    name: skillgraph-gateway
+    runtime: docker
+    dockerfilePath: gateway/Dockerfile
+    dockerContext: .
+    plan: free
+    dockerCommand: "npm --prefix .. run db:deploy && npm run dev"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skillgraph-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: skillgraph-redis
+          property: connectionString
+      - key: GRAPH_SERVICE_URL
+        value: http://skillgraph-graph-service:3001
+      - key: NLP_SERVICE_URL
+        value: http://skillgraph-nlp-service:8001
+      - key: FRONTEND_URL
+        value: http://localhost:5173 # Replace with your production Frontend Render URL
+      - key: TOKEN_ENCRYPTION_KEY
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      # Authentication Keys (Configure in Render Dashboard or leave blank for defaults)
+      - key: JWT_PUBLIC_KEY
+        sync: false
+      - key: JWT_PRIVATE_KEY
+        sync: false
+      # GitHub OAuth Configuration
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CALLBACK_URL
+        sync: false
+      # Google OAuth Configuration
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      # SMTP Configuration for Notifications
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+
+  # 2. Graph Service (Internal Private Service)
+  - type: pserv
+    name: skillgraph-graph-service
+    runtime: docker
+    dockerfilePath: graph-service/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skillgraph-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: skillgraph-redis
+          property: connectionString
+      # Neo4j credentials (Option A: Neo4j AuraDB credentials go here)
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USER
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+
+  # 3. NLP Service (Internal Private Service)
+  - type: pserv
+    name: skillgraph-nlp-service
+    runtime: docker
+    dockerfilePath: nlp-service/Dockerfile
+    dockerContext: nlp-service
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skillgraph-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: skillgraph-redis
+          property: connectionString
+
+  # 4. Notification Service (Exposed Web Service for Socket.IO)
+  - type: web
+    name: skillgraph-notification-service
+    runtime: docker
+    dockerfilePath: notification-service/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skillgraph-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: skillgraph-redis
+          property: connectionString
+      - key: JWT_PUBLIC_KEY
+        sync: false
+      - key: JWT_PRIVATE_KEY
+        sync: false
+
+  # 5. Decay Worker (Background Worker)
+  - type: worker
+    name: skillgraph-decay-worker
+    runtime: docker
+    dockerfilePath: decay-worker/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skillgraph-db
+          property: connectionString
+      # Neo4j credentials (Option A: Neo4j AuraDB credentials go here)
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USER
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+
+  # 6. Frontend App (Exposed Web Service)
+  - type: web
+    name: skillgraph-frontend
+    runtime: docker
+    dockerfilePath: frontend/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: BACKEND_PROXY_URL
+        value: http://skillgraph-gateway:3000
+      # Production URLs for Frontend requests (obtained after deploying gateway and notification-service)
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_SOCKET_URL
+        sync: false
+
+  # 7. Redis Instance (KeyValue Service)
+  - type: keyvalue
+    name: skillgraph-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+
+databases:
+  # 8. PostgreSQL Database
+  - name: skillgraph-db
+    plan: free
+    databaseName: skillgraph
+    user: skillgraph
