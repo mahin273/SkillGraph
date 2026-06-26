@@ -164,6 +164,7 @@ services:
     name: skillgraph-redis
     plan: free
     maxmemoryPolicy: noeviction
+    ipAllowList: []
 
 databases:
   # 8. PostgreSQL Database
